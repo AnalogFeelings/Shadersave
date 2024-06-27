@@ -16,7 +16,7 @@
 
 #include <windows.h>
 #include <scrnsave.h>
-#include "include/glrenderer.h"
+#include <glrenderer.h>
 
 #define ANIMATION_TIMER 1
 

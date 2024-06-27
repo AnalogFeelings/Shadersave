@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include "include/shader.h"
+#include <shader.h>
 
 auto Shader::LoadShader(CONST std::string& vertexText) -> BOOL
 {
