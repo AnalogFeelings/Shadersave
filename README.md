@@ -20,6 +20,7 @@ Shadersave is a Windows screensaver that can run Shadertoy shaders locally under
 - [ ] Add support for loading from files instead of resources.
 - [ ] Add config dialogue using Win32.
 - [ ] Move to meson and make it cross-platform (?).
+- [ ] Come up with something to get full 144Hz displaying.
 
 # :warning: Limitations
 
