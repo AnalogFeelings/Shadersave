@@ -129,7 +129,7 @@ VOID GLRenderer::DoRender(HDC deviceContext)
 	// Looks dirty, I know.
 	FLOAT elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(this->ProgramNow - this->ProgramStart).count() / 1000.0;
 
-	this->QuadShader->SetVector2Uniform("iResolution", this->ViewportWidth, this->ViewportHeight);
+	this->QuadShader->SetVector3Uniform("iResolution", this->ViewportWidth, this->ViewportHeight, 0);
 	this->QuadShader->SetFloatUniform("iTime", elapsedTime);
 
 	glClearColor(0, 0, 0, 1);
