@@ -45,9 +45,9 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 			UINT refreshRate;
 			if (::EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &deviceMode) == NULL)
-				refreshRate = std::floor(1 / 60 * 1000);
+				refreshRate = std::lround(1.0 / 60 * 1000);
 			else
-				refreshRate = std::floor(1 / deviceMode.dmDisplayFrequency * 1000);
+				refreshRate = std::lround(1.0 / deviceMode.dmDisplayFrequency * 1000);
 
 			glRenderer = std::make_shared<GLRenderer>();
 
