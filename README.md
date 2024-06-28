@@ -44,3 +44,6 @@ I still haven't heard of ways to debug screensavers properly.
 
 [*Cook-Torrance*](https://www.shadertoy.com/view/XsXXDB) by **xbe**  
 ![torrance](screenshots/raytracer.png)
+
+[*Splitting DNA*](https://www.shadertoy.com/view/4d2cWd) by **BigWIngs**
+![dna](screenshots/dna.png)
