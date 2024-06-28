@@ -19,6 +19,23 @@ Shadersave is a Windows screensaver that can run Shadertoy shaders locally under
 - [ ] Clean up the code.
 - [ ] Add support for loading from files instead of resources.
 - [ ] Add config dialogue using Win32.
+- [ ] Move to meson and make it cross-platform (?).
+
+# :warning: Limitations
+
+- Audio and VR shaders will not be supported.
+- Mouse and/or keyboard input wont be supported for obvious reasons.
+
+# :hammer_and_wrench: Building
+
+To build this, you need Visual Studio 2022 with the C++ workload installed alongside the Windows 11 SDK.  
+You must also place the libraries below in a "lib" folder.
+
+- [boost::regex](https://github.com/boostorg/regex)
+- [GLEW](https://glew.sourceforge.net/)
+- [GLM](https://github.com/g-truc/glm)
+
+I still haven't heard of ways to debug screensavers properly.
 
 # :camera: Screenshots
 
