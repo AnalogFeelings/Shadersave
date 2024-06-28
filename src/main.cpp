@@ -19,66 +19,68 @@
 #include <glrenderer.h>
 
 #define ANIMATION_TIMER 1
+#define GLEW_ERROR_SIZE 128
+#define OPENGL_ERROR_SIZE 2048
+
+HDC deviceContextHandle;
+HGLRC glRenderContextHandle;
+RECT clientRect;
+std::shared_ptr<GLRenderer> glRenderer;
 
 auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) -> LRESULT
 {
-	static HDC deviceContextHandle;
-	static HGLRC glRenderContextHandle;
-	static RECT clientRect;
-	static GLRenderer* glRenderer;
-
 	switch (message)
 	{
 	case WM_CREATE:
-	{
-		::GetClientRect(hWnd, &clientRect);
-		INT windowWidth = clientRect.right;
-		INT windowHeight = clientRect.bottom;
-
-		DEVMODE deviceMode;
-		ZeroMemory(&deviceMode, sizeof(deviceMode));
-
-		deviceMode.dmSize = sizeof(deviceMode);
-		deviceMode.dmDriverExtra = 0;
-
-		UINT refreshRate;
-		if (::EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &deviceMode) == NULL)
-			refreshRate = std::floor(1 / 60 * 1000);
-		else
-			refreshRate = std::floor(1 / deviceMode.dmDisplayFrequency * 1000);
-
-		glRenderer = new GLRenderer();
-
-		BOOL contextResult = glRenderer->InitContext(hWnd, deviceContextHandle, glRenderContextHandle);
-		if (!contextResult)
 		{
-			GLenum error = glGetError();
-			CHAR buffer[96];
+			::GetClientRect(hWnd, &clientRect);
+			INT windowWidth = clientRect.right;
+			INT windowHeight = clientRect.bottom;
 
-			std::snprintf(buffer, 96, "Error initializing GLEW.\n%s", glewGetErrorString(error));
+			DEVMODE deviceMode =
+			{
+				.dmSize = sizeof(DEVMODE),
+				.dmDriverExtra = 0
+			};
 
-			::MessageBox(hWnd, buffer, "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+			UINT refreshRate;
+			if (::EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &deviceMode) == NULL)
+				refreshRate = std::floor(1 / 60 * 1000);
+			else
+				refreshRate = std::floor(1 / deviceMode.dmDisplayFrequency * 1000);
 
-			return -1;
+			glRenderer = std::make_shared<GLRenderer>();
+
+			BOOL contextResult = glRenderer->InitContext(hWnd, deviceContextHandle, glRenderContextHandle);
+			if (!contextResult)
+			{
+				GLenum error = glGetError();
+				CHAR buffer[GLEW_ERROR_SIZE];
+
+				std::snprintf(buffer, GLEW_ERROR_SIZE, "Error initializing GLEW.\n%s", glewGetErrorString(error));
+
+				::MessageBox(hWnd, buffer, "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+
+				return -1;
+			}
+
+			BOOL rendererResult = glRenderer->InitRenderer(windowWidth, windowHeight);
+			if (!rendererResult)
+			{
+				CHAR buffer[OPENGL_ERROR_SIZE];
+				std::snprintf(buffer, OPENGL_ERROR_SIZE, "Error initializing OpenGL renderer.\n%s", glRenderer->QuadShader->ShaderLog);
+
+				::MessageBox(hWnd, buffer, "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+
+				return -1;
+			}
+
+			::SetTimer(hWnd, ANIMATION_TIMER, refreshRate, nullptr);
+			return 0;
 		}
-
-		BOOL rendererResult = glRenderer->InitRenderer(windowWidth, windowHeight);
-		if(!rendererResult)
-		{
-			CHAR buffer[2048];
-			std::snprintf(buffer, 2048, "Error initializing OpenGL renderer.\n%s", glRenderer->QuadShader->ShaderLog);
-
-			::MessageBox(hWnd, buffer, "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
-
-			return -1;
-		}
-
-		::SetTimer(hWnd, ANIMATION_TIMER, refreshRate, nullptr);
-		return 0;
-	}
 	case WM_DESTROY:
 		::KillTimer(hWnd, ANIMATION_TIMER);
-		if(glRenderer) 
+		if (glRenderer)
 			glRenderer->CloseRenderer(hWnd, deviceContextHandle, glRenderContextHandle);
 
 		return 0;

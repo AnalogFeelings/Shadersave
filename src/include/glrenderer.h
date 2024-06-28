@@ -24,7 +24,7 @@
 #include <resources.h>
 #include <chrono>
 
-#define TIMEPOINT std::chrono::time_point<std::chrono::high_resolution_clock>
+typedef std::chrono::time_point<std::chrono::high_resolution_clock> TIMEPOINT;
 
 class GLRenderer
 {
@@ -37,27 +37,17 @@ public:
 	auto DoRender(HDC deviceContext) -> VOID;
 
 	auto CloseRenderer(HWND hWnd, HDC deviceContext, HGLRC glRenderContext) -> VOID;
+
 private:
 	INT ViewportWidth = 0;
 	INT ViewportHeight = 0;
 
-	UINT QuadVao, QuadVbo, QuadEbo;
+	UINT QuadVao = 0;
+	UINT QuadVbo = 0;
+	UINT QuadEbo = 0;
 
 	TIMEPOINT ProgramStart;
 	TIMEPOINT ProgramNow;
-	
-	CONST FLOAT QuadVertices[12] =
-	{
-		-1.0f, -1.0f, -0.0f,
-		1.0f,  1.0f, -0.0f,
-		-1.0f,  1.0f, -0.0f,
-		1.0f, -1.0f, -0.0f
-	};
-	CONST UINT QuadIndices[6] =
-	{
-		0, 1, 2,
-		0, 3, 1
-	};
 
 	auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
 	auto GuaranteeNull(UINT size, PCSTR& data) -> std::string;
