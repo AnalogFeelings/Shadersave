@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <regex>
 #include <shader.h>
 
 auto Shader::LoadShader(CONST std::string& vertexText) -> BOOL
@@ -32,10 +33,10 @@ auto Shader::LoadShader(CONST std::string& vertexText) -> BOOL
 auto Shader::LoadShadertoyShader(std::string& fragmentText) -> BOOL
 {
 	std::stringstream stream;
-	std::regex entryRegex(R"(void\s+mainImage\s*\(\s*(?:out)?\s+vec4\s+([^,]+),\s*(?:in)?\s+vec2\s+([^)]+)\))");
-	std::smatch matches;
+	boost::regex entryRegex(R"(void\s+mainImage\s*\(\s*(?:out)?\s+vec4\s+([^,]+),\s*(?:in)?\s+vec2\s+([^)]+)\))");
+	boost::smatch matches;
 
-	if (!std::regex_search(fragmentText, matches, entryRegex))
+	if (!boost::regex_search(fragmentText, matches, entryRegex))
 		return FALSE;
 
 	std::string fragColorName = matches[1];
@@ -48,7 +49,7 @@ auto Shader::LoadShadertoyShader(std::string& fragmentText) -> BOOL
 	stream << "uniform vec4 iMouse;" << "\n"; // This gets ignored but still needs a definition.
 	stream << "out vec4 " << fragColorName << ";" << "\n";
 
-	fragmentText = std::regex_replace(fragmentText, entryRegex, "void main()");
+	fragmentText = boost::regex_replace(fragmentText, entryRegex, "void main()");
 
 	std::string stringifiedStream = stream.str();
 	fragmentText.insert(0, stringifiedStream);

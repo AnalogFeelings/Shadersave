@@ -21,7 +21,7 @@
 #include <glm.hpp>
 #include <string>
 #include <sstream>
-#include <regex>
+#include <boost/regex.hpp>
 #include <memory>
 
 #define SHADER_LOG_SIZE 1024
