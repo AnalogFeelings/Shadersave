@@ -23,8 +23,7 @@
 #include <shader.h>
 #include <resources.h>
 #include <chrono>
-
-typedef std::chrono::time_point<std::chrono::high_resolution_clock> TIMEPOINT;
+#include <defines.h>
 
 class GLRenderer
 {

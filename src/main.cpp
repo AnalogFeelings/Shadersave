@@ -17,9 +17,8 @@
 #include <windows.h>
 #include <scrnsave.h>
 #include <glrenderer.h>
-
-#define GLEW_ERROR_SIZE 128
-#define OPENGL_ERROR_SIZE 2048
+#include <resources.h>
+#include <defines.h>
 
 HDC deviceContextHandle;
 HGLRC glRenderContextHandle;
@@ -67,11 +66,11 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 	case WM_PAINT:
 		PAINTSTRUCT paintStruct;
 
-		BeginPaint(hWnd, &paintStruct);
+		::BeginPaint(hWnd, &paintStruct);
 		glRenderer->DoRender(deviceContextHandle);
-		EndPaint(hWnd, &paintStruct);
+		::EndPaint(hWnd, &paintStruct);
 
-		InvalidateRect(hWnd, &clientRect, FALSE);
+		::InvalidateRect(hWnd, &clientRect, FALSE);
 
 		return 0;
 	case WM_DESTROY:
@@ -86,7 +85,26 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) -> BOOL
 {
-	return FALSE;
+	switch(message)
+	{
+	case WM_COMMAND:
+		switch(LOWORD(wParam))
+		{
+		case IDC_ABOUTBUTT:
+			std::string versionString = std::string(SHADERSAVE_VERSION);
+			std::string builtString = "Shadersave v" + versionString + " by Analog Feelings\nhttps://github.com/AnalogFeelings";
+
+			::MessageBox(hDlg, builtString.c_str(), "About Shadersave", MB_OK | MB_ICONINFORMATION | MB_TOPMOST);
+
+			break;
+		}
+	case WM_CLOSE:
+		::EndDialog(hDlg, 0);
+		break;
+	default:
+		return FALSE;
+	}
+	return TRUE;
 }
 
 auto WINAPI RegisterDialogClasses(HANDLE hInst) -> BOOL

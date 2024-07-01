@@ -24,6 +24,7 @@
     <ClCompile Include="src\shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\include\defines.h" />
     <ClInclude Include="src\include\glrenderer.h" />
     <ClInclude Include="src\include\shader.h" />
     <ClInclude Include="src\resources\resource.h" />
