@@ -16,12 +16,11 @@
 
 #pragma once
 
-#define SHADERSAVE_VERSION "0.1"
-#define GLEW_ERROR_SIZE 128
-#define OPENGL_ERROR_SIZE 2048
+#include <Windows.h>
+#include <string>
 
-#define REGISTRY_SUBKEY "SOFTWARE\\AnalogFeelings\\Shadersave"
-#define FRAMERATE_CAP "FramerateCap"
-#define SHADER_PATH "ShaderPath"
-
-typedef std::chrono::time_point<std::chrono::high_resolution_clock> TIMEPOINT;
+typedef struct
+{
+	std::string ShaderPath;
+	UINT FramerateCap;
+} SETTINGS, *PSETTINGS;

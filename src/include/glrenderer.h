@@ -24,6 +24,10 @@
 #include <resources.h>
 #include <chrono>
 #include <defines.h>
+#include <iostream>
+#include <fstream>
+
+#include "settings.h"
 
 class GLRenderer
 {
@@ -31,7 +35,7 @@ public:
 	std::shared_ptr<Shader> QuadShader;
 
 	auto InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> BOOL;
-	auto InitRenderer(INT viewportWidth, INT viewportHeight) -> BOOL;
+	auto InitRenderer(INT viewportWidth, INT viewportHeight, SETTINGS settings) -> BOOL;
 
 	auto DoRender(HDC deviceContext) -> VOID;
 

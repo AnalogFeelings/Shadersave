@@ -57,7 +57,7 @@ auto GLRenderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderConte
 	return TRUE;
 }
 
-auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight) -> BOOL
+auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, SETTINGS settings) -> BOOL
 {
 	this->ViewportWidth = viewportWidth;
 	this->ViewportHeight = viewportHeight;
@@ -91,16 +91,30 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight) -> BOOL
 		return FALSE;
 
 	std::string vertexSource = this->GuaranteeNull(vertexSize, vertexData);
+	std::string fragmentSource;
 
-	UINT fragmentSize;
-	PCSTR fragmentData;
+	if(settings.ShaderPath.empty())
+	{
+		UINT fragmentSize;
+		PCSTR fragmentData;
 
-	// Load fragment shader text.
-	BOOL fragmentResult = this->LoadFileFromResource(IDR_FRAGMENTSHADER, fragmentSize, fragmentData);
-	if (!fragmentResult)
-		return FALSE;
+		// Load fragment shader text.
+		BOOL fragmentResult = this->LoadFileFromResource(IDR_FRAGMENTSHADER, fragmentSize, fragmentData);
+		if (!fragmentResult)
+			return FALSE;
 
-	std::string fragmentSource = this->GuaranteeNull(fragmentSize, fragmentData);
+		fragmentSource = this->GuaranteeNull(fragmentSize, fragmentData);
+	}
+	else
+	{
+		std::ifstream fileStream(settings.ShaderPath);
+		std::stringstream stringStream;
+		stringStream << fileStream.rdbuf();
+
+		fragmentSource = stringStream.str();
+
+		fileStream.close();
+	}
 
 	// Actually load the shaders and compile them.
 	this->QuadShader = std::make_shared<Shader>();

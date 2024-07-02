@@ -19,65 +19,73 @@
 #include <glrenderer.h>
 #include <resources.h>
 #include <defines.h>
+#include <settings.h>
+#include <registry.h>
+#include <filesystem>
 
 HDC deviceContextHandle;
 HGLRC glRenderContextHandle;
 RECT clientRect;
 std::shared_ptr<GLRenderer> glRenderer;
 
+auto LoadSettings() -> SETTINGS;
+auto SaveSettings(PSETTINGS settings) -> BOOL;
+auto ValidateSettings(PSETTINGS settings) -> VOID;
+
 auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) -> LRESULT
 {
 	switch (message)
 	{
-	case WM_CREATE:
-	{
-		::GetClientRect(hWnd, &clientRect);
-		INT windowWidth = clientRect.right;
-		INT windowHeight = clientRect.bottom;
-
-		glRenderer = std::make_shared<GLRenderer>();
-
-		BOOL contextResult = glRenderer->InitContext(hWnd, deviceContextHandle, glRenderContextHandle);
-		if (!contextResult)
+		case WM_CREATE:
 		{
-			GLenum error = glGetError();
-			CHAR buffer[GLEW_ERROR_SIZE];
+			::GetClientRect(hWnd, &clientRect);
+			INT windowWidth = clientRect.right;
+			INT windowHeight = clientRect.bottom;
+			SETTINGS settings = LoadSettings();
 
-			std::snprintf(buffer, GLEW_ERROR_SIZE, "Error initializing GLEW.\n%s", glewGetErrorString(error));
+			glRenderer = std::make_shared<GLRenderer>();
 
-			::MessageBox(hWnd, buffer, "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+			BOOL contextResult = glRenderer->InitContext(hWnd, deviceContextHandle, glRenderContextHandle);
+			if (!contextResult)
+			{
+				GLenum error = glGetError();
+				CHAR buffer[GLEW_ERROR_SIZE];
 
-			return -1;
+				std::snprintf(buffer, GLEW_ERROR_SIZE, "Error initializing GLEW.\n%s", glewGetErrorString(error));
+
+				::MessageBox(hWnd, buffer, "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+
+				return -1;
+			}
+
+			BOOL rendererResult = glRenderer->InitRenderer(windowWidth, windowHeight, settings);
+			if (!rendererResult)
+			{
+				CHAR buffer[OPENGL_ERROR_SIZE];
+				std::snprintf(buffer, OPENGL_ERROR_SIZE, "Error initializing OpenGL renderer.\n%s", glRenderer->QuadShader->ShaderLog);
+
+				::MessageBox(hWnd, buffer, "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+
+				return -1;
+			}
+
+			return 0;
 		}
+		case WM_PAINT:
+			PAINTSTRUCT paintStruct;
 
-		BOOL rendererResult = glRenderer->InitRenderer(windowWidth, windowHeight);
-		if (!rendererResult)
-		{
-			CHAR buffer[OPENGL_ERROR_SIZE];
-			std::snprintf(buffer, OPENGL_ERROR_SIZE, "Error initializing OpenGL renderer.\n%s", glRenderer->QuadShader->ShaderLog);
+			::BeginPaint(hWnd, &paintStruct);
+			glRenderer->DoRender(deviceContextHandle);
+			::EndPaint(hWnd, &paintStruct);
 
-			::MessageBox(hWnd, buffer, "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+			::InvalidateRect(hWnd, &clientRect, FALSE);
 
-			return -1;
-		}
+			return 0;
+		case WM_DESTROY:
+			if (glRenderer)
+				glRenderer->CloseRenderer(hWnd, deviceContextHandle, glRenderContextHandle);
 
-		return 0;
-	}
-	case WM_PAINT:
-		PAINTSTRUCT paintStruct;
-
-		::BeginPaint(hWnd, &paintStruct);
-		glRenderer->DoRender(deviceContextHandle);
-		::EndPaint(hWnd, &paintStruct);
-
-		::InvalidateRect(hWnd, &clientRect, FALSE);
-
-		return 0;
-	case WM_DESTROY:
-		if (glRenderer)
-			glRenderer->CloseRenderer(hWnd, deviceContextHandle, glRenderContextHandle);
-
-		return 0;
+			return 0;
 	}
 
 	return ::DefScreenSaverProc(hWnd, message, wParam, lParam);
@@ -85,24 +93,68 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) -> BOOL
 {
-	switch(message)
+	switch (message)
 	{
-	case WM_COMMAND:
-		switch(LOWORD(wParam))
+		case WM_INITDIALOG:
 		{
-		case IDC_ABOUTBUTT:
-			std::string versionString = std::string(SHADERSAVE_VERSION);
-			std::string builtString = "Shadersave v" + versionString + " by Analog Feelings\nhttps://github.com/AnalogFeelings";
+			SETTINGS settings = LoadSettings();
 
-			::MessageBox(hDlg, builtString.c_str(), "About Shadersave", MB_OK | MB_ICONINFORMATION | MB_TOPMOST);
+			SetDlgItemText(hDlg, IDC_SHADERPATH, settings.ShaderPath.c_str());
+			SetDlgItemText(hDlg, IDC_FRAMECAP, std::to_string(settings.FramerateCap).c_str());
 
+			return TRUE;
+		}
+		case WM_COMMAND:
+		{
+			switch (LOWORD(wParam))
+			{
+				case IDC_ABOUTBUTT:
+				{
+					std::string versionString = std::string(SHADERSAVE_VERSION);
+					std::string builtString = "Shadersave v" + versionString + " by Analog Feelings\nhttps://github.com/AnalogFeelings";
+
+					::MessageBox(hDlg, builtString.c_str(), "About Shadersave", MB_OK | MB_ICONINFORMATION | MB_TOPMOST);
+
+					break;
+				}
+				case IDC_CANCELBUTT:
+				{
+					::EndDialog(hDlg, 0);
+					break;
+				}
+				case IDC_OKBUTT:
+				{
+					CHAR shaderPath[MAX_PATH];
+					GetDlgItemText(hDlg, IDC_SHADERPATH, shaderPath, MAX_PATH);
+					UINT frameCap = GetDlgItemInt(hDlg, IDC_FRAMECAP, nullptr, FALSE);
+
+					SETTINGS settings =
+					{
+						.ShaderPath = std::string(shaderPath),
+						.FramerateCap = frameCap
+					};
+
+					BOOL saveResult = SaveSettings(&settings);
+					if (!saveResult)
+					{
+						::MessageBox(hDlg, "Could not save settings!", "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+
+						break;
+					}
+
+					::EndDialog(hDlg, 0);
+					break;
+				}
+			}
+			return FALSE;
+		}
+		case WM_CLOSE:
+		{
+			::EndDialog(hDlg, 0);
 			break;
 		}
-	case WM_CLOSE:
-		::EndDialog(hDlg, 0);
-		break;
-	default:
-		return FALSE;
+		default:
+			return FALSE;
 	}
 	return TRUE;
 }
@@ -110,4 +162,47 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 auto WINAPI RegisterDialogClasses(HANDLE hInst) -> BOOL
 {
 	return TRUE;
+}
+
+auto LoadSettings() -> SETTINGS
+{
+	std::string shaderPath = ReadRegistryString(REGISTRY_SUBKEY, SHADER_PATH);
+	UINT framerateCap = ReadRegistryDword(REGISTRY_SUBKEY, FRAMERATE_CAP);
+
+	SETTINGS settings =
+	{
+		.ShaderPath = shaderPath,
+		.FramerateCap = framerateCap
+	};
+
+	ValidateSettings(&settings);
+
+	return settings;
+}
+
+auto SaveSettings(PSETTINGS settings) -> BOOL
+{
+	ValidateSettings(settings);
+
+	BOOL pathResult = SetRegistryString(REGISTRY_SUBKEY, SHADER_PATH, settings->ShaderPath);
+	if (!pathResult)
+		return FALSE;
+
+	BOOL frameResult = SetRegistryDword(REGISTRY_SUBKEY, FRAMERATE_CAP, settings->FramerateCap);
+	if (!frameResult)
+		return FALSE;
+
+	return TRUE;
+}
+
+auto ValidateSettings(PSETTINGS settings) -> VOID
+{
+	if(!std::filesystem::is_regular_file(settings->ShaderPath))
+		settings->ShaderPath = std::string();
+
+	DEVMODE deviceMode = {};
+	EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &deviceMode);
+
+	if(settings->FramerateCap > deviceMode.dmDisplayFrequency)
+		settings->FramerateCap = deviceMode.dmDisplayFrequency;
 }
