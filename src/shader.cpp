@@ -46,6 +46,7 @@ auto Shader::LoadShadertoyShader(std::string& fragmentText) -> BOOL
 	stream << "#define " << fragCoordName << " gl_FragCoord.xy" << "\n"; // This is a vec4 in GLSL.
 	stream << "uniform vec3 iResolution;" << "\n";
 	stream << "uniform float iTime;" << "\n";
+	stream << "uniform int iFrame;" << "\n";
 	stream << "uniform vec4 iMouse;" << "\n"; // This gets ignored but still needs a definition.
 	stream << "out vec4 " << fragColorName << ";" << "\n";
 

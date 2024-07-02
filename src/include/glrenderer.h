@@ -44,6 +44,7 @@ public:
 private:
 	INT ViewportWidth = 0;
 	INT ViewportHeight = 0;
+	UINT FrameCount = 0;
 
 	UINT QuadVao = 0;
 	UINT QuadVbo = 0;

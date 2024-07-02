@@ -145,6 +145,7 @@ VOID GLRenderer::DoRender(HDC deviceContext)
 
 	this->QuadShader->SetVector3Uniform("iResolution", this->ViewportWidth, this->ViewportHeight, 0);
 	this->QuadShader->SetFloatUniform("iTime", elapsedTime);
+	this->QuadShader->SetIntUniform("iFrame", this->FrameCount);
 
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -154,6 +155,8 @@ VOID GLRenderer::DoRender(HDC deviceContext)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 	::SwapBuffers(deviceContext);
+
+	this->FrameCount++;
 }
 
 VOID GLRenderer::CloseRenderer(HWND hWnd, HDC deviceContext, HGLRC glRenderContext)
