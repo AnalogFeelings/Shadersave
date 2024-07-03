@@ -22,6 +22,8 @@
 #include <settings.h>
 #include <registry.h>
 #include <filesystem>
+#include <shobjidl.h>
+#include <atlbase.h>
 
 HDC deviceContextHandle;
 HGLRC glRenderContextHandle;
@@ -31,6 +33,7 @@ std::shared_ptr<GLRenderer> glRenderer;
 auto LoadSettings() -> SETTINGS;
 auto SaveSettings(PSETTINGS settings) -> BOOL;
 auto ValidateSettings(PSETTINGS settings) -> VOID;
+auto OpenFilePicker(HWND owner) -> std::string;
 
 auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) -> LRESULT
 {
@@ -97,6 +100,14 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 	{
 		case WM_INITDIALOG:
 		{
+			HRESULT comResult = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+			if(!SUCCEEDED(comResult))
+			{
+				::MessageBox(hDlg, "Error initializing COM.", "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+
+				return FALSE;
+			}
+
 			SETTINGS settings = LoadSettings();
 
 			SetDlgItemText(hDlg, IDC_SHADERPATH, settings.ShaderPath.c_str());
@@ -145,12 +156,22 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 					::EndDialog(hDlg, 0);
 					break;
 				}
+				case IDC_BROWSEBUTT:
+				{
+					std::string filePath = OpenFilePicker(hDlg);
+
+					SetDlgItemText(hDlg, IDC_SHADERPATH, filePath.c_str());
+
+					break;
+				}
 			}
 			return FALSE;
 		}
 		case WM_CLOSE:
 		{
+			CoUninitialize();
 			::EndDialog(hDlg, 0);
+
 			break;
 		}
 		default:
@@ -205,4 +226,44 @@ auto ValidateSettings(PSETTINGS settings) -> VOID
 
 	if(settings->FramerateCap > deviceMode.dmDisplayFrequency)
 		settings->FramerateCap = deviceMode.dmDisplayFrequency;
+}
+
+// I hate working with COM.
+auto OpenFilePicker(HWND owner) -> std::string
+{
+	CComPtr<IFileOpenDialog> filePicker;
+
+	HRESULT currentResult = CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, 
+		IID_IFileOpenDialog, reinterpret_cast<void**>(&filePicker));
+
+	if(!SUCCEEDED(currentResult))
+		return std::string();
+
+	currentResult = filePicker->Show(owner);
+
+	if(!SUCCEEDED(currentResult))
+		return std::string();
+
+	CComPtr<IShellItem> shellItem;
+	currentResult = filePicker->GetResult(&shellItem);
+
+	if(!SUCCEEDED(currentResult))
+		return std::string();
+
+	PWSTR filePath;
+	currentResult = shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath);
+
+	if(!SUCCEEDED(currentResult))
+		return std::string();
+
+	ULONG64 pathLength = std::wcslen(filePath);
+	std::unique_ptr<CHAR[]> filePathConverted = std::make_unique<CHAR[]>(pathLength + 1);
+
+	std::wcstombs(filePathConverted.get(), filePath, pathLength);
+
+	std::string result = std::string(filePathConverted.get());
+
+	CoTaskMemFree(filePath);
+
+	return result;
 }
