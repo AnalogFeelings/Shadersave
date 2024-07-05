@@ -52,6 +52,7 @@ private:
 
 	ULONG64 ProgramStart = 0;
 	ULONG64 ProgramNow = 0;
+	ULONG64 ProgramDelta = 0;
 
 	auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
 	auto GuaranteeNull(UINT size, PCSTR& data) -> std::string;

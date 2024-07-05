@@ -145,6 +145,7 @@ VOID GLRenderer::DoRender(HDC deviceContext)
 
 	this->QuadShader->SetVector3Uniform("iResolution", this->ViewportWidth, this->ViewportHeight, 0);
 	this->QuadShader->SetFloatUniform("iTime", elapsedTime);
+	this->QuadShader->SetFloatUniform("iTimeDelta", this->ProgramDelta);
 	this->QuadShader->SetIntUniform("iFrame", this->FrameCount);
 
 	glClearColor(0, 0, 0, 1);
@@ -155,6 +156,9 @@ VOID GLRenderer::DoRender(HDC deviceContext)
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 	::SwapBuffers(deviceContext);
+
+	ULONG64 currentTime = this->GetUnixTimeInMs();
+	this->ProgramDelta = (currentTime - this->ProgramNow) / 1000.0f;
 
 	this->FrameCount++;
 }
