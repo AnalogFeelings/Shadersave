@@ -131,17 +131,17 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, SETTINGS se
 		return FALSE;
 
 	// Set up startup time.
-	this->ProgramStart = std::chrono::high_resolution_clock::now();
+	this->ProgramStart = this->GetUnixTimeInMs();
 
 	return TRUE;
 }
 
 VOID GLRenderer::DoRender(HDC deviceContext)
 {
-	this->ProgramNow = std::chrono::high_resolution_clock::now();
+	this->ProgramNow = this->GetUnixTimeInMs();
 
 	// Looks dirty, I know.
-	FLOAT elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(this->ProgramNow - this->ProgramStart).count() / 1000.0;
+	FLOAT elapsedTime = (this->ProgramNow - this->ProgramStart) / 1000.0f;
 
 	this->QuadShader->SetVector3Uniform("iResolution", this->ViewportWidth, this->ViewportHeight, 0);
 	this->QuadShader->SetFloatUniform("iTime", elapsedTime);
@@ -197,4 +197,11 @@ auto GLRenderer::GuaranteeNull(UINT size, PCSTR& data) -> std::string
 	buffer.get()[size] = NULL;
 
 	return std::string(buffer.get());
+}
+
+auto GLRenderer::GetUnixTimeInMs() -> ULONG64
+{
+	TIMEPOINT currentPoint = std::chrono::system_clock::now();
+
+	return std::chrono::duration_cast<std::chrono::milliseconds>(currentPoint.time_since_epoch()).count();
 }

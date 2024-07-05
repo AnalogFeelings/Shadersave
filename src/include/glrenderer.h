@@ -44,15 +44,16 @@ public:
 private:
 	INT ViewportWidth = 0;
 	INT ViewportHeight = 0;
-	UINT FrameCount = 0;
+	INT FrameCount = 0;
 
 	UINT QuadVao = 0;
 	UINT QuadVbo = 0;
 	UINT QuadEbo = 0;
 
-	TIMEPOINT ProgramStart;
-	TIMEPOINT ProgramNow;
+	ULONG64 ProgramStart = 0;
+	ULONG64 ProgramNow = 0;
 
 	auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
 	auto GuaranteeNull(UINT size, PCSTR& data) -> std::string;
+	auto GetUnixTimeInMs() -> ULONG64;
 };

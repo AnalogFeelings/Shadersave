@@ -24,4 +24,4 @@
 #define FRAMERATE_CAP "FramerateCap"
 #define SHADER_PATH "ShaderPath"
 
-typedef std::chrono::time_point<std::chrono::high_resolution_clock> TIMEPOINT;
+typedef std::chrono::time_point<std::chrono::system_clock> TIMEPOINT;
