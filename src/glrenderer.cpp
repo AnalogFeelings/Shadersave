@@ -57,7 +57,7 @@ auto GLRenderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderConte
 	return TRUE;
 }
 
-auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, SETTINGS settings) -> BOOL
+auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTINGS& settings) -> BOOL
 {
 	this->ViewportWidth = viewportWidth;
 	this->ViewportHeight = viewportHeight;

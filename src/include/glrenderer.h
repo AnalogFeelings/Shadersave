@@ -35,7 +35,7 @@ public:
 	std::shared_ptr<Shader> QuadShader;
 
 	auto InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> BOOL;
-	auto InitRenderer(INT viewportWidth, INT viewportHeight, SETTINGS settings) -> BOOL;
+	auto InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTINGS& settings) -> BOOL;
 
 	auto DoRender(HDC deviceContext) -> VOID;
 
