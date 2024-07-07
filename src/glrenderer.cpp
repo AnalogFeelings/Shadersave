@@ -141,12 +141,21 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 {
 	this->ProgramNow = this->GetUnixTimeInMs();
+
+	std::time_t currentCTime = std::time(nullptr);
+	std::tm* localTime = std::localtime(&currentCTime);
+
+	UINT year = localTime->tm_year + 1900;
+	UINT month = localTime->tm_mon + 1;
+	UINT day = localTime->tm_mday;
+	UINT seconds = (localTime->tm_hour * 3600) + (localTime->tm_min * 60) + localTime->tm_sec;
 	
 	this->QuadShader->SetVector3Uniform("iResolution", this->ViewportWidth, this->ViewportHeight, 0);
 	this->QuadShader->SetFloatUniform("iTime", (this->ProgramNow - this->ProgramStart) / 1000.0f);
 	this->QuadShader->SetFloatUniform("iTimeDelta", this->ProgramDelta / 1000.0f);
 	this->QuadShader->SetFloatUniform("iFrameRate", 1000.0f / this->ProgramDelta);
 	this->QuadShader->SetIntUniform("iFrame", this->FrameCount);
+	this->QuadShader->SetVector4Uniform("iDate", year, month, day, seconds);
 
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
