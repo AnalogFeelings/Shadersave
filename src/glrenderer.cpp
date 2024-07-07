@@ -143,6 +143,7 @@ VOID GLRenderer::DoRender(HDC deviceContext)
 	this->QuadShader->SetVector3Uniform("iResolution", this->ViewportWidth, this->ViewportHeight, 0);
 	this->QuadShader->SetFloatUniform("iTime", (this->ProgramNow - this->ProgramStart) / 1000.0f);
 	this->QuadShader->SetFloatUniform("iTimeDelta", this->ProgramDelta / 1000.0f);
+	this->QuadShader->SetFloatUniform("iFrameRate", 1000.0f / this->ProgramDelta);
 	this->QuadShader->SetIntUniform("iFrame", this->FrameCount);
 
 	glClearColor(0, 0, 0, 1);
