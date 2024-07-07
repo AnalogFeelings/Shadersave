@@ -55,6 +55,6 @@ private:
 	ULONG64 ProgramDelta = 0;
 
 	auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
-	auto GuaranteeNull(UINT size, PCSTR& data) -> std::string;
+	auto GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string;
 	auto GetUnixTimeInMs() -> ULONG64;
 };

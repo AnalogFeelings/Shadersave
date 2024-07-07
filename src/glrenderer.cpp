@@ -90,7 +90,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	if (!vertexResult)
 		return FALSE;
 
-	std::string vertexSource = this->GuaranteeNull(vertexSize, vertexData);
+	std::string vertexSource = this->GuaranteeNullTermination(vertexSize, vertexData);
 	std::string fragmentSource;
 
 	if(settings.ShaderPath.empty())
@@ -103,7 +103,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 		if (!fragmentResult)
 			return FALSE;
 
-		fragmentSource = this->GuaranteeNull(fragmentSize, fragmentData);
+		fragmentSource = this->GuaranteeNullTermination(fragmentSize, fragmentData);
 	}
 	else
 	{
@@ -136,10 +136,12 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	return TRUE;
 }
 
-VOID GLRenderer::DoRender(HDC deviceContext)
+#pragma warning(push)
+#pragma warning(disable: 4244)
+auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 {
 	this->ProgramNow = this->GetUnixTimeInMs();
-
+	
 	this->QuadShader->SetVector3Uniform("iResolution", this->ViewportWidth, this->ViewportHeight, 0);
 	this->QuadShader->SetFloatUniform("iTime", (this->ProgramNow - this->ProgramStart) / 1000.0f);
 	this->QuadShader->SetFloatUniform("iTimeDelta", this->ProgramDelta / 1000.0f);
@@ -160,8 +162,9 @@ VOID GLRenderer::DoRender(HDC deviceContext)
 
 	this->FrameCount++;
 }
+#pragma warning(pop)
 
-VOID GLRenderer::CloseRenderer(HWND hWnd, HDC deviceContext, HGLRC glRenderContext)
+auto GLRenderer::CloseRenderer(HWND hWnd, HDC deviceContext, HGLRC glRenderContext) -> VOID
 {
 	glDeleteVertexArrays(1, &this->QuadVao);
 	glDeleteBuffers(1, &this->QuadVbo);
@@ -191,7 +194,7 @@ auto GLRenderer::LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -
 	return TRUE;
 }
 
-auto GLRenderer::GuaranteeNull(UINT size, PCSTR& data) -> std::string
+auto GLRenderer::GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string
 {
 	std::unique_ptr<CHAR[]> buffer = std::make_unique<CHAR[]>(size + 1);
 	std::memcpy(buffer.get(), data, size);
