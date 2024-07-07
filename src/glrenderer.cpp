@@ -140,12 +140,9 @@ VOID GLRenderer::DoRender(HDC deviceContext)
 {
 	this->ProgramNow = this->GetUnixTimeInMs();
 
-	// Looks dirty, I know.
-	FLOAT elapsedTime = (this->ProgramNow - this->ProgramStart) / 1000.0f;
-
 	this->QuadShader->SetVector3Uniform("iResolution", this->ViewportWidth, this->ViewportHeight, 0);
-	this->QuadShader->SetFloatUniform("iTime", elapsedTime);
-	this->QuadShader->SetFloatUniform("iTimeDelta", this->ProgramDelta);
+	this->QuadShader->SetFloatUniform("iTime", (this->ProgramNow - this->ProgramStart) / 1000.0f);
+	this->QuadShader->SetFloatUniform("iTimeDelta", this->ProgramDelta / 1000.0f);
 	this->QuadShader->SetIntUniform("iFrame", this->FrameCount);
 
 	glClearColor(0, 0, 0, 1);
@@ -158,7 +155,7 @@ VOID GLRenderer::DoRender(HDC deviceContext)
 	::SwapBuffers(deviceContext);
 
 	ULONG64 currentTime = this->GetUnixTimeInMs();
-	this->ProgramDelta = (currentTime - this->ProgramNow) / 1000.0f;
+	this->ProgramDelta = currentTime - this->ProgramNow;
 
 	this->FrameCount++;
 }
