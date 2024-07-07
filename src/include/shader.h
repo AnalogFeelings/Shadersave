@@ -29,7 +29,7 @@
 class Shader
 {
 public:
-	CHAR ShaderLog[SHADER_LOG_SIZE];
+	CHAR ShaderLog[SHADER_LOG_SIZE] = {};
 
 	auto LoadShader(CONST std::string& vertexText) -> BOOL;
 	auto LoadShadertoyShader(std::string& fragmentText) -> BOOL;
