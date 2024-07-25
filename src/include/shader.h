@@ -25,6 +25,7 @@
 #include <memory>
 
 #define SHADER_LOG_SIZE 1024
+#define UNIFORM_BUFFER_SIZE 16
 
 class Shader
 {
@@ -35,24 +36,20 @@ public:
 	auto LoadShadertoyShader(std::string& fragmentText) -> BOOL;
 	auto CreateProgram() -> BOOL;
 	auto UseShader() -> VOID;
+	~Shader();
 
-	auto SetBoolUniform(CONST std::string& name, BOOL value) -> VOID;
 	auto SetIntUniform(CONST std::string& name, INT value) -> VOID;
 	auto SetFloatUniform(CONST std::string& name, FLOAT value) -> VOID;
-	auto SetVector2Uniform(CONST std::string& name, CONST glm::vec2& value) -> VOID;
 	auto SetVector2Uniform(CONST std::string& name, FLOAT x, FLOAT y) -> VOID;
-	auto SetVector3Uniform(CONST std::string& name, CONST glm::vec3& value) -> VOID;
 	auto SetVector3Uniform(CONST std::string& name, FLOAT x, FLOAT y, FLOAT z) -> VOID;
-	auto SetVector4Uniform(CONST std::string& name, CONST glm::vec4& value) -> VOID;
 	auto SetVector4Uniform(CONST std::string& name, FLOAT x, FLOAT y, FLOAT z, FLOAT w) -> VOID;
-	auto SetMatrix2Uniform(CONST std::string& name, CONST glm::mat2& value) -> VOID;
-	auto SetMatrix3Uniform(CONST std::string& name, CONST glm::mat3& value) -> VOID;
-	auto SetMatrix4Uniform(CONST std::string& name, CONST glm::mat4& value) -> VOID;
 
 private:
 	UINT ProgramId = 0;
 	UINT VertexShader = 0;
 	UINT FragmentShader = 0;
+
+	std::unordered_map<std::string, INT> UniformMap = {};
 
 	auto CheckCompileErrors(GLuint shaderId, CONST std::string& type) -> BOOL;
 };

@@ -49,6 +49,7 @@ auto Shader::LoadShadertoyShader(std::string& fragmentText) -> BOOL
 	stream << "uniform float iTimeDelta;" << "\n";
 	stream << "uniform float iFrameRate;" << "\n";
 	stream << "uniform int iFrame;" << "\n";
+	stream << "uniform float iChannelTime[4];" << "\n"; // This gets ignored but still needs a definition.
 	stream << "uniform vec4 iMouse;" << "\n"; // This gets ignored but still needs a definition.
 	stream << "uniform vec4 iDate;" << "\n";
 	stream << "out vec4 " << fragColorName << ";" << "\n";
@@ -80,6 +81,22 @@ auto Shader::CreateProgram() -> BOOL
 	glDeleteShader(this->VertexShader);
 	glDeleteShader(this->FragmentShader);
 
+	INT uniformCount;
+	glGetProgramiv(this->ProgramId, GL_ACTIVE_UNIFORMS, &uniformCount);
+
+	for (INT i = 0; i < uniformCount; i++)
+	{
+		INT length, size;
+		UINT type;
+		CHAR buffer[UNIFORM_BUFFER_SIZE] = {};
+		glGetActiveUniform(this->ProgramId, i, UNIFORM_BUFFER_SIZE, &length, &size, &type, buffer);
+
+		std::string bufferString(buffer);
+		INT location = glGetUniformLocation(this->ProgramId, buffer);
+
+		this->UniformMap.insert(std::pair(bufferString, location));
+	}
+
 	return programResult;
 }
 
@@ -88,76 +105,49 @@ auto Shader::UseShader() -> VOID
 	glUseProgram(this->ProgramId);
 }
 
-auto Shader::SetBoolUniform(CONST std::string& name, BOOL value) -> VOID
+Shader::~Shader()
 {
-	GLint uniformLocation = glGetUniformLocation(this->ProgramId, name.c_str());
-	glUniform1i(uniformLocation, (INT)value);
+	glDeleteProgram(this->ProgramId);
 }
 
 auto Shader::SetIntUniform(CONST std::string& name, INT value) -> VOID
 {
-	GLint uniformLocation = glGetUniformLocation(this->ProgramId, name.c_str());
+	if(!this->UniformMap.contains(name)) return;
+
+	INT uniformLocation = this->UniformMap.at(name);
 	glUniform1i(uniformLocation, value);
 }
 
 auto Shader::SetFloatUniform(CONST std::string& name, FLOAT value) -> VOID
 {
-	GLint uniformLocation = glGetUniformLocation(this->ProgramId, name.c_str());
-	glUniform1f(uniformLocation, value);
-}
+	if(!this->UniformMap.contains(name)) return;
 
-auto Shader::SetVector2Uniform(CONST std::string& name, CONST glm::vec2& value) -> VOID
-{
-	GLint uniformLocation = glGetUniformLocation(this->ProgramId, name.c_str());
-	glUniform2fv(uniformLocation, 1, &value[0]);
+	INT uniformLocation = this->UniformMap.at(name);
+	glUniform1f(uniformLocation, value);
 }
 
 auto Shader::SetVector2Uniform(CONST std::string& name, FLOAT x, FLOAT y) -> VOID
 {
-	GLint uniformLocation = glGetUniformLocation(this->ProgramId, name.c_str());
-	glUniform2f(uniformLocation, x, y);
-}
+	if(!this->UniformMap.contains(name)) return;
 
-auto Shader::SetVector3Uniform(CONST std::string& name, CONST glm::vec3& value) -> VOID
-{
-	GLint uniformLocation = glGetUniformLocation(this->ProgramId, name.c_str());
-	glUniform3fv(uniformLocation, 1, &value[0]);
+	INT uniformLocation = this->UniformMap.at(name);
+	glUniform2f(uniformLocation, x, y);
 }
 
 auto Shader::SetVector3Uniform(CONST std::string& name, FLOAT x, FLOAT y, FLOAT z) -> VOID
 {
-	GLint uniformLocation = glGetUniformLocation(this->ProgramId, name.c_str());
-	glUniform3f(uniformLocation, x, y, z);
-}
+	if(!this->UniformMap.contains(name)) return;
 
-auto Shader::SetVector4Uniform(CONST std::string& name, CONST glm::vec4& value) -> VOID
-{
-	GLint uniformLocation = glGetUniformLocation(this->ProgramId, name.c_str());
-	glUniform4fv(uniformLocation, 1, &value[0]);
+	INT uniformLocation = this->UniformMap.at(name);
+	glUniform3f(uniformLocation, x, y, z);
 }
 
 auto Shader::SetVector4Uniform(CONST std::string& name, FLOAT x, FLOAT y, FLOAT z, FLOAT w) -> VOID
 {
-	GLint uniformLocation = glGetUniformLocation(this->ProgramId, name.c_str());
+	if(!this->UniformMap.contains(name)) return;
+
+	INT uniformLocation = this->UniformMap.at(name);
 	glUniform4f(uniformLocation, x, y, z, w);
-}
-
-auto Shader::SetMatrix2Uniform(CONST std::string& name, CONST glm::mat2& value) -> VOID
-{
-	GLint uniformLocation = glGetUniformLocation(this->ProgramId, name.c_str());
-	glUniformMatrix2fv(uniformLocation, 1, GL_FALSE, &value[0][0]);
-}
-
-auto Shader::SetMatrix3Uniform(CONST std::string& name, CONST glm::mat3& value) -> VOID
-{
-	GLint uniformLocation = glGetUniformLocation(this->ProgramId, name.c_str());
-	glUniformMatrix3fv(uniformLocation, 1, GL_FALSE, &value[0][0]);
-}
-
-auto Shader::SetMatrix4Uniform(CONST std::string& name, CONST glm::mat4& value) -> VOID
-{
-	GLint uniformLocation = glGetUniformLocation(this->ProgramId, name.c_str());
-	glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, &value[0][0]);
 }
 
 auto Shader::CheckCompileErrors(GLuint shaderId, CONST std::string& type) -> BOOL

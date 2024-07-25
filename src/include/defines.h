@@ -18,7 +18,7 @@
 
 #define SHADERSAVE_VERSION "0.2"
 #define GLEW_ERROR_SIZE 128
-#define OPENGL_ERROR_SIZE 2048
+#define OPENGL_ERROR_SIZE 128
 
 #define REGISTRY_SUBKEY "SOFTWARE\\AnalogFeelings\\Shadersave"
 #define FRAMERATE_CAP "FramerateCap"
