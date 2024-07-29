@@ -82,6 +82,40 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	// Generate framebuffers.
+	if(!settings.BufferAPath.empty())
+	{
+		glGenFramebuffers(1, &this->BufferAFramebuffer);
+		glGenTextures(1, &this->BufferATexture);
+
+		glBindTexture(GL_TEXTURE_2D, this->BufferATexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	}
+	if(!settings.BufferBPath.empty())
+	{
+		glGenFramebuffers(1, &this->BufferBFramebuffer);
+		glGenTextures(1, &this->BufferBTexture);
+
+		glBindTexture(GL_TEXTURE_2D, this->BufferBTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	}
+	if(!settings.BufferCPath.empty())
+	{
+		glGenFramebuffers(1, &this->BufferCFramebuffer);
+		glGenTextures(1, &this->BufferCTexture);
+
+		glBindTexture(GL_TEXTURE_2D, this->BufferCTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	}
+	if(!settings.BufferDPath.empty())
+	{
+		glGenFramebuffers(1, &this->BufferDFramebuffer);
+		glGenTextures(1, &this->BufferDTexture);
+
+		glBindTexture(GL_TEXTURE_2D, this->BufferDTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	}
+
 	UINT vertexSize;
 	PCSTR vertexData;
 
@@ -178,6 +212,16 @@ auto GLRenderer::CloseRenderer(HWND hWnd, HDC deviceContext, HGLRC glRenderConte
 	glDeleteVertexArrays(1, &this->QuadVao);
 	glDeleteBuffers(1, &this->QuadVbo);
 	glDeleteBuffers(1, &this->QuadEbo);
+
+	glDeleteFramebuffers(1, &this->BufferAFramebuffer);
+	glDeleteFramebuffers(1, &this->BufferBFramebuffer);
+	glDeleteFramebuffers(1, &this->BufferCFramebuffer);
+	glDeleteFramebuffers(1, &this->BufferDFramebuffer);
+
+	glDeleteTextures(1, &this->BufferATexture);
+	glDeleteTextures(1, &this->BufferBTexture);
+	glDeleteTextures(1, &this->BufferCTexture);
+	glDeleteTextures(1, &this->BufferDTexture);
 
 	wglMakeCurrent(nullptr, nullptr);
 	wglDeleteContext(glRenderContext);
