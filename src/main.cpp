@@ -101,7 +101,7 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 		case WM_INITDIALOG:
 		{
 			HRESULT comResult = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-			if(!SUCCEEDED(comResult))
+			if(FAILED(comResult))
 			{
 				::MessageBox(hDlg, "Error initializing COM.", "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
 
@@ -236,24 +236,24 @@ auto OpenFilePicker(HWND owner) -> std::string
 	HRESULT currentResult = CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, 
 		IID_IFileOpenDialog, reinterpret_cast<void**>(&filePicker));
 
-	if(!SUCCEEDED(currentResult))
+	if(FAILED(currentResult))
 		return std::string();
 
 	currentResult = filePicker->Show(owner);
 
-	if(!SUCCEEDED(currentResult))
+	if(FAILED(currentResult))
 		return std::string();
 
 	CComPtr<IShellItem> shellItem;
 	currentResult = filePicker->GetResult(&shellItem);
 
-	if(!SUCCEEDED(currentResult))
+	if(FAILED(currentResult))
 		return std::string();
 
 	PWSTR filePath;
 	currentResult = shellItem->GetDisplayName(SIGDN_FILESYSPATH, &filePath);
 
-	if(!SUCCEEDED(currentResult))
+	if(FAILED(currentResult))
 		return std::string();
 
 	ULONG64 pathLength = std::wcslen(filePath);
