@@ -100,7 +100,7 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 	{
 		case WM_INITDIALOG:
 		{
-			HRESULT comResult = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+			HRESULT comResult = ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 			if(FAILED(comResult))
 			{
 				::MessageBox(hDlg, "Error initializing COM.", "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
@@ -110,8 +110,13 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 
 			SETTINGS settings = LoadSettings();
 
-			SetDlgItemText(hDlg, IDC_SHADERPATH, settings.ShaderPath.c_str());
-			SetDlgItemText(hDlg, IDC_FRAMECAP, std::to_string(settings.FramerateCap).c_str());
+			::SetDlgItemText(hDlg, IDC_SHADERPATH, settings.MainPath.c_str());
+			::SetDlgItemText(hDlg, IDC_SHADERPATHA, settings.BufferAPath.c_str());
+			::SetDlgItemText(hDlg, IDC_SHADERPATHB, settings.BufferBPath.c_str());
+			::SetDlgItemText(hDlg, IDC_SHADERPATHC, settings.BufferCPath.c_str());
+			::SetDlgItemText(hDlg, IDC_SHADERPATHD, settings.BufferDPath.c_str());
+
+			::SetDlgItemText(hDlg, IDC_FRAMECAP, std::to_string(settings.FramerateCap).c_str());
 
 			return TRUE;
 		}
@@ -136,12 +141,12 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 				case IDC_OKBUTT:
 				{
 					CHAR shaderPath[MAX_PATH];
-					GetDlgItemText(hDlg, IDC_SHADERPATH, shaderPath, MAX_PATH);
-					UINT frameCap = GetDlgItemInt(hDlg, IDC_FRAMECAP, nullptr, FALSE);
+					::GetDlgItemText(hDlg, IDC_SHADERPATH, shaderPath, MAX_PATH);
+					UINT frameCap = ::GetDlgItemInt(hDlg, IDC_FRAMECAP, nullptr, FALSE);
 
 					SETTINGS settings =
 					{
-						.ShaderPath = std::string(shaderPath),
+						.MainPath = std::string(shaderPath),
 						.FramerateCap = frameCap
 					};
 
@@ -160,7 +165,71 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 				{
 					std::string filePath = OpenFilePicker(hDlg);
 
-					SetDlgItemText(hDlg, IDC_SHADERPATH, filePath.c_str());
+					::SetDlgItemText(hDlg, IDC_SHADERPATH, filePath.c_str());
+
+					break;
+				}
+				case IDC_BROWSEBUTTA:
+				{
+					std::string filePath = OpenFilePicker(hDlg);
+
+					::SetDlgItemText(hDlg, IDC_SHADERPATHA, filePath.c_str());
+
+					break;
+				}
+				case IDC_BROWSEBUTTB:
+				{
+					std::string filePath = OpenFilePicker(hDlg);
+
+					::SetDlgItemText(hDlg, IDC_SHADERPATHB, filePath.c_str());
+
+					break;
+				}
+				case IDC_BROWSEBUTTC:
+				{
+					std::string filePath = OpenFilePicker(hDlg);
+
+					::SetDlgItemText(hDlg, IDC_SHADERPATHC, filePath.c_str());
+
+					break;
+				}
+				case IDC_BROWSEBUTTD:
+				{
+					std::string filePath = OpenFilePicker(hDlg);
+
+					::SetDlgItemText(hDlg, IDC_SHADERPATHD, filePath.c_str());
+
+					break;
+				}
+				case IDC_BROWSEBUTTCHN0:
+				{
+					std::string filePath = OpenFilePicker(hDlg);
+
+					::SetDlgItemText(hDlg, IDC_CHANNEL0, filePath.c_str());
+
+					break;
+				}
+				case IDC_BROWSEBUTTCHN1:
+				{
+					std::string filePath = OpenFilePicker(hDlg);
+
+					::SetDlgItemText(hDlg, IDC_CHANNEL1, filePath.c_str());
+
+					break;
+				}
+				case IDC_BROWSEBUTTCHN2:
+				{
+					std::string filePath = OpenFilePicker(hDlg);
+
+					::SetDlgItemText(hDlg, IDC_CHANNEL2, filePath.c_str());
+
+					break;
+				}
+				case IDC_BROWSEBUTTCHN3:
+				{
+					std::string filePath = OpenFilePicker(hDlg);
+
+					::SetDlgItemText(hDlg, IDC_CHANNEL3, filePath.c_str());
 
 					break;
 				}
@@ -169,7 +238,7 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 		}
 		case WM_CLOSE:
 		{
-			CoUninitialize();
+			::CoUninitialize();
 			::EndDialog(hDlg, 0);
 
 			break;
@@ -188,11 +257,20 @@ auto WINAPI RegisterDialogClasses(HANDLE hInst) -> BOOL
 auto LoadSettings() -> SETTINGS
 {
 	std::string shaderPath = ReadRegistryString(REGISTRY_SUBKEY, SHADER_PATH);
+	std::string bufferAPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERA_PATH);
+	std::string bufferBPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERB_PATH);
+	std::string bufferCPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERC_PATH);
+	std::string bufferDPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERD_PATH);
+
 	UINT framerateCap = ReadRegistryDword(REGISTRY_SUBKEY, FRAMERATE_CAP);
 
 	SETTINGS settings =
 	{
-		.ShaderPath = shaderPath,
+		.MainPath = shaderPath,
+		.BufferAPath = bufferAPath,
+		.BufferBPath = bufferBPath,
+		.BufferCPath = bufferCPath,
+		.BufferDPath = bufferDPath,
 		.FramerateCap = framerateCap
 	};
 
@@ -205,8 +283,24 @@ auto SaveSettings(PSETTINGS settings) -> BOOL
 {
 	ValidateSettings(settings);
 
-	BOOL pathResult = SetRegistryString(REGISTRY_SUBKEY, SHADER_PATH, settings->ShaderPath);
+	BOOL pathResult = SetRegistryString(REGISTRY_SUBKEY, SHADER_PATH, settings->MainPath);
 	if (!pathResult)
+		return FALSE;
+
+	BOOL bufferAResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERA_PATH, settings->BufferAPath);
+	if (!bufferAResult)
+		return FALSE;
+
+	BOOL bufferBResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERB_PATH, settings->BufferBPath);
+	if (!bufferBResult)
+		return FALSE;
+
+	BOOL bufferCResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERC_PATH, settings->BufferCPath);
+	if (!bufferCResult)
+		return FALSE;
+
+	BOOL bufferDResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERD_PATH, settings->BufferDPath);
+	if (!bufferDResult)
 		return FALSE;
 
 	BOOL frameResult = SetRegistryDword(REGISTRY_SUBKEY, FRAMERATE_CAP, settings->FramerateCap);
@@ -218,8 +312,16 @@ auto SaveSettings(PSETTINGS settings) -> BOOL
 
 auto ValidateSettings(PSETTINGS settings) -> VOID
 {
-	if(!std::filesystem::is_regular_file(settings->ShaderPath))
-		settings->ShaderPath = std::string();
+	if(!std::filesystem::is_regular_file(settings->MainPath))
+		settings->MainPath = std::string();
+	if(!std::filesystem::is_regular_file(settings->BufferAPath))
+		settings->BufferAPath = std::string();
+	if(!std::filesystem::is_regular_file(settings->BufferBPath))
+		settings->BufferBPath = std::string();
+	if(!std::filesystem::is_regular_file(settings->BufferCPath))
+		settings->BufferCPath = std::string();
+	if(!std::filesystem::is_regular_file(settings->BufferDPath))
+		settings->BufferDPath = std::string();
 
 	DEVMODE deviceMode = {};
 	EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &deviceMode);

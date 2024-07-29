@@ -44,14 +44,25 @@ auto Shader::LoadShadertoyShader(std::string& fragmentText) -> BOOL
 
 	stream << "#version 430 core" << "\n";
 	stream << "#define " << fragCoordName << " gl_FragCoord.xy" << "\n"; // This is a vec4 in GLSL.
+
 	stream << "uniform vec3 iResolution;" << "\n";
+
 	stream << "uniform float iTime;" << "\n";
 	stream << "uniform float iTimeDelta;" << "\n";
+
 	stream << "uniform float iFrameRate;" << "\n";
 	stream << "uniform int iFrame;" << "\n";
+
+	stream << "uniform sampler2D iChannel0;" << "\n";
+	stream << "uniform sampler2D iChannel1;" << "\n";
+	stream << "uniform sampler2D iChannel2;" << "\n";
+	stream << "uniform sampler2D iChannel3;" << "\n";
 	stream << "uniform float iChannelTime[4];" << "\n"; // This gets ignored but still needs a definition.
-	stream << "uniform vec4 iMouse;" << "\n"; // This gets ignored but still needs a definition.
+	stream << "uniform vec3 iChannelResolution[4];" << "\n"; // This gets ignored but still needs a definition.
+
 	stream << "uniform vec4 iDate;" << "\n";
+	stream << "uniform vec4 iMouse;" << "\n"; // This gets ignored but still needs a definition.
+	
 	stream << "out vec4 " << fragColorName << ";" << "\n";
 
 	fragmentText = boost::regex_replace(fragmentText, entryRegex, "void main()");

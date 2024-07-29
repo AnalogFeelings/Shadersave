@@ -21,7 +21,12 @@
 #define OPENGL_ERROR_SIZE 128
 
 #define REGISTRY_SUBKEY "SOFTWARE\\AnalogFeelings\\Shadersave"
+
 #define FRAMERATE_CAP "FramerateCap"
 #define SHADER_PATH "ShaderPath"
+#define BUFFERA_PATH "BufferAPath"
+#define BUFFERB_PATH "BufferBPath"
+#define BUFFERC_PATH "BufferCPath"
+#define BUFFERD_PATH "BufferDPath"
 
 typedef std::chrono::time_point<std::chrono::system_clock> TIMEPOINT;

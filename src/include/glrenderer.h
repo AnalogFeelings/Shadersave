@@ -50,6 +50,18 @@ private:
 	UINT QuadVbo = 0;
 	UINT QuadEbo = 0;
 
+	UINT BufferAFramebuffer = 0;
+	UINT BufferATexture = 0;
+
+	UINT BufferBFramebuffer = 0;
+	UINT BufferBTexture = 0;
+
+	UINT BufferCFramebuffer = 0;
+	UINT BufferCTexture = 0;
+
+	UINT BufferDFramebuffer = 0;
+	UINT BufferDTexture = 0;
+
 	ULONG64 ProgramStart = 0;
 	ULONG64 ProgramNow = 0;
 	ULONG64 ProgramDelta = 0;

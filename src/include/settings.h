@@ -21,6 +21,16 @@
 
 typedef struct
 {
-	std::string ShaderPath;
+	std::string MainPath;
+	std::string BufferAPath;
+	std::string BufferBPath;
+	std::string BufferCPath;
+	std::string BufferDPath;
+
+	std::string Channel0;
+	std::string Channel1;
+	std::string Channel2;
+	std::string Channel3;
+
 	UINT FramerateCap;
 } SETTINGS, *PSETTINGS;

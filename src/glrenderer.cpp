@@ -93,7 +93,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	std::string vertexSource = this->GuaranteeNullTermination(vertexSize, vertexData);
 	std::string fragmentSource;
 
-	if(settings.ShaderPath.empty())
+	if(settings.MainPath.empty())
 	{
 		UINT fragmentSize;
 		PCSTR fragmentData;
@@ -107,7 +107,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	}
 	else
 	{
-		std::ifstream fileStream(settings.ShaderPath);
+		std::ifstream fileStream(settings.MainPath);
 		std::stringstream stringStream;
 		stringStream << fileStream.rdbuf();
 
