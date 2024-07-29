@@ -90,6 +90,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 
 		glBindTexture(GL_TEXTURE_2D, this->BufferATexture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferATexture, 0);
 	}
 	if(!settings.BufferBPath.empty())
 	{
@@ -98,6 +99,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 
 		glBindTexture(GL_TEXTURE_2D, this->BufferBTexture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferBTexture, 0);
 	}
 	if(!settings.BufferCPath.empty())
 	{
@@ -106,6 +108,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 
 		glBindTexture(GL_TEXTURE_2D, this->BufferCTexture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferCTexture, 0);
 	}
 	if(!settings.BufferDPath.empty())
 	{
@@ -114,6 +117,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 
 		glBindTexture(GL_TEXTURE_2D, this->BufferDTexture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferDTexture, 0);
 	}
 
 	UINT vertexSize;
@@ -141,28 +145,47 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	}
 	else
 	{
-		std::ifstream fileStream(settings.MainPath);
-		std::stringstream stringStream;
-		stringStream << fileStream.rdbuf();
-
-		fragmentSource = stringStream.str();
-
-		fileStream.close();
+		fragmentSource = this->LoadFileFromDisk(settings.MainPath);
 	}
 
 	// Actually load the shaders and compile them.
-	this->QuadShader = std::make_shared<Shader>();
-	BOOL shaderResult = this->QuadShader->LoadShader(vertexSource);
-	if (!shaderResult)
+	BOOL quadResult = this->CreateShader(this->QuadShader, vertexSource, fragmentSource);
+	if(!quadResult)
 		return FALSE;
 
-	BOOL shadertoyResult = this->QuadShader->LoadShadertoyShader(fragmentSource);
-	if (!shadertoyResult)
-		return FALSE;
+	// Create buffer shaders.
+	if(!settings.BufferAPath.empty())
+	{
+		std::string bufferASource = this->LoadFileFromDisk(settings.BufferAPath);
 
-	BOOL compileResult = this->QuadShader->CreateProgram();
-	if (!compileResult)
-		return FALSE;
+		BOOL bufferAResult = this->CreateShader(this->BufferAShader, vertexSource, bufferASource);
+		if(!bufferAResult)
+			return FALSE;
+	}
+	if(!settings.BufferBPath.empty())
+	{
+		std::string bufferBSource = this->LoadFileFromDisk(settings.BufferBPath);
+
+		BOOL bufferBResult = this->CreateShader(this->BufferBShader, vertexSource, bufferBSource);
+		if(!bufferBResult)
+			return FALSE;
+	}
+	if(!settings.BufferCPath.empty())
+	{
+		std::string bufferCSource = this->LoadFileFromDisk(settings.BufferCPath);
+
+		BOOL bufferCResult = this->CreateShader(this->BufferCShader, vertexSource, bufferCSource);
+		if(!bufferCResult)
+			return FALSE;
+	}
+	if(!settings.BufferDPath.empty())
+	{
+		std::string bufferDSource = this->LoadFileFromDisk(settings.BufferDPath);
+
+		BOOL bufferDResult = this->CreateShader(this->BufferDShader, vertexSource, bufferDSource);
+		if(!bufferDResult)
+			return FALSE;
+	}
 
 	// Set up startup time.
 	this->ProgramStart = this->GetUnixTimeInMs();
@@ -177,17 +200,20 @@ auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 	this->ProgramNow = this->GetUnixTimeInMs();
 
 	std::time_t currentCTime = std::time(nullptr);
-	std::tm* localTime = std::localtime(&currentCTime);
+	std::tm* detailedTime = std::localtime(&currentCTime);
+	FLOAT timeDelta = this->ProgramDelta / 1000.0f;
+	FLOAT time = (this->ProgramNow - this->ProgramStart) / 1000.0f;
+	FLOAT frameRate = 1000.0f / this->ProgramDelta;
 
-	UINT year = localTime->tm_year + 1900;
-	UINT month = localTime->tm_mon + 1;
-	UINT day = localTime->tm_mday;
-	UINT seconds = (localTime->tm_hour * 3600) + (localTime->tm_min * 60) + localTime->tm_sec;
+	UINT year = detailedTime->tm_year + 1900;
+	UINT month = detailedTime->tm_mon + 1;
+	UINT day = detailedTime->tm_mday;
+	UINT seconds = (detailedTime->tm_hour * 3600) + (detailedTime->tm_min * 60) + detailedTime->tm_sec;
 	
 	this->QuadShader->SetVector3Uniform("iResolution", this->ViewportWidth, this->ViewportHeight, 0);
-	this->QuadShader->SetFloatUniform("iTime", (this->ProgramNow - this->ProgramStart) / 1000.0f);
-	this->QuadShader->SetFloatUniform("iTimeDelta", this->ProgramDelta / 1000.0f);
-	this->QuadShader->SetFloatUniform("iFrameRate", 1000.0f / this->ProgramDelta);
+	this->QuadShader->SetFloatUniform("iTime", time);
+	this->QuadShader->SetFloatUniform("iTimeDelta", timeDelta);
+	this->QuadShader->SetFloatUniform("iFrameRate", frameRate);
 	this->QuadShader->SetIntUniform("iFrame", this->FrameCount);
 	this->QuadShader->SetVector4Uniform("iDate", year, month, day, seconds);
 
@@ -255,6 +281,37 @@ auto GLRenderer::GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::
 	buffer.get()[size] = NULL;
 
 	return std::string(buffer.get());
+}
+
+auto GLRenderer::LoadFileFromDisk(CONST std::string& filename) -> std::string
+{
+	std::ifstream fileStream(filename);
+	std::stringstream stringStream;
+	stringStream << fileStream.rdbuf();
+
+	std::string text = stringStream.str();
+
+	fileStream.close();
+
+	return text;
+}
+
+auto GLRenderer::CreateShader(std::shared_ptr<Shader>& target, CONST std::string& vertexSource, std::string& fragmentSource) -> BOOL
+{
+	target = std::make_shared<Shader>();
+	BOOL shaderResult = target->LoadShader(vertexSource);
+	if (!shaderResult)
+		return FALSE;
+
+	BOOL shadertoyResult = target->LoadShadertoyShader(fragmentSource);
+	if (!shadertoyResult)
+		return FALSE;
+
+	BOOL compileResult = target->CreateProgram();
+	if (!compileResult)
+		return FALSE;
+
+	return TRUE;
 }
 
 auto GLRenderer::GetUnixTimeInMs() -> ULONG64
