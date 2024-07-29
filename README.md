@@ -36,7 +36,6 @@ You must also place the libraries below in a "lib" folder.
 
 - [boost::regex](https://github.com/boostorg/regex)
 - [GLEW](https://glew.sourceforge.net/)
-- [GLM](https://github.com/g-truc/glm)
 
 I still haven't heard of ways to debug screensavers properly.
 

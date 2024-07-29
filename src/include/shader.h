@@ -18,7 +18,6 @@
 
 #include <windows.h>
 #include <GL/glew.h>
-#include <glm.hpp>
 #include <string>
 #include <sstream>
 #include <boost/regex.hpp>
