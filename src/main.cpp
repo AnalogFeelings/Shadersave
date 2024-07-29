@@ -24,11 +24,20 @@
 #include <filesystem>
 #include <shobjidl.h>
 #include <atlbase.h>
+#include <unordered_set>
 
 HDC deviceContextHandle;
 HGLRC glRenderContextHandle;
 RECT clientRect;
 std::shared_ptr<GLRenderer> glRenderer;
+
+std::unordered_set<std::string> validBindings =
+{
+	"BUFFER_A",
+	"BUFFER_B",
+	"BUFFER_C",
+	"BUFFER_D"
+};
 
 auto LoadSettings() -> SETTINGS;
 auto SaveSettings(PSETTINGS settings) -> BOOL;
@@ -262,6 +271,11 @@ auto LoadSettings() -> SETTINGS
 	std::string bufferCPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERC_PATH);
 	std::string bufferDPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERD_PATH);
 
+	std::string channel0Binding = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL0_BINDING);
+	std::string channel1Binding = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL1_BINDING);
+	std::string channel2Binding = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL2_BINDING);
+	std::string channel3Binding = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL3_BINDING);
+
 	UINT framerateCap = ReadRegistryDword(REGISTRY_SUBKEY, FRAMERATE_CAP);
 
 	SETTINGS settings =
@@ -271,6 +285,12 @@ auto LoadSettings() -> SETTINGS
 		.BufferBPath = bufferBPath,
 		.BufferCPath = bufferCPath,
 		.BufferDPath = bufferDPath,
+
+		.Channel0 = channel0Binding,
+		.Channel1 = channel1Binding,
+		.Channel2 = channel2Binding,
+		.Channel3 = channel3Binding,
+
 		.FramerateCap = framerateCap
 	};
 
@@ -286,21 +306,30 @@ auto SaveSettings(PSETTINGS settings) -> BOOL
 	BOOL pathResult = SetRegistryString(REGISTRY_SUBKEY, SHADER_PATH, settings->MainPath);
 	if (!pathResult)
 		return FALSE;
-
 	BOOL bufferAResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERA_PATH, settings->BufferAPath);
 	if (!bufferAResult)
 		return FALSE;
-
 	BOOL bufferBResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERB_PATH, settings->BufferBPath);
 	if (!bufferBResult)
 		return FALSE;
-
 	BOOL bufferCResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERC_PATH, settings->BufferCPath);
 	if (!bufferCResult)
 		return FALSE;
-
 	BOOL bufferDResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERD_PATH, settings->BufferDPath);
 	if (!bufferDResult)
+		return FALSE;
+
+	BOOL channel0Result = SetRegistryString(REGISTRY_SUBKEY, CHANNEL0_BINDING, settings->Channel0);
+	if (!channel0Result)
+		return FALSE;
+	BOOL channel1Result = SetRegistryString(REGISTRY_SUBKEY, CHANNEL1_BINDING, settings->Channel1);
+	if (!channel1Result)
+		return FALSE;
+	BOOL channel2Result = SetRegistryString(REGISTRY_SUBKEY, CHANNEL2_BINDING, settings->Channel2);
+	if (!channel2Result)
+		return FALSE;
+	BOOL channel3Result = SetRegistryString(REGISTRY_SUBKEY, CHANNEL3_BINDING, settings->Channel3);
+	if (!channel3Result)
 		return FALSE;
 
 	BOOL frameResult = SetRegistryDword(REGISTRY_SUBKEY, FRAMERATE_CAP, settings->FramerateCap);
@@ -322,6 +351,15 @@ auto ValidateSettings(PSETTINGS settings) -> VOID
 		settings->BufferCPath = std::string();
 	if(!std::filesystem::is_regular_file(settings->BufferDPath))
 		settings->BufferDPath = std::string();
+
+	if(!std::filesystem::is_regular_file(settings->Channel0) || !validBindings.contains(settings->Channel0))
+		settings->Channel0 = std::string();
+	if(!std::filesystem::is_regular_file(settings->Channel1) || !validBindings.contains(settings->Channel1))
+		settings->Channel1 = std::string();
+	if(!std::filesystem::is_regular_file(settings->Channel2) || !validBindings.contains(settings->Channel2))
+		settings->Channel2 = std::string();
+	if(!std::filesystem::is_regular_file(settings->Channel3) || !validBindings.contains(settings->Channel3))
+		settings->Channel3 = std::string();
 
 	DEVMODE deviceMode = {};
 	EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &deviceMode);

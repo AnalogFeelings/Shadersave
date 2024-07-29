@@ -29,4 +29,9 @@
 #define BUFFERC_PATH "BufferCPath"
 #define BUFFERD_PATH "BufferDPath"
 
+#define CHANNEL0_BINDING "Channel0Binding"
+#define CHANNEL1_BINDING "Channel1Binding"
+#define CHANNEL2_BINDING "Channel2Binding"
+#define CHANNEL3_BINDING "Channel3Binding"
+
 typedef std::chrono::time_point<std::chrono::system_clock> TIMEPOINT;
