@@ -43,6 +43,7 @@ auto LoadSettings() -> SETTINGS;
 auto SaveSettings(PSETTINGS settings) -> BOOL;
 auto ValidateSettings(PSETTINGS settings) -> VOID;
 auto OpenFilePicker(HWND owner) -> std::string;
+auto GetControlText(HWND hDlg, int control) -> std::string;
 
 auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) -> LRESULT
 {
@@ -154,40 +155,31 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 				}
 				case IDC_OKBUTT:
 				{
-					CHAR shaderPath[MAX_PATH];
-					::GetDlgItemText(hDlg, IDC_SHADERPATH, shaderPath, MAX_PATH);
-					CHAR bufferAPath[MAX_PATH];
-					::GetDlgItemText(hDlg, IDC_SHADERPATHA, bufferAPath, MAX_PATH);
-					CHAR bufferBPath[MAX_PATH];
-					::GetDlgItemText(hDlg, IDC_SHADERPATHB, bufferBPath, MAX_PATH);
-					CHAR bufferCPath[MAX_PATH];
-					::GetDlgItemText(hDlg, IDC_SHADERPATHC, bufferCPath, MAX_PATH);
-					CHAR bufferDPath[MAX_PATH];
-					::GetDlgItemText(hDlg, IDC_SHADERPATHA, bufferDPath, MAX_PATH);
+					std::string shaderPath = GetControlText(hDlg, IDC_SHADERPATH);
+					std::string bufferAPath = GetControlText(hDlg, IDC_SHADERPATHA);
+					std::string bufferBPath = GetControlText(hDlg, IDC_SHADERPATHB);
+					std::string bufferCPath = GetControlText(hDlg, IDC_SHADERPATHC);
+					std::string bufferDPath = GetControlText(hDlg, IDC_SHADERPATHD);
 
-					CHAR channel0Binding[MAX_PATH];
-					::GetDlgItemText(hDlg, IDC_CHANNEL0, channel0Binding, MAX_PATH);
-					CHAR channel1Binding[MAX_PATH];
-					::GetDlgItemText(hDlg, IDC_CHANNEL1, channel1Binding, MAX_PATH);
-					CHAR channel2Binding[MAX_PATH];
-					::GetDlgItemText(hDlg, IDC_CHANNEL2, channel2Binding, MAX_PATH);
-					CHAR channel3Binding[MAX_PATH];
-					::GetDlgItemText(hDlg, IDC_CHANNEL3, channel3Binding, MAX_PATH);
+					std::string channel0Binding = GetControlText(hDlg, IDC_CHANNEL0);
+					std::string channel1Binding = GetControlText(hDlg, IDC_CHANNEL1);
+					std::string channel2Binding = GetControlText(hDlg, IDC_CHANNEL2);
+					std::string channel3Binding = GetControlText(hDlg, IDC_CHANNEL3);
 
 					UINT frameCap = ::GetDlgItemInt(hDlg, IDC_FRAMECAP, nullptr, FALSE);
 
 					SETTINGS settings =
 					{
-						.MainPath = std::string(shaderPath),
-						.BufferAPath = std::string(bufferAPath),
-						.BufferBPath = std::string(bufferBPath),
-						.BufferCPath = std::string(bufferCPath),
-						.BufferDPath = std::string(bufferDPath),
+						.MainPath = shaderPath,
+						.BufferAPath = bufferAPath,
+						.BufferBPath = bufferBPath,
+						.BufferCPath = bufferCPath,
+						.BufferDPath = bufferDPath,
 
-						.Channel0 = std::string(channel0Binding),
-						.Channel1 = std::string(channel1Binding),
-						.Channel2 = std::string(channel2Binding),
-						.Channel3 = std::string(channel3Binding),
+						.Channel0 = channel0Binding,
+						.Channel1 = channel1Binding,
+						.Channel2 = channel2Binding,
+						.Channel3 = channel3Binding,
 
 						.FramerateCap = frameCap
 					};
@@ -439,4 +431,12 @@ auto OpenFilePicker(HWND owner) -> std::string
 	CoTaskMemFree(filePath);
 
 	return result;
+}
+
+auto GetControlText(HWND hDlg, int control) -> std::string
+{
+	CHAR buffer[MAX_PATH];
+	::GetDlgItemText(hDlg, control, buffer, MAX_PATH);
+
+	return std::string(buffer);
 }
