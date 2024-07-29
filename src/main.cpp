@@ -125,6 +125,11 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 			::SetDlgItemText(hDlg, IDC_SHADERPATHC, settings.BufferCPath.c_str());
 			::SetDlgItemText(hDlg, IDC_SHADERPATHD, settings.BufferDPath.c_str());
 
+			::SetDlgItemText(hDlg, IDC_CHANNEL0, settings.Channel0.c_str());
+			::SetDlgItemText(hDlg, IDC_CHANNEL1, settings.Channel1.c_str());
+			::SetDlgItemText(hDlg, IDC_CHANNEL2, settings.Channel2.c_str());
+			::SetDlgItemText(hDlg, IDC_CHANNEL3, settings.Channel3.c_str());
+
 			::SetDlgItemText(hDlg, IDC_FRAMECAP, std::to_string(settings.FramerateCap).c_str());
 
 			return TRUE;
@@ -151,11 +156,39 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 				{
 					CHAR shaderPath[MAX_PATH];
 					::GetDlgItemText(hDlg, IDC_SHADERPATH, shaderPath, MAX_PATH);
+					CHAR bufferAPath[MAX_PATH];
+					::GetDlgItemText(hDlg, IDC_SHADERPATHA, bufferAPath, MAX_PATH);
+					CHAR bufferBPath[MAX_PATH];
+					::GetDlgItemText(hDlg, IDC_SHADERPATHB, bufferBPath, MAX_PATH);
+					CHAR bufferCPath[MAX_PATH];
+					::GetDlgItemText(hDlg, IDC_SHADERPATHC, bufferCPath, MAX_PATH);
+					CHAR bufferDPath[MAX_PATH];
+					::GetDlgItemText(hDlg, IDC_SHADERPATHA, bufferDPath, MAX_PATH);
+
+					CHAR channel0Binding[MAX_PATH];
+					::GetDlgItemText(hDlg, IDC_CHANNEL0, channel0Binding, MAX_PATH);
+					CHAR channel1Binding[MAX_PATH];
+					::GetDlgItemText(hDlg, IDC_CHANNEL1, channel1Binding, MAX_PATH);
+					CHAR channel2Binding[MAX_PATH];
+					::GetDlgItemText(hDlg, IDC_CHANNEL2, channel2Binding, MAX_PATH);
+					CHAR channel3Binding[MAX_PATH];
+					::GetDlgItemText(hDlg, IDC_CHANNEL3, channel3Binding, MAX_PATH);
+
 					UINT frameCap = ::GetDlgItemInt(hDlg, IDC_FRAMECAP, nullptr, FALSE);
 
 					SETTINGS settings =
 					{
 						.MainPath = std::string(shaderPath),
+						.BufferAPath = std::string(bufferAPath),
+						.BufferBPath = std::string(bufferBPath),
+						.BufferCPath = std::string(bufferCPath),
+						.BufferDPath = std::string(bufferDPath),
+
+						.Channel0 = std::string(channel0Binding),
+						.Channel1 = std::string(channel1Binding),
+						.Channel2 = std::string(channel2Binding),
+						.Channel3 = std::string(channel3Binding),
+
 						.FramerateCap = frameCap
 					};
 
@@ -352,13 +385,13 @@ auto ValidateSettings(PSETTINGS settings) -> VOID
 	if(!std::filesystem::is_regular_file(settings->BufferDPath))
 		settings->BufferDPath = std::string();
 
-	if(!std::filesystem::is_regular_file(settings->Channel0) || !validBindings.contains(settings->Channel0))
+	if(!std::filesystem::is_regular_file(settings->Channel0) && !validBindings.contains(settings->Channel0))
 		settings->Channel0 = std::string();
-	if(!std::filesystem::is_regular_file(settings->Channel1) || !validBindings.contains(settings->Channel1))
+	if(!std::filesystem::is_regular_file(settings->Channel1) && !validBindings.contains(settings->Channel1))
 		settings->Channel1 = std::string();
-	if(!std::filesystem::is_regular_file(settings->Channel2) || !validBindings.contains(settings->Channel2))
+	if(!std::filesystem::is_regular_file(settings->Channel2) && !validBindings.contains(settings->Channel2))
 		settings->Channel2 = std::string();
-	if(!std::filesystem::is_regular_file(settings->Channel3) || !validBindings.contains(settings->Channel3))
+	if(!std::filesystem::is_regular_file(settings->Channel3) && !validBindings.contains(settings->Channel3))
 		settings->Channel3 = std::string();
 
 	DEVMODE deviceMode = {};
