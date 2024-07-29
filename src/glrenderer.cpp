@@ -193,8 +193,6 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	return TRUE;
 }
 
-#pragma warning(push)
-#pragma warning(disable: 4244)
 auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 {
 	this->ProgramNow = this->GetUnixTimeInMs();
@@ -231,7 +229,6 @@ auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 
 	this->FrameCount++;
 }
-#pragma warning(pop)
 
 auto GLRenderer::CloseRenderer(HWND hWnd, HDC deviceContext, HGLRC glRenderContext) -> VOID
 {
