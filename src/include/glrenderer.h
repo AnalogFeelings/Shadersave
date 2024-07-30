@@ -42,8 +42,7 @@ public:
 	auto InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTINGS& settings) -> BOOL;
 
 	auto DoRender(HDC deviceContext) -> VOID;
-
-	auto CloseRenderer(HWND hWnd, HDC deviceContext, HGLRC glRenderContext) -> VOID;
+	~GLRenderer();
 
 private:
 	INT ViewportWidth = 0;

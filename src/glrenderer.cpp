@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <glrenderer.h>
+#include <core.h>
 
 constexpr FLOAT QUAD_VERTICES[12] =
 {
@@ -230,7 +231,7 @@ auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 	this->FrameCount++;
 }
 
-auto GLRenderer::CloseRenderer(HWND hWnd, HDC deviceContext, HGLRC glRenderContext) -> VOID
+GLRenderer::~GLRenderer()
 {
 	glDeleteVertexArrays(1, &this->QuadVao);
 	glDeleteBuffers(1, &this->QuadVbo);
@@ -247,8 +248,8 @@ auto GLRenderer::CloseRenderer(HWND hWnd, HDC deviceContext, HGLRC glRenderConte
 	glDeleteTextures(1, &this->BufferDTexture);
 
 	wglMakeCurrent(nullptr, nullptr);
-	wglDeleteContext(glRenderContext);
-	::ReleaseDC(hWnd, deviceContext);
+	wglDeleteContext(GlRenderContext);
+	::ReleaseDC(MainWindow, DeviceContext);
 }
 
 auto GLRenderer::LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL

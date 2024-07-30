@@ -34,3 +34,7 @@ typedef struct
 
 	UINT FramerateCap;
 } SETTINGS, *PSETTINGS;
+
+auto LoadSettings() -> SETTINGS;
+auto SaveSettings(PSETTINGS settings) -> BOOL;
+auto ValidateSettings(PSETTINGS settings) -> VOID;

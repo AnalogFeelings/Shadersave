@@ -16,24 +16,12 @@
 
 #pragma once
 
-#include <chrono>
+#include <memory>
+#include <windows.h>
+#include <glrenderer.h>
 
-#define SHADERSAVE_VERSION "0.3"
-#define GLEW_ERROR_SIZE 128
-#define OPENGL_ERROR_SIZE 128
-
-#define REGISTRY_SUBKEY "SOFTWARE\\AnalogFeelings\\Shadersave"
-
-#define FRAMERATE_CAP "FramerateCap"
-#define SHADER_PATH "ShaderPath"
-#define BUFFERA_PATH "BufferAPath"
-#define BUFFERB_PATH "BufferBPath"
-#define BUFFERC_PATH "BufferCPath"
-#define BUFFERD_PATH "BufferDPath"
-
-#define CHANNEL0_BINDING "Channel0Binding"
-#define CHANNEL1_BINDING "Channel1Binding"
-#define CHANNEL2_BINDING "Channel2Binding"
-#define CHANNEL3_BINDING "Channel3Binding"
-
-typedef std::chrono::time_point<std::chrono::system_clock> TIMEPOINT;
+inline HWND MainWindow;
+inline HDC DeviceContext;
+inline HGLRC GlRenderContext;
+inline RECT ClientRect;
+inline std::shared_ptr<GLRenderer> GlRenderer;
