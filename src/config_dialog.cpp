@@ -79,33 +79,20 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 				}
 				case IDC_OKBUTT:
 				{
-					std::string shaderPath = GetControlText(hDlg, IDC_SHADERPATH);
-					std::string bufferAPath = GetControlText(hDlg, IDC_SHADERPATHA);
-					std::string bufferBPath = GetControlText(hDlg, IDC_SHADERPATHB);
-					std::string bufferCPath = GetControlText(hDlg, IDC_SHADERPATHC);
-					std::string bufferDPath = GetControlText(hDlg, IDC_SHADERPATHD);
-
-					std::string channel0Binding = GetControlText(hDlg, IDC_CHANNEL0);
-					std::string channel1Binding = GetControlText(hDlg, IDC_CHANNEL1);
-					std::string channel2Binding = GetControlText(hDlg, IDC_CHANNEL2);
-					std::string channel3Binding = GetControlText(hDlg, IDC_CHANNEL3);
-
-					UINT frameCap = ::GetDlgItemInt(hDlg, IDC_FRAMECAP, nullptr, FALSE);
-
 					SETTINGS settings =
 					{
-						.MainPath = shaderPath,
-						.BufferAPath = bufferAPath,
-						.BufferBPath = bufferBPath,
-						.BufferCPath = bufferCPath,
-						.BufferDPath = bufferDPath,
+						.MainPath = ::GetControlText(hDlg, IDC_SHADERPATH),
+						.BufferAPath = ::GetControlText(hDlg, IDC_SHADERPATHA),
+						.BufferBPath = ::GetControlText(hDlg, IDC_SHADERPATHB),
+						.BufferCPath = ::GetControlText(hDlg, IDC_SHADERPATHC),
+						.BufferDPath = ::GetControlText(hDlg, IDC_SHADERPATHD),
 
-						.Channel0 = channel0Binding,
-						.Channel1 = channel1Binding,
-						.Channel2 = channel2Binding,
-						.Channel3 = channel3Binding,
+						.Channel0 = ::GetControlText(hDlg, IDC_CHANNEL0),
+						.Channel1 = ::GetControlText(hDlg, IDC_CHANNEL1),
+						.Channel2 = ::GetControlText(hDlg, IDC_CHANNEL2),
+						.Channel3 = ::GetControlText(hDlg, IDC_CHANNEL3),
 
-						.FramerateCap = frameCap
+						.FramerateCap = ::GetDlgItemInt(hDlg, IDC_FRAMECAP, nullptr, FALSE)
 					};
 
 					BOOL saveResult = SaveSettings(&settings);
