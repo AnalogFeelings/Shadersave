@@ -84,7 +84,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	glBindVertexArray(0);
 
 	// Generate framebuffers.
-	if(!settings.BufferAPath.empty())
+	if (!settings.BufferAPath.empty())
 	{
 		glGenFramebuffers(1, &this->BufferAFramebuffer);
 		glGenTextures(1, &this->BufferATexture);
@@ -93,7 +93,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferATexture, 0);
 	}
-	if(!settings.BufferBPath.empty())
+	if (!settings.BufferBPath.empty())
 	{
 		glGenFramebuffers(1, &this->BufferBFramebuffer);
 		glGenTextures(1, &this->BufferBTexture);
@@ -102,7 +102,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferBTexture, 0);
 	}
-	if(!settings.BufferCPath.empty())
+	if (!settings.BufferCPath.empty())
 	{
 		glGenFramebuffers(1, &this->BufferCFramebuffer);
 		glGenTextures(1, &this->BufferCTexture);
@@ -111,7 +111,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferCTexture, 0);
 	}
-	if(!settings.BufferDPath.empty())
+	if (!settings.BufferDPath.empty())
 	{
 		glGenFramebuffers(1, &this->BufferDFramebuffer);
 		glGenTextures(1, &this->BufferDTexture);
@@ -132,7 +132,7 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	std::string vertexSource = this->GuaranteeNullTermination(vertexSize, vertexData);
 	std::string fragmentSource;
 
-	if(settings.MainPath.empty())
+	if (settings.MainPath.empty())
 	{
 		UINT fragmentSize;
 		PCSTR fragmentData;
@@ -151,40 +151,40 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 
 	// Actually load the shaders and compile them.
 	BOOL quadResult = this->CreateShader(this->QuadShader, vertexSource, fragmentSource);
-	if(!quadResult)
+	if (!quadResult)
 		return FALSE;
 
 	// Create buffer shaders.
-	if(!settings.BufferAPath.empty())
+	if (!settings.BufferAPath.empty())
 	{
 		std::string bufferASource = this->LoadFileFromDisk(settings.BufferAPath);
 
 		BOOL bufferAResult = this->CreateShader(this->BufferAShader, vertexSource, bufferASource);
-		if(!bufferAResult)
+		if (!bufferAResult)
 			return FALSE;
 	}
-	if(!settings.BufferBPath.empty())
+	if (!settings.BufferBPath.empty())
 	{
 		std::string bufferBSource = this->LoadFileFromDisk(settings.BufferBPath);
 
 		BOOL bufferBResult = this->CreateShader(this->BufferBShader, vertexSource, bufferBSource);
-		if(!bufferBResult)
+		if (!bufferBResult)
 			return FALSE;
 	}
-	if(!settings.BufferCPath.empty())
+	if (!settings.BufferCPath.empty())
 	{
 		std::string bufferCSource = this->LoadFileFromDisk(settings.BufferCPath);
 
 		BOOL bufferCResult = this->CreateShader(this->BufferCShader, vertexSource, bufferCSource);
-		if(!bufferCResult)
+		if (!bufferCResult)
 			return FALSE;
 	}
-	if(!settings.BufferDPath.empty())
+	if (!settings.BufferDPath.empty())
 	{
 		std::string bufferDSource = this->LoadFileFromDisk(settings.BufferDPath);
 
 		BOOL bufferDResult = this->CreateShader(this->BufferDShader, vertexSource, bufferDSource);
-		if(!bufferDResult)
+		if (!bufferDResult)
 			return FALSE;
 	}
 
@@ -200,21 +200,20 @@ auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 
 	std::time_t currentCTime = std::time(nullptr);
 	std::tm* detailedTime = std::localtime(&currentCTime);
-	FLOAT timeDelta = this->ProgramDelta / 1000.0f;
-	FLOAT time = (this->ProgramNow - this->ProgramStart) / 1000.0f;
-	FLOAT frameRate = 1000.0f / this->ProgramDelta;
 
-	UINT year = detailedTime->tm_year + 1900;
-	UINT month = detailedTime->tm_mon + 1;
-	UINT day = detailedTime->tm_mday;
-	UINT seconds = (detailedTime->tm_hour * 3600) + (detailedTime->tm_min * 60) + detailedTime->tm_sec;
-	
-	this->QuadShader->SetVector3Uniform("iResolution", this->ViewportWidth, this->ViewportHeight, 0);
-	this->QuadShader->SetFloatUniform("iTime", time);
-	this->QuadShader->SetFloatUniform("iTimeDelta", timeDelta);
-	this->QuadShader->SetFloatUniform("iFrameRate", frameRate);
-	this->QuadShader->SetIntUniform("iFrame", this->FrameCount);
-	this->QuadShader->SetVector4Uniform("iDate", year, month, day, seconds);
+	UNIFORMS uniforms =
+	{
+		.Time = (this->ProgramNow - this->ProgramStart) / 1000.0f,
+		.DeltaTime = this->ProgramDelta / 1000.0f,
+		.FrameRate = 1000.0f / this->ProgramDelta,
+
+		.Year = detailedTime->tm_year + 1900,
+		.Month = detailedTime->tm_mon + 1,
+		.Day = detailedTime->tm_mday,
+		.Seconds = (detailedTime->tm_hour * 3600) + (detailedTime->tm_min * 60) + detailedTime->tm_sec
+	};
+
+	this->SetUniformValues(this->QuadShader, &uniforms);
 
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -250,6 +249,16 @@ GLRenderer::~GLRenderer()
 	wglMakeCurrent(nullptr, nullptr);
 	wglDeleteContext(GlRenderContext);
 	::ReleaseDC(MainWindow, DeviceContext);
+}
+
+auto GLRenderer::SetUniformValues(std::shared_ptr<Shader> target, PUNIFORMS uniforms) -> VOID
+{
+	target->SetVector3Uniform("iResolution", this->ViewportWidth, this->ViewportHeight, 0);
+	target->SetFloatUniform("iTime", uniforms->Time);
+	target->SetFloatUniform("iTimeDelta", uniforms->DeltaTime);
+	target->SetFloatUniform("iFrameRate", uniforms->FrameRate);
+	target->SetIntUniform("iFrame", this->FrameCount);
+	target->SetVector4Uniform("iDate", uniforms->Year, uniforms->Month, uniforms->Day, uniforms->Seconds);
 }
 
 auto GLRenderer::LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL

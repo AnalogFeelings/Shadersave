@@ -25,10 +25,10 @@
 
 std::unordered_set<std::string> validBindings =
 {
-	"BUFFER_A",
-	"BUFFER_B",
-	"BUFFER_C",
-	"BUFFER_D"
+	BUFFER_A,
+	BUFFER_B,
+	BUFFER_C,
+	BUFFER_D
 };
 
 auto LoadSettings() -> SETTINGS

@@ -26,8 +26,19 @@
 #include <defines.h>
 #include <iostream>
 #include <fstream>
+#include <settings.h>
 
-#include "settings.h"
+typedef struct
+{
+	FLOAT Time;
+	FLOAT DeltaTime;
+	FLOAT FrameRate;
+
+	INT Year;
+	INT Month;
+	INT Day;
+	INT Seconds;
+} UNIFORMS, *PUNIFORMS;
 
 class GLRenderer
 {
@@ -69,6 +80,7 @@ private:
 	ULONG64 ProgramNow = 0;
 	ULONG64 ProgramDelta = 0;
 
+	auto SetUniformValues(std::shared_ptr<Shader> target, PUNIFORMS uniforms) -> VOID;
 	auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
 	auto GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string;
 	auto LoadFileFromDisk(CONST std::string& filename) -> std::string;
