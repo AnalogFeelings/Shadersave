@@ -162,6 +162,31 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 		BOOL bufferAResult = this->CreateShader(this->BufferAShader, vertexSource, bufferASource);
 		if (!bufferAResult)
 			return FALSE;
+
+		if (settings.Channel0 == BUFFER_A)
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, this->BufferATexture);
+			this->Channel0Texture = this->BufferATexture;
+		}
+		if (settings.Channel1 == BUFFER_A)
+		{
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, this->BufferATexture);
+			this->Channel1Texture = this->BufferATexture;
+		}
+		if (settings.Channel2 == BUFFER_A)
+		{
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, this->BufferATexture);
+			this->Channel1Texture = this->BufferATexture;
+		}
+		if (settings.Channel3 == BUFFER_A)
+		{
+			glActiveTexture(GL_TEXTURE3);
+			glBindTexture(GL_TEXTURE_2D, this->BufferATexture);
+			this->Channel1Texture = this->BufferATexture;
+		}
 	}
 	if (!settings.BufferBPath.empty())
 	{
@@ -170,6 +195,31 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 		BOOL bufferBResult = this->CreateShader(this->BufferBShader, vertexSource, bufferBSource);
 		if (!bufferBResult)
 			return FALSE;
+
+		if (settings.Channel0 == BUFFER_B)
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, this->BufferBTexture);
+			this->Channel0Texture = this->BufferBTexture;
+		}
+		if (settings.Channel1 == BUFFER_B)
+		{
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, this->BufferBTexture);
+			this->Channel1Texture = this->BufferBTexture;
+		}
+		if (settings.Channel2 == BUFFER_B)
+		{
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, this->BufferBTexture);
+			this->Channel2Texture = this->BufferBTexture;
+		}
+		if (settings.Channel3 == BUFFER_B)
+		{
+			glActiveTexture(GL_TEXTURE3);
+			glBindTexture(GL_TEXTURE_2D, this->BufferBTexture);
+			this->Channel3Texture = this->BufferBTexture;
+		}
 	}
 	if (!settings.BufferCPath.empty())
 	{
@@ -178,6 +228,31 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 		BOOL bufferCResult = this->CreateShader(this->BufferCShader, vertexSource, bufferCSource);
 		if (!bufferCResult)
 			return FALSE;
+
+		if(settings.Channel0 == BUFFER_C)
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, this->BufferCTexture);
+			this->Channel0Texture = this->BufferCTexture;
+		}
+		if(settings.Channel1 == BUFFER_C)
+		{
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, this->BufferCTexture);
+			this->Channel1Texture = this->BufferCTexture;
+		}
+		if(settings.Channel2 == BUFFER_C)
+		{
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, this->BufferCTexture);
+			this->Channel2Texture = this->BufferCTexture;
+		}
+		if(settings.Channel3 == BUFFER_C)
+		{
+			glActiveTexture(GL_TEXTURE3);
+			glBindTexture(GL_TEXTURE_2D, this->BufferCTexture);
+			this->Channel3Texture = this->BufferCTexture;
+		}
 	}
 	if (!settings.BufferDPath.empty())
 	{
@@ -186,6 +261,31 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 		BOOL bufferDResult = this->CreateShader(this->BufferDShader, vertexSource, bufferDSource);
 		if (!bufferDResult)
 			return FALSE;
+
+		if(settings.Channel0 == BUFFER_D)
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, this->BufferDTexture);
+			this->Channel0Texture = this->BufferDTexture;
+		}
+		if(settings.Channel1 == BUFFER_D)
+		{
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, this->BufferDTexture);
+			this->Channel1Texture = this->BufferDTexture;
+		}
+		if(settings.Channel2 == BUFFER_D)
+		{
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, this->BufferDTexture);
+			this->Channel2Texture = this->BufferDTexture;
+		}
+		if(settings.Channel3 == BUFFER_D)
+		{
+			glActiveTexture(GL_TEXTURE3);
+			glBindTexture(GL_TEXTURE_2D, this->BufferDTexture);
+			this->Channel3Texture = this->BufferDTexture;
+		}
 	}
 
 	// Set up startup time.
@@ -213,12 +313,29 @@ auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 		.Seconds = (detailedTime->tm_hour * 3600) + (detailedTime->tm_min * 60) + detailedTime->tm_sec
 	};
 
-	this->SetUniformValues(this->QuadShader, &uniforms);
-
+	glBindFramebuffer(GL_FRAMEBUFFER, this->BufferAFramebuffer);
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	this->SetUniformValues(this->BufferAShader, &uniforms);
+	this->BufferAShader->UseShader();
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, this->Channel0Texture);
+
+	glBindVertexArray(this->QuadVao);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(0, 0, 0, 1);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, this->Channel0Texture);
+
+	this->SetUniformValues(this->QuadShader, &uniforms);
 	this->QuadShader->UseShader();
+
 	glBindVertexArray(this->QuadVao);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
@@ -258,6 +375,13 @@ auto GLRenderer::SetUniformValues(std::shared_ptr<Shader> target, PUNIFORMS unif
 	target->SetFloatUniform("iTimeDelta", uniforms->DeltaTime);
 	target->SetFloatUniform("iFrameRate", uniforms->FrameRate);
 	target->SetIntUniform("iFrame", this->FrameCount);
+
+	// Set texture units.
+	target->SetIntUniform("iChannel0", 0);
+	target->SetIntUniform("iChannel1", 1);
+	target->SetIntUniform("iChannel2", 2);
+	target->SetIntUniform("iChannel3", 3);
+
 	target->SetVector4Uniform("iDate", uniforms->Year, uniforms->Month, uniforms->Day, uniforms->Seconds);
 }
 

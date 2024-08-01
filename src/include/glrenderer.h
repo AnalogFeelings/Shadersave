@@ -80,6 +80,11 @@ private:
 	ULONG64 ProgramNow = 0;
 	ULONG64 ProgramDelta = 0;
 
+	UINT Channel0Texture = 0;
+	UINT Channel1Texture = 0;
+	UINT Channel2Texture = 0;
+	UINT Channel3Texture = 0;
+
 	auto SetUniformValues(std::shared_ptr<Shader> target, PUNIFORMS uniforms) -> VOID;
 	auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
 	auto GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string;
