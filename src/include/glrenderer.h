@@ -27,6 +27,7 @@
 #include <iostream>
 #include <fstream>
 #include <settings.h>
+#include <GL/wglew.h>
 
 typedef struct
 {
