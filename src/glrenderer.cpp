@@ -81,8 +81,13 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	glViewport(0, 0, this->ViewportWidth, this->ViewportHeight);
 
 	glGenVertexArrays(1, &this->QuadVao);
+	glObjectLabel(GL_VERTEX_ARRAY, this->QuadVao, 11, "Screen VAO");
+
 	glGenBuffers(1, &this->QuadVbo);
+	glObjectLabel(GL_BUFFER, this->QuadVbo, 11, "Screen VBO");
+
 	glGenBuffers(1, &this->QuadEbo);
+	glObjectLabel(GL_BUFFER, this->QuadEbo, 11, "Screen EBO");
 
 	glBindVertexArray(this->QuadVao);
 
@@ -102,7 +107,10 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	if (!settings.BufferAPath.empty())
 	{
 		glGenFramebuffers(1, &this->BufferAFramebuffer);
+		glObjectLabel(GL_FRAMEBUFFER, this->BufferAFramebuffer, 20, "BufferA Framebuffer");
+
 		glGenTextures(1, &this->BufferATexture);
+		glObjectLabel(GL_TEXTURE, this->BufferATexture, 16, "BufferA Texture");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferAFramebuffer);
 		glBindTexture(GL_TEXTURE_2D, this->BufferATexture);
@@ -119,7 +127,10 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	if (!settings.BufferBPath.empty())
 	{
 		glGenFramebuffers(1, &this->BufferBFramebuffer);
+		glObjectLabel(GL_FRAMEBUFFER, this->BufferBFramebuffer, 20, "BufferB Framebuffer");
+
 		glGenTextures(1, &this->BufferBTexture);
+		glObjectLabel(GL_TEXTURE, this->BufferBTexture, 16, "BufferB Texture");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferBFramebuffer);
 		glBindTexture(GL_TEXTURE_2D, this->BufferBTexture);
@@ -136,7 +147,10 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	if (!settings.BufferCPath.empty())
 	{
 		glGenFramebuffers(1, &this->BufferCFramebuffer);
+		glObjectLabel(GL_FRAMEBUFFER, this->BufferCFramebuffer, 20, "BufferC Framebuffer");
+
 		glGenTextures(1, &this->BufferCTexture);
+		glObjectLabel(GL_TEXTURE, this->BufferCTexture, 16, "BufferC Texture");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferCFramebuffer);
 		glBindTexture(GL_TEXTURE_2D, this->BufferCTexture);
@@ -153,7 +167,10 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	if (!settings.BufferDPath.empty())
 	{
 		glGenFramebuffers(1, &this->BufferDFramebuffer);
+		glObjectLabel(GL_FRAMEBUFFER, this->BufferDFramebuffer, 20, "BufferD Framebuffer");
+
 		glGenTextures(1, &this->BufferDTexture);
+		glObjectLabel(GL_TEXTURE, this->BufferDTexture, 16, "BufferD Texture");
 
 		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferDFramebuffer);
 		glBindTexture(GL_TEXTURE_2D, this->BufferDTexture);

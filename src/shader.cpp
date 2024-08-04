@@ -58,7 +58,7 @@ auto Shader::LoadShadertoyShader(std::string& fragmentText) -> BOOL
 	stream << "uniform sampler2D iChannel2;" << "\n";
 	stream << "uniform sampler2D iChannel3;" << "\n";
 	stream << "uniform float iChannelTime[4];" << "\n"; // This gets ignored but still needs a definition.
-	stream << "uniform vec3 iChannelResolution[4];" << "\n"; // This gets ignored but still needs a definition.
+	stream << "uniform vec3 iChannelResolution[4];" << "\n";
 
 	stream << "uniform vec4 iDate;" << "\n";
 	stream << "uniform vec4 iMouse;" << "\n"; // This gets ignored but still needs a definition.
