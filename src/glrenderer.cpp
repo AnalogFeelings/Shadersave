@@ -104,36 +104,68 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 		glGenFramebuffers(1, &this->BufferAFramebuffer);
 		glGenTextures(1, &this->BufferATexture);
 
+		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferAFramebuffer);
 		glBindTexture(GL_TEXTURE_2D, this->BufferATexture);
+
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferATexture, 0);
+		
+		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			return FALSE;
 	}
 	if (!settings.BufferBPath.empty())
 	{
 		glGenFramebuffers(1, &this->BufferBFramebuffer);
 		glGenTextures(1, &this->BufferBTexture);
 
+		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferBFramebuffer);
 		glBindTexture(GL_TEXTURE_2D, this->BufferBTexture);
+
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferBTexture, 0);
+
+		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			return FALSE;
 	}
 	if (!settings.BufferCPath.empty())
 	{
 		glGenFramebuffers(1, &this->BufferCFramebuffer);
 		glGenTextures(1, &this->BufferCTexture);
 
+		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferCFramebuffer);
 		glBindTexture(GL_TEXTURE_2D, this->BufferCTexture);
+
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferCTexture, 0);
+
+		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			return FALSE;
 	}
 	if (!settings.BufferDPath.empty())
 	{
 		glGenFramebuffers(1, &this->BufferDFramebuffer);
 		glGenTextures(1, &this->BufferDTexture);
 
+		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferDFramebuffer);
 		glBindTexture(GL_TEXTURE_2D, this->BufferDTexture);
+
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
+
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferDTexture, 0);
+
+		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			return FALSE;
 	}
 
 	UINT vertexSize;
@@ -332,11 +364,11 @@ auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	this->SetUniformValues(this->BufferAShader, &uniforms);
-	this->BufferAShader->UseShader();
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, this->Channel0Texture);
+
+	this->SetUniformValues(this->BufferAShader, &uniforms);
+	this->BufferAShader->UseShader();
 
 	glBindVertexArray(this->QuadVao);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
