@@ -33,17 +33,8 @@ auto Shader::LoadShader(CONST std::string& vertexText) -> BOOL
 auto Shader::LoadShadertoyShader(std::string& fragmentText) -> BOOL
 {
 	std::stringstream stream;
-	boost::regex entryRegex(R"(void\s+mainImage\s*\(\s*(?:out)?\s+vec4\s+([^,]+),\s*(?:in)?\s+vec2\s+([^)]+)\))");
-	boost::smatch matches;
-
-	if (!boost::regex_search(fragmentText, matches, entryRegex))
-		return FALSE;
-
-	std::string fragColorName = matches[1];
-	std::string fragCoordName = matches[2];
 
 	stream << "#version 430 core" << "\n";
-	stream << "#define " << fragCoordName << " gl_FragCoord.xy" << "\n"; // This is a vec4 in GLSL.
 
 	stream << "uniform vec3 iResolution;" << "\n";
 
@@ -63,12 +54,15 @@ auto Shader::LoadShadertoyShader(std::string& fragmentText) -> BOOL
 	stream << "uniform vec4 iDate;" << "\n";
 	stream << "uniform vec4 iMouse;" << "\n"; // This gets ignored but still needs a definition.
 	
-	stream << "out vec4 " << fragColorName << ";" << "\n";
+	stream << "out vec4 analogFeelings_Output;" << "\n";
 
-	fragmentText = boost::regex_replace(fragmentText, entryRegex, "void main()");
+	stream << fragmentText << "\n";
 
-	std::string stringifiedStream = stream.str();
-	fragmentText.insert(0, stringifiedStream);
+	stream << "void main() {" << "\n";
+	stream << "    mainImage(analogFeelings_Output, gl_FragCoord.xy);" << "\n";
+	stream << "}" << "\n";
+
+	fragmentText = stream.str();
 
 	PCSTR constFragment = fragmentText.c_str();
 	UINT createdFragment = glCreateShader(GL_FRAGMENT_SHADER);
