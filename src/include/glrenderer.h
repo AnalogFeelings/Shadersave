@@ -86,7 +86,7 @@ private:
 	UINT Channel2Texture = 0;
 	UINT Channel3Texture = 0;
 
-	auto SetUniformValues(std::shared_ptr<Shader> target, PUNIFORMS uniforms) -> VOID;
+	auto SetUniformValues(std::shared_ptr<Shader> target, CONST PUNIFORMS uniforms) -> VOID;
 	auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
 	auto GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string;
 	auto LoadFileFromDisk(CONST std::string& filename) -> std::string;

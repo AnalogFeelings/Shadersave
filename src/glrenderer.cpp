@@ -427,12 +427,17 @@ GLRenderer::~GLRenderer()
 	glDeleteTextures(1, &this->BufferCTexture);
 	glDeleteTextures(1, &this->BufferDTexture);
 
+	glDeleteTextures(1, &this->Channel0Texture);
+	glDeleteTextures(1, &this->Channel1Texture);
+	glDeleteTextures(1, &this->Channel2Texture);
+	glDeleteTextures(1, &this->Channel3Texture);
+
 	wglMakeCurrent(nullptr, nullptr);
 	wglDeleteContext(GlRenderContext);
 	::ReleaseDC(MainWindow, DeviceContext);
 }
 
-auto GLRenderer::SetUniformValues(std::shared_ptr<Shader> target, PUNIFORMS uniforms) -> VOID
+auto GLRenderer::SetUniformValues(std::shared_ptr<Shader> target, CONST PUNIFORMS uniforms) -> VOID
 {
 	target->SetVector3Uniform("iResolution", this->ViewportWidth, this->ViewportHeight, 0);
 	target->SetFloatUniform("iTime", uniforms->Time);
