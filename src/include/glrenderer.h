@@ -44,6 +44,12 @@ typedef struct
 class GLRenderer
 {
 public:
+	std::shared_ptr<Shader> QuadShader;
+	std::shared_ptr<Shader> BufferAShader;
+	std::shared_ptr<Shader> BufferBShader;
+	std::shared_ptr<Shader> BufferCShader;
+	std::shared_ptr<Shader> BufferDShader;
+
 	auto InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> BOOL;
 	auto InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTINGS& settings) -> BOOL;
 
@@ -51,12 +57,6 @@ public:
 	~GLRenderer();
 
 private:
-	std::shared_ptr<Shader> QuadShader;
-	std::shared_ptr<Shader> BufferAShader;
-	std::shared_ptr<Shader> BufferBShader;
-	std::shared_ptr<Shader> BufferCShader;
-	std::shared_ptr<Shader> BufferDShader;
-
 	INT ViewportWidth = 0;
 	INT ViewportHeight = 0;
 	INT FrameCount = 0;
@@ -87,6 +87,8 @@ private:
 	UINT Channel3Texture = 0;
 
 	auto SetUniformValues(std::shared_ptr<Shader> target, CONST PUNIFORMS uniforms) -> VOID;
+	auto GenerateFramebuffer(PUINT targetFramebuffer, PUINT targetTexture) -> BOOL;
+	auto LabelObject(UINT type, UINT object, PCSTR label) -> VOID;
 	auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
 	auto GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string;
 	auto LoadFileFromDisk(CONST std::string& filename) -> std::string;

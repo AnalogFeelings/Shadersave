@@ -20,8 +20,8 @@
 #include <GL/glew.h>
 #include <string>
 #include <sstream>
-#include <boost/regex.hpp>
 #include <memory>
+#include <unordered_map>
 
 #define SHADER_LOG_SIZE 1024
 #define UNIFORM_BUFFER_SIZE 16

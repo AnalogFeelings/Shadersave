@@ -81,13 +81,13 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	glViewport(0, 0, this->ViewportWidth, this->ViewportHeight);
 
 	glGenVertexArrays(1, &this->QuadVao);
-	glObjectLabel(GL_VERTEX_ARRAY, this->QuadVao, 11, "Screen VAO");
+	this->LabelObject(GL_VERTEX_ARRAY, this->QuadVao, "Screen VAO");
 
 	glGenBuffers(1, &this->QuadVbo);
-	glObjectLabel(GL_BUFFER, this->QuadVbo, 11, "Screen VBO");
+	this->LabelObject(GL_BUFFER, this->QuadVbo, "Screen VBO");
 
 	glGenBuffers(1, &this->QuadEbo);
-	glObjectLabel(GL_BUFFER, this->QuadEbo, 11, "Screen EBO");
+	this->LabelObject(GL_BUFFER, this->QuadEbo, "Screen EBO");
 
 	glBindVertexArray(this->QuadVao);
 
@@ -106,83 +106,39 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 	// Generate framebuffers.
 	if (!settings.BufferAPath.empty())
 	{
-		glGenFramebuffers(1, &this->BufferAFramebuffer);
-		glObjectLabel(GL_FRAMEBUFFER, this->BufferAFramebuffer, 20, "BufferA Framebuffer");
-
-		glGenTextures(1, &this->BufferATexture);
-		glObjectLabel(GL_TEXTURE, this->BufferATexture, 16, "BufferA Texture");
-
-		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferAFramebuffer);
-		glBindTexture(GL_TEXTURE_2D, this->BufferATexture);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferATexture, 0);
-
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		BOOL result = this->GenerateFramebuffer(&this->BufferAFramebuffer, &this->BufferATexture);
+		if (!result)
 			return FALSE;
+
+		this->LabelObject(GL_FRAMEBUFFER, this->BufferAFramebuffer, "BufferA Framebuffer");
+		this->LabelObject(GL_TEXTURE, this->BufferATexture, "BufferA Texture");
 	}
 	if (!settings.BufferBPath.empty())
 	{
-		glGenFramebuffers(1, &this->BufferBFramebuffer);
-		glObjectLabel(GL_FRAMEBUFFER, this->BufferBFramebuffer, 20, "BufferB Framebuffer");
-
-		glGenTextures(1, &this->BufferBTexture);
-		glObjectLabel(GL_TEXTURE, this->BufferBTexture, 16, "BufferB Texture");
-
-		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferBFramebuffer);
-		glBindTexture(GL_TEXTURE_2D, this->BufferBTexture);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferBTexture, 0);
-
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		BOOL result = this->GenerateFramebuffer(&this->BufferBFramebuffer, &this->BufferBTexture);
+		if (!result)
 			return FALSE;
+
+		this->LabelObject(GL_FRAMEBUFFER, this->BufferBFramebuffer, "BufferB Framebuffer");
+		this->LabelObject(GL_TEXTURE, this->BufferBTexture, "BufferB Texture");
 	}
 	if (!settings.BufferCPath.empty())
 	{
-		glGenFramebuffers(1, &this->BufferCFramebuffer);
-		glObjectLabel(GL_FRAMEBUFFER, this->BufferCFramebuffer, 20, "BufferC Framebuffer");
-
-		glGenTextures(1, &this->BufferCTexture);
-		glObjectLabel(GL_TEXTURE, this->BufferCTexture, 16, "BufferC Texture");
-
-		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferCFramebuffer);
-		glBindTexture(GL_TEXTURE_2D, this->BufferCTexture);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferCTexture, 0);
-
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		BOOL result = this->GenerateFramebuffer(&this->BufferCFramebuffer, &this->BufferCTexture);
+		if (!result)
 			return FALSE;
+
+		this->LabelObject(GL_FRAMEBUFFER, this->BufferCFramebuffer, "BufferC Framebuffer");
+		this->LabelObject(GL_TEXTURE, this->BufferCTexture, "BufferC Texture");
 	}
 	if (!settings.BufferDPath.empty())
 	{
-		glGenFramebuffers(1, &this->BufferDFramebuffer);
-		glObjectLabel(GL_FRAMEBUFFER, this->BufferDFramebuffer, 20, "BufferD Framebuffer");
-
-		glGenTextures(1, &this->BufferDTexture);
-		glObjectLabel(GL_TEXTURE, this->BufferDTexture, 16, "BufferD Texture");
-
-		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferDFramebuffer);
-		glBindTexture(GL_TEXTURE_2D, this->BufferDTexture);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferDTexture, 0);
-
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		BOOL result = this->GenerateFramebuffer(&this->BufferDFramebuffer, &this->BufferDTexture);
+		if (!result)
 			return FALSE;
+
+		this->LabelObject(GL_FRAMEBUFFER, this->BufferDFramebuffer, "BufferD Framebuffer");
+		this->LabelObject(GL_TEXTURE, this->BufferDTexture, "BufferD Texture");
 	}
 
 	UINT vertexSize;
@@ -455,6 +411,33 @@ auto GLRenderer::SetUniformValues(std::shared_ptr<Shader> target, CONST PUNIFORM
 	target->SetIntUniform("iChannel3", 3);
 
 	target->SetVector4Uniform("iDate", uniforms->Year, uniforms->Month, uniforms->Day, uniforms->Seconds);
+}
+
+auto GLRenderer::GenerateFramebuffer(PUINT targetFramebuffer, PUINT targetTexture) -> BOOL
+{
+	glGenFramebuffers(1, targetFramebuffer);
+	glGenTextures(1, targetTexture);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, *targetFramebuffer);
+	glBindTexture(GL_TEXTURE_2D, *targetTexture);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->ViewportWidth, this->ViewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *targetTexture, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		return FALSE;
+
+	return TRUE;
+}
+
+auto GLRenderer::LabelObject(UINT type, UINT object, PCSTR label) -> VOID
+{
+	UINT stringLength = std::strlen(label);
+
+	glObjectLabel(type, object, stringLength, label);
 }
 
 auto GLRenderer::LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL
