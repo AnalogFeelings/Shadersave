@@ -35,7 +35,6 @@ Shadersave is a Windows screensaver that can run Shadertoy shaders locally under
 To build this, you need Visual Studio 2022 with the C++ workload installed alongside the Windows 11 SDK.  
 You must also place the libraries below in a "lib" folder.
 
-- [boost::regex](https://github.com/boostorg/regex)
 - [GLEW](https://glew.sourceforge.net/)
 
 I still haven't heard of ways to debug screensavers properly.

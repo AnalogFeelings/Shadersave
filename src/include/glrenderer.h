@@ -44,12 +44,6 @@ typedef struct
 class GLRenderer
 {
 public:
-	std::shared_ptr<Shader> QuadShader;
-	std::shared_ptr<Shader> BufferAShader;
-	std::shared_ptr<Shader> BufferBShader;
-	std::shared_ptr<Shader> BufferCShader;
-	std::shared_ptr<Shader> BufferDShader;
-
 	auto InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> BOOL;
 	auto InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTINGS& settings) -> BOOL;
 
@@ -57,6 +51,12 @@ public:
 	~GLRenderer();
 
 private:
+	std::shared_ptr<Shader> QuadShader;
+	std::shared_ptr<Shader> BufferAShader;
+	std::shared_ptr<Shader> BufferBShader;
+	std::shared_ptr<Shader> BufferCShader;
+	std::shared_ptr<Shader> BufferDShader;
+
 	INT ViewportWidth = 0;
 	INT ViewportHeight = 0;
 	INT FrameCount = 0;
