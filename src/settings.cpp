@@ -33,33 +33,20 @@ std::unordered_set<std::string> validBindings =
 
 auto LoadSettings() -> SETTINGS
 {
-	std::string shaderPath = ReadRegistryString(REGISTRY_SUBKEY, SHADER_PATH);
-	std::string bufferAPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERA_PATH);
-	std::string bufferBPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERB_PATH);
-	std::string bufferCPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERC_PATH);
-	std::string bufferDPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERD_PATH);
-
-	std::string channel0Binding = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL0_BINDING);
-	std::string channel1Binding = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL1_BINDING);
-	std::string channel2Binding = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL2_BINDING);
-	std::string channel3Binding = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL3_BINDING);
-
-	UINT framerateCap = ReadRegistryDword(REGISTRY_SUBKEY, FRAMERATE_CAP);
-
 	SETTINGS settings =
 	{
-		.MainPath = shaderPath,
-		.BufferAPath = bufferAPath,
-		.BufferBPath = bufferBPath,
-		.BufferCPath = bufferCPath,
-		.BufferDPath = bufferDPath,
+		.MainPath = ReadRegistryString(REGISTRY_SUBKEY, SHADER_PATH),
+		.BufferAPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERA_PATH),
+		.BufferBPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERB_PATH),
+		.BufferCPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERC_PATH),
+		.BufferDPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERD_PATH),
 
-		.Channel0 = channel0Binding,
-		.Channel1 = channel1Binding,
-		.Channel2 = channel2Binding,
-		.Channel3 = channel3Binding,
+		.Channel0 = ReadRegistryString(REGISTRY_SUBKEY, BUFFERA_PATH),
+		.Channel1 = ReadRegistryString(REGISTRY_SUBKEY, BUFFERB_PATH),
+		.Channel2 = ReadRegistryString(REGISTRY_SUBKEY, BUFFERC_PATH),
+		.Channel3 = ReadRegistryString(REGISTRY_SUBKEY, BUFFERD_PATH),
 
-		.FramerateCap = framerateCap
+		.FramerateCap = ReadRegistryDword(REGISTRY_SUBKEY, FRAMERATE_CAP)
 	};
 
 	ValidateSettings(&settings);
@@ -74,15 +61,19 @@ auto SaveSettings(PSETTINGS settings) -> BOOL
 	BOOL pathResult = SetRegistryString(REGISTRY_SUBKEY, SHADER_PATH, settings->MainPath);
 	if (!pathResult)
 		return FALSE;
+
 	BOOL bufferAResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERA_PATH, settings->BufferAPath);
 	if (!bufferAResult)
 		return FALSE;
+
 	BOOL bufferBResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERB_PATH, settings->BufferBPath);
 	if (!bufferBResult)
 		return FALSE;
+
 	BOOL bufferCResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERC_PATH, settings->BufferCPath);
 	if (!bufferCResult)
 		return FALSE;
+
 	BOOL bufferDResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERD_PATH, settings->BufferDPath);
 	if (!bufferDResult)
 		return FALSE;
@@ -90,12 +81,15 @@ auto SaveSettings(PSETTINGS settings) -> BOOL
 	BOOL channel0Result = SetRegistryString(REGISTRY_SUBKEY, CHANNEL0_BINDING, settings->Channel0);
 	if (!channel0Result)
 		return FALSE;
+
 	BOOL channel1Result = SetRegistryString(REGISTRY_SUBKEY, CHANNEL1_BINDING, settings->Channel1);
 	if (!channel1Result)
 		return FALSE;
+
 	BOOL channel2Result = SetRegistryString(REGISTRY_SUBKEY, CHANNEL2_BINDING, settings->Channel2);
 	if (!channel2Result)
 		return FALSE;
+
 	BOOL channel3Result = SetRegistryString(REGISTRY_SUBKEY, CHANNEL3_BINDING, settings->Channel3);
 	if (!channel3Result)
 		return FALSE;
