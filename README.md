@@ -28,7 +28,6 @@ Shadersave is a Windows screensaver that can run Shadertoy shaders locally under
 - Audio and VR shaders will not be supported.
 - Mouse and/or keyboard input wont be supported for obvious reasons.
 - Cubemap shaders will not be supported.
-- Some shaders may require minor tweaks due to global naming conflicts.
 
 # :hammer_and_wrench: Building
 
