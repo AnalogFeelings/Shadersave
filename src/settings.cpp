@@ -41,10 +41,10 @@ auto LoadSettings() -> SETTINGS
 		.BufferCPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERC_PATH),
 		.BufferDPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERD_PATH),
 
-		.Channel0 = ReadRegistryString(REGISTRY_SUBKEY, BUFFERA_PATH),
-		.Channel1 = ReadRegistryString(REGISTRY_SUBKEY, BUFFERB_PATH),
-		.Channel2 = ReadRegistryString(REGISTRY_SUBKEY, BUFFERC_PATH),
-		.Channel3 = ReadRegistryString(REGISTRY_SUBKEY, BUFFERD_PATH),
+		.Channel0 = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL0_BINDING),
+		.Channel1 = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL1_BINDING),
+		.Channel2 = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL2_BINDING),
+		.Channel3 = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL3_BINDING),
 
 		.FramerateCap = ReadRegistryDword(REGISTRY_SUBKEY, FRAMERATE_CAP)
 	};
