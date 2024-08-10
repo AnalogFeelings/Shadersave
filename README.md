@@ -41,6 +41,9 @@ I still haven't heard of ways to debug screensavers properly.
 
 # :camera: Screenshots
 
+[*pow(The Shining, 2.0)*](https://www.shadertoy.com/view/tlyfDV) by **dean_the_coder**  
+![shining](screenshots/shining.png)
+
 [*Barber*](https://www.shadertoy.com/view/MsjXDm) by **okro**  
 ![barber](screenshots/barber.png)
 
