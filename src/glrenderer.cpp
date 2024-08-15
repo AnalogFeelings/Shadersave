@@ -345,14 +345,14 @@ auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 	if (this->BufferAFramebuffer)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferAFramebuffer);
-		
-		glClearColor(0, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT);
 
 		if(this->Channel0LastFrame == this->Channel0Texture)
 		{
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->Channel0TextureCopy, 0);
+
+			glClearColor(0, 0, 0, 1);
+			glClear(GL_COLOR_BUFFER_BIT);
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, this->Channel0Texture);
@@ -363,6 +363,9 @@ auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 		{
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->Channel0Texture, 0);
+
+			glClearColor(0, 0, 0, 1);
+			glClear(GL_COLOR_BUFFER_BIT);
 
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, this->Channel0TextureCopy);
@@ -384,8 +387,8 @@ auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, this->Channel0Texture);
 
-	this->SetUniformValues(this->QuadShader, &uniforms);
 	this->QuadShader->UseShader();
+	this->SetUniformValues(this->QuadShader, &uniforms);
 
 	glBindVertexArray(this->QuadVao);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
