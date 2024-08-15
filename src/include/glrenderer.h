@@ -82,9 +82,17 @@ private:
 	ULONG64 ProgramDelta = 0;
 
 	UINT Channel0Texture = 0;
+	UINT Channel0TextureCopy = 0;
+	UINT Channel0LastFrame = 0;
+
 	UINT Channel1Texture = 0;
+	UINT Channel1TextureCopy = 0;
+
 	UINT Channel2Texture = 0;
+	UINT Channel2TextureCopy = 0;
+
 	UINT Channel3Texture = 0;
+	UINT Channel3TextureCopy = 0;
 
 	auto SetUniformValues(std::shared_ptr<Shader> target, CONST PUNIFORMS uniforms) -> VOID;
 	auto GenerateFramebuffer(PUINT targetFramebuffer, PUINT targetTexture) -> BOOL;

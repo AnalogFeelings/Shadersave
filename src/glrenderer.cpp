@@ -188,6 +188,15 @@ auto GLRenderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTI
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, this->BufferATexture);
 			this->Channel0Texture = this->BufferATexture;
+
+			glGenTextures(1, &this->Channel0TextureCopy);
+			glBindTexture(GL_TEXTURE_2D, this->Channel0TextureCopy);
+
+			this->LabelObject(GL_TEXTURE, this->Channel0TextureCopy, "Channel 0 Copy");
+
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->ViewportWidth, this->ViewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		}
 		if (settings.Channel1 == BUFFER_A)
 		{
@@ -336,14 +345,33 @@ auto GLRenderer::DoRender(HDC deviceContext) -> VOID
 	if (this->BufferAFramebuffer)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, this->BufferAFramebuffer);
+		
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, this->Channel0Texture);
+		if(this->Channel0LastFrame == this->Channel0Texture)
+		{
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->Channel0TextureCopy, 0);
 
-		this->SetUniformValues(this->BufferAShader, &uniforms);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, this->Channel0Texture);
+
+			this->Channel0LastFrame = this->Channel0TextureCopy;
+		}
+		else
+		{
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->Channel0Texture, 0);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, this->Channel0TextureCopy);
+
+			this->Channel0LastFrame = this->Channel0Texture;
+		}
+		
 		this->BufferAShader->UseShader();
+		this->SetUniformValues(this->BufferAShader, &uniforms);
 
 		glBindVertexArray(this->QuadVao);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
@@ -426,9 +454,6 @@ auto GLRenderer::GenerateFramebuffer(PUINT targetFramebuffer, PUINT targetTextur
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *targetTexture, 0);
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		return FALSE;
 
 	return TRUE;
 }
