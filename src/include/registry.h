@@ -19,8 +19,11 @@
 #include <Windows.h>
 #include <string>
 
-auto ReadRegistryString(CONST std::string& subKey, CONST std::string& item) -> std::string;
-auto ReadRegistryDword(CONST std::string& subKey, CONST std::string& item) -> UINT;
+namespace Registry
+{
+	auto ReadString(CONST std::string& subKey, CONST std::string& item) -> std::string;
+	auto ReadInteger(CONST std::string& subKey, CONST std::string& item) -> UINT;
 
-auto SetRegistryString(CONST std::string& subKey, CONST std::string& item, CONST std::string& value) -> BOOL;
-auto SetRegistryDword(CONST std::string& subKey, CONST std::string& item, UINT value) -> BOOL;
+	auto SetString(CONST std::string& subKey, CONST std::string& item, CONST std::string& value) -> BOOL;
+	auto SetInteger(CONST std::string& subKey, CONST std::string& item, UINT value) -> BOOL;
+}

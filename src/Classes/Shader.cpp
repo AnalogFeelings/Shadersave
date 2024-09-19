@@ -80,9 +80,11 @@ auto Shader::LoadShadertoyShader(std::string& fragmentText) -> BOOL
 auto Shader::CreateProgram() -> BOOL
 {
 	this->ProgramId = glCreateProgram();
+
 	glAttachShader(this->ProgramId, this->VertexShader);
 	glAttachShader(this->ProgramId, this->FragmentShader);
 	glLinkProgram(this->ProgramId);
+
 	BOOL programResult = this->CheckCompileErrors(this->ProgramId, "PROGRAM");
 
 	glDeleteShader(this->VertexShader);
@@ -96,6 +98,7 @@ auto Shader::CreateProgram() -> BOOL
 		INT length, size;
 		UINT type;
 		CHAR buffer[UNIFORM_BUFFER_SIZE] = {};
+
 		glGetActiveUniform(this->ProgramId, i, UNIFORM_BUFFER_SIZE, &length, &size, &type, buffer);
 
 		std::string bufferString(buffer);

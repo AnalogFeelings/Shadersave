@@ -37,18 +37,18 @@ auto Settings::LoadFromRegistry() -> SETTINGS
 {
 	SETTINGS settings =
 	{
-		.MainPath = ReadRegistryString(REGISTRY_SUBKEY, SHADER_PATH),
-		.BufferAPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERA_PATH),
-		.BufferBPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERB_PATH),
-		.BufferCPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERC_PATH),
-		.BufferDPath = ReadRegistryString(REGISTRY_SUBKEY, BUFFERD_PATH),
+		.MainPath = Registry::ReadString(REGISTRY_SUBKEY, SHADER_PATH),
+		.BufferAPath = Registry::ReadString(REGISTRY_SUBKEY, BUFFERA_PATH),
+		.BufferBPath = Registry::ReadString(REGISTRY_SUBKEY, BUFFERB_PATH),
+		.BufferCPath = Registry::ReadString(REGISTRY_SUBKEY, BUFFERC_PATH),
+		.BufferDPath = Registry::ReadString(REGISTRY_SUBKEY, BUFFERD_PATH),
 
-		.Channel0 = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL0_BINDING),
-		.Channel1 = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL1_BINDING),
-		.Channel2 = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL2_BINDING),
-		.Channel3 = ReadRegistryString(REGISTRY_SUBKEY, CHANNEL3_BINDING),
+		.Channel0 = Registry::ReadString(REGISTRY_SUBKEY, CHANNEL0_BINDING),
+		.Channel1 = Registry::ReadString(REGISTRY_SUBKEY, CHANNEL1_BINDING),
+		.Channel2 = Registry::ReadString(REGISTRY_SUBKEY, CHANNEL2_BINDING),
+		.Channel3 = Registry::ReadString(REGISTRY_SUBKEY, CHANNEL3_BINDING),
 
-		.FramerateCap = ReadRegistryDword(REGISTRY_SUBKEY, FRAMERATE_CAP)
+		.FramerateCap = Registry::ReadInteger(REGISTRY_SUBKEY, FRAMERATE_CAP)
 	};
 
 	ValidateSettings(&settings);
@@ -60,43 +60,43 @@ auto Settings::SaveToRegistry(PSETTINGS settings) -> BOOL
 {
 	ValidateSettings(settings);
 
-	BOOL pathResult = SetRegistryString(REGISTRY_SUBKEY, SHADER_PATH, settings->MainPath);
+	BOOL pathResult = Registry::SetString(REGISTRY_SUBKEY, SHADER_PATH, settings->MainPath);
 	if (!pathResult)
 		return FALSE;
 
-	BOOL bufferAResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERA_PATH, settings->BufferAPath);
+	BOOL bufferAResult = Registry::SetString(REGISTRY_SUBKEY, BUFFERA_PATH, settings->BufferAPath);
 	if (!bufferAResult)
 		return FALSE;
 
-	BOOL bufferBResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERB_PATH, settings->BufferBPath);
+	BOOL bufferBResult = Registry::SetString(REGISTRY_SUBKEY, BUFFERB_PATH, settings->BufferBPath);
 	if (!bufferBResult)
 		return FALSE;
 
-	BOOL bufferCResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERC_PATH, settings->BufferCPath);
+	BOOL bufferCResult = Registry::SetString(REGISTRY_SUBKEY, BUFFERC_PATH, settings->BufferCPath);
 	if (!bufferCResult)
 		return FALSE;
 
-	BOOL bufferDResult = SetRegistryString(REGISTRY_SUBKEY, BUFFERD_PATH, settings->BufferDPath);
+	BOOL bufferDResult = Registry::SetString(REGISTRY_SUBKEY, BUFFERD_PATH, settings->BufferDPath);
 	if (!bufferDResult)
 		return FALSE;
 
-	BOOL channel0Result = SetRegistryString(REGISTRY_SUBKEY, CHANNEL0_BINDING, settings->Channel0);
+	BOOL channel0Result = Registry::SetString(REGISTRY_SUBKEY, CHANNEL0_BINDING, settings->Channel0);
 	if (!channel0Result)
 		return FALSE;
 
-	BOOL channel1Result = SetRegistryString(REGISTRY_SUBKEY, CHANNEL1_BINDING, settings->Channel1);
+	BOOL channel1Result = Registry::SetString(REGISTRY_SUBKEY, CHANNEL1_BINDING, settings->Channel1);
 	if (!channel1Result)
 		return FALSE;
 
-	BOOL channel2Result = SetRegistryString(REGISTRY_SUBKEY, CHANNEL2_BINDING, settings->Channel2);
+	BOOL channel2Result = Registry::SetString(REGISTRY_SUBKEY, CHANNEL2_BINDING, settings->Channel2);
 	if (!channel2Result)
 		return FALSE;
 
-	BOOL channel3Result = SetRegistryString(REGISTRY_SUBKEY, CHANNEL3_BINDING, settings->Channel3);
+	BOOL channel3Result = Registry::SetString(REGISTRY_SUBKEY, CHANNEL3_BINDING, settings->Channel3);
 	if (!channel3Result)
 		return FALSE;
 
-	BOOL frameResult = SetRegistryDword(REGISTRY_SUBKEY, FRAMERATE_CAP, settings->FramerateCap);
+	BOOL frameResult = Registry::SetInteger(REGISTRY_SUBKEY, FRAMERATE_CAP, settings->FramerateCap);
 	if (!frameResult)
 		return FALSE;
 
