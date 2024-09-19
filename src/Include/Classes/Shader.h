@@ -23,9 +23,6 @@
 #include <memory>
 #include <unordered_map>
 
-#define SHADER_LOG_SIZE 1024
-#define UNIFORM_BUFFER_SIZE 16
-
 class Shader
 {
 public:

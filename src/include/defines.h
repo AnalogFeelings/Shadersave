@@ -19,8 +19,11 @@
 #include <chrono>
 
 #define SHADERSAVE_VERSION "0.5"
+
 #define GLEW_ERROR_SIZE 128
 #define OPENGL_ERROR_SIZE 128
+#define SHADER_LOG_SIZE 1024
+#define UNIFORM_BUFFER_SIZE 16
 
 #define REGISTRY_SUBKEY "SOFTWARE\\AnalogFeelings\\Shadersave"
 
