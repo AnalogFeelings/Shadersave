@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <registry.h>
+#include <Registry.h>
 
 auto ReadRegistryString(CONST std::string& subKey, CONST std::string& item) -> std::string
 {

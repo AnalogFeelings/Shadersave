@@ -19,33 +19,33 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\config_dialog.cpp" />
-    <ClCompile Include="src\renderer.cpp" />
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\registry.cpp" />
-    <ClCompile Include="src\settings.cpp" />
-    <ClCompile Include="src\shader.cpp" />
+    <ClCompile Include="src\ConfigDialog.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\EntryPoint.cpp" />
+    <ClCompile Include="src\Registry.cpp" />
+    <ClCompile Include="src\Settings.cpp" />
+    <ClCompile Include="src\Classes\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\include\globals.h" />
-    <ClInclude Include="src\include\defines.h" />
-    <ClInclude Include="src\include\renderer.h" />
-    <ClInclude Include="src\include\registry.h" />
-    <ClInclude Include="src\include\settings.h" />
-    <ClInclude Include="src\include\shader.h" />
+    <ClInclude Include="src\Include\Globals.h" />
+    <ClInclude Include="src\Include\Defines.h" />
+    <ClInclude Include="src\Include\Renderer.h" />
+    <ClInclude Include="src\Include\Registry.h" />
+    <ClInclude Include="src\Include\Settings.h" />
+    <ClInclude Include="src\Include\Classes\Shader.h" />
     <ClInclude Include="src\resources\resource.h" />
-    <ClInclude Include="src\resources\resources.h" />
-    <ClInclude Include="src\resources\targetver.h" />
+    <ClInclude Include="src\resources\Resources.h" />
+    <ClInclude Include="src\resources\TargetVer.h" />
   </ItemGroup>
   <ItemGroup>
-    <Manifest Include="src\resources\manifest.manifest" />
+    <Manifest Include="src\resources\Manifest.manifest" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\shaders\main.frag" />
     <None Include="src\shaders\main.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="src\resources\resources.rc" />
+    <ResourceCompile Include="src\resources\Resources.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

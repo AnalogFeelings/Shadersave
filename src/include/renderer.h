@@ -20,13 +20,13 @@
 #include <format>
 #include <memory>
 #include <string>
-#include <shader.h>
-#include <resources.h>
+#include <Classes/Shader.h>
+#include <Resources.h>
 #include <chrono>
-#include <defines.h>
+#include <Defines.h>
 #include <iostream>
 #include <fstream>
-#include <settings.h>
+#include <Settings.h>
 #include <GL/wglew.h>
 
 namespace Renderer

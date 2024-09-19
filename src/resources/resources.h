@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by resources.rc
+// Used by Resources.rc
 //
 #define IDS_DESCRIPTION                 1
 #define IDR_FRAGMENTSHADER              134

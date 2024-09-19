@@ -15,14 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <regex>
-#include <shader.h>
+#include <Classes/Shader.h>
 
 auto Shader::LoadShader(CONST std::string& vertexText) -> BOOL
 {
 	PCSTR constVertex = vertexText.c_str();
 	UINT createdVertex = glCreateShader(GL_VERTEX_SHADER);
+
 	glShaderSource(createdVertex, 1, &constVertex, nullptr);
 	glCompileShader(createdVertex);
+
 	BOOL vertexResult = this->CheckCompileErrors(createdVertex, "VERTEX");
 
 	this->VertexShader = createdVertex;

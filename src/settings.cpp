@@ -17,10 +17,10 @@
 #include <windows.h>
 #include <scrnsave.h>
 #include <shobjidl.h>
-#include <settings.h>
-#include <defines.h>
+#include <Settings.h>
+#include <Defines.h>
 #include <filesystem>
-#include <registry.h>
+#include <Registry.h>
 #include <unordered_set>
 
 auto ValidateSettings(PSETTINGS settings) -> VOID;

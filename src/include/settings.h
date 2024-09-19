@@ -18,7 +18,7 @@
 
 #include <windows.h>
 #include <string>
-#include <defines.h>
+#include <Defines.h>
 
 namespace Settings
 {

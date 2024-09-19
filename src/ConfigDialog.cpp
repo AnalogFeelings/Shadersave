@@ -16,11 +16,11 @@
 
 #include <windows.h>
 #include <scrnsave.h>
-#include <renderer.h>
-#include <resources.h>
-#include <defines.h>
-#include <settings.h>
-#include <registry.h>
+#include <Renderer.h>
+#include <Resources.h>
+#include <Defines.h>
+#include <Settings.h>
+#include <Registry.h>
 #include <filesystem>
 #include <shobjidl.h>
 #include <atlbase.h>
@@ -42,7 +42,7 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 				return FALSE;
 			}
 
-			SETTINGS settings = LoadSettings();
+			SETTINGS settings = Settings::LoadFromRegistry();
 
 			::SetDlgItemText(hDlg, IDC_SHADERPATH, settings.MainPath.c_str());
 			::SetDlgItemText(hDlg, IDC_SHADERPATHA, settings.BufferAPath.c_str());
@@ -95,7 +95,7 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 						.FramerateCap = ::GetDlgItemInt(hDlg, IDC_FRAMECAP, nullptr, FALSE)
 					};
 
-					BOOL saveResult = SaveSettings(&settings);
+					BOOL saveResult = Settings::SaveToRegistry(&settings);
 					if (!saveResult)
 					{
 						::MessageBox(hDlg, "Could not save settings!", "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);

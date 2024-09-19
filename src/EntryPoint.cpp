@@ -16,13 +16,13 @@
 
 #include <windows.h>
 #include <scrnsave.h>
-#include <renderer.h>
-#include <defines.h>
-#include <settings.h>
+#include <Renderer.h>
+#include <Defines.h>
+#include <Settings.h>
 #include <filesystem>
 #include <shobjidl.h>
 #include <atlbase.h>
-#include <globals.h>
+#include <Globals.h>
 
 auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) -> LRESULT
 {
@@ -34,6 +34,7 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			INT windowWidth = Globals::ClientRect.right;
 			INT windowHeight = Globals::ClientRect.bottom;
 			SETTINGS settings = Settings::LoadFromRegistry();
+
 			Globals::MainWindow = hWnd;
 
 			BOOL contextResult = Renderer::InitContext(hWnd, Globals::DeviceContext, Globals::GlRenderContext);
