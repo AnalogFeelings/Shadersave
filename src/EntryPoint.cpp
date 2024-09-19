@@ -74,6 +74,8 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 			return 0;
 		case WM_DESTROY:
+			Renderer::UninitializeRenderer();
+
 			return 0;
 	}
 
