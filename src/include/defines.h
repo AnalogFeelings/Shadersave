@@ -42,3 +42,31 @@
 #define BUFFER_D "BUFFER_D"
 
 typedef std::chrono::time_point<std::chrono::system_clock> TIMEPOINT;
+
+typedef struct
+{
+	FLOAT Time;
+	FLOAT DeltaTime;
+	FLOAT FrameRate;
+
+	INT Year;
+	INT Month;
+	INT Day;
+	INT Seconds;
+} UNIFORMS, * PUNIFORMS;
+
+typedef struct
+{
+	std::string MainPath;
+	std::string BufferAPath;
+	std::string BufferBPath;
+	std::string BufferCPath;
+	std::string BufferDPath;
+
+	std::string Channel0;
+	std::string Channel1;
+	std::string Channel2;
+	std::string Channel3;
+
+	UINT FramerateCap;
+} SETTINGS, * PSETTINGS;

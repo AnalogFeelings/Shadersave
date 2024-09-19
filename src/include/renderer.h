@@ -17,11 +17,23 @@
 #pragma once
 
 #include <windows.h>
+#include <format>
+#include <memory>
 #include <string>
+#include <shader.h>
+#include <resources.h>
+#include <chrono>
 #include <defines.h>
+#include <iostream>
+#include <fstream>
+#include <settings.h>
+#include <GL/wglew.h>
 
-namespace Settings
+namespace Renderer
 {
-	auto LoadFromRegistry() -> SETTINGS;
-	auto SaveToRegistry(PSETTINGS settings) -> BOOL;
+	auto InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> BOOL;
+	auto InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTINGS& settings) -> BOOL;
+	auto UninitializeRenderer() -> VOID;
+
+	auto DoRender(HDC deviceContext) -> VOID;
 }

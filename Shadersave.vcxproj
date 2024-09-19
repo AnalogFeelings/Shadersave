@@ -20,16 +20,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\config_dialog.cpp" />
-    <ClCompile Include="src\glrenderer.cpp" />
+    <ClCompile Include="src\renderer.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\registry.cpp" />
     <ClCompile Include="src\settings.cpp" />
     <ClCompile Include="src\shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\include\core.h" />
+    <ClInclude Include="src\include\globals.h" />
     <ClInclude Include="src\include\defines.h" />
-    <ClInclude Include="src\include\glrenderer.h" />
+    <ClInclude Include="src\include\renderer.h" />
     <ClInclude Include="src\include\registry.h" />
     <ClInclude Include="src\include\settings.h" />
     <ClInclude Include="src\include\shader.h" />

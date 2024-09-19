@@ -16,7 +16,7 @@
 
 #include <windows.h>
 #include <scrnsave.h>
-#include <glrenderer.h>
+#include <renderer.h>
 #include <resources.h>
 #include <defines.h>
 #include <settings.h>

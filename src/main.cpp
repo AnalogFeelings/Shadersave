@@ -16,13 +16,13 @@
 
 #include <windows.h>
 #include <scrnsave.h>
-#include <glrenderer.h>
+#include <renderer.h>
 #include <defines.h>
 #include <settings.h>
 #include <filesystem>
 #include <shobjidl.h>
 #include <atlbase.h>
-#include <core.h>
+#include <globals.h>
 
 auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) -> LRESULT
 {
@@ -30,15 +30,13 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 	{
 		case WM_CREATE:
 		{
-			::GetClientRect(hWnd, &ClientRect);
-			INT windowWidth = ClientRect.right;
-			INT windowHeight = ClientRect.bottom;
-			SETTINGS settings = LoadSettings();
+			::GetClientRect(hWnd, &Globals::ClientRect);
+			INT windowWidth = Globals::ClientRect.right;
+			INT windowHeight = Globals::ClientRect.bottom;
+			SETTINGS settings = Settings::LoadFromRegistry();
+			Globals::MainWindow = hWnd;
 
-			GlRenderer = std::make_shared<GLRenderer>();
-			MainWindow = hWnd;
-
-			BOOL contextResult = GlRenderer->InitContext(hWnd, DeviceContext, GlRenderContext);
+			BOOL contextResult = Renderer::InitContext(hWnd, Globals::DeviceContext, Globals::GlRenderContext);
 			if (!contextResult)
 			{
 				GLenum error = glGetError();
@@ -51,11 +49,11 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 				return -1;
 			}
 
-			BOOL rendererResult = GlRenderer->InitRenderer(windowWidth, windowHeight, settings);
+			BOOL rendererResult = Renderer::InitRenderer(windowWidth, windowHeight, settings);
 			if (!rendererResult)
 			{
 				CHAR buffer[OPENGL_ERROR_SIZE];
-				std::snprintf(buffer, OPENGL_ERROR_SIZE, "Error initializing OpenGL renderer.\n%s", GlRenderer->QuadShader->ShaderLog);
+				std::snprintf(buffer, OPENGL_ERROR_SIZE, "Error initializing OpenGL renderer.\n%s", "placeholder");
 
 				::MessageBox(hWnd, buffer, "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
 
@@ -68,10 +66,10 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			PAINTSTRUCT paintStruct;
 
 			::BeginPaint(hWnd, &paintStruct);
-			GlRenderer->DoRender(DeviceContext);
+			Renderer::DoRender(Globals::DeviceContext);
 			::EndPaint(hWnd, &paintStruct);
 
-			::InvalidateRect(hWnd, &ClientRect, FALSE);
+			::InvalidateRect(hWnd, &Globals::ClientRect, FALSE);
 
 			return 0;
 		case WM_DESTROY:

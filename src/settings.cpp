@@ -23,6 +23,8 @@
 #include <registry.h>
 #include <unordered_set>
 
+auto ValidateSettings(PSETTINGS settings) -> VOID;
+
 std::unordered_set<std::string> validBindings =
 {
 	BUFFER_A,
@@ -31,7 +33,7 @@ std::unordered_set<std::string> validBindings =
 	BUFFER_D
 };
 
-auto LoadSettings() -> SETTINGS
+auto Settings::LoadFromRegistry() -> SETTINGS
 {
 	SETTINGS settings =
 	{
@@ -54,7 +56,7 @@ auto LoadSettings() -> SETTINGS
 	return settings;
 }
 
-auto SaveSettings(PSETTINGS settings) -> BOOL
+auto Settings::SaveToRegistry(PSETTINGS settings) -> BOOL
 {
 	ValidateSettings(settings);
 

@@ -16,12 +16,12 @@
 
 #pragma once
 
-#include <memory>
 #include <windows.h>
-#include <glrenderer.h>
 
-inline HWND MainWindow;
-inline HDC DeviceContext;
-inline HGLRC GlRenderContext;
-inline RECT ClientRect;
-inline std::shared_ptr<GLRenderer> GlRenderer;
+namespace Globals
+{
+	inline HWND MainWindow;
+	inline HDC DeviceContext;
+	inline HGLRC GlRenderContext;
+	inline RECT ClientRect;
+}
