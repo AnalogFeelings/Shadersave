@@ -120,7 +120,7 @@ auto Shader::SetIntUniform(CONST std::string& name, INT value) -> VOID
 	if(!this->UniformMap.contains(name)) return;
 
 	INT uniformLocation = this->UniformMap.at(name);
-	glUniform1i(uniformLocation, value);
+	glProgramUniform1i(this->ProgramId, uniformLocation, value);
 }
 
 auto Shader::SetFloatUniform(CONST std::string& name, FLOAT value) -> VOID
@@ -128,7 +128,7 @@ auto Shader::SetFloatUniform(CONST std::string& name, FLOAT value) -> VOID
 	if(!this->UniformMap.contains(name)) return;
 
 	INT uniformLocation = this->UniformMap.at(name);
-	glUniform1f(uniformLocation, value);
+	glProgramUniform1f(this->ProgramId, uniformLocation, value);
 }
 
 auto Shader::SetVector2Uniform(CONST std::string& name, FLOAT x, FLOAT y) -> VOID
@@ -136,7 +136,7 @@ auto Shader::SetVector2Uniform(CONST std::string& name, FLOAT x, FLOAT y) -> VOI
 	if(!this->UniformMap.contains(name)) return;
 
 	INT uniformLocation = this->UniformMap.at(name);
-	glUniform2f(uniformLocation, x, y);
+	glProgramUniform2f(this->ProgramId, uniformLocation, x, y);
 }
 
 auto Shader::SetVector3Uniform(CONST std::string& name, FLOAT x, FLOAT y, FLOAT z) -> VOID
@@ -144,7 +144,7 @@ auto Shader::SetVector3Uniform(CONST std::string& name, FLOAT x, FLOAT y, FLOAT 
 	if(!this->UniformMap.contains(name)) return;
 
 	INT uniformLocation = this->UniformMap.at(name);
-	glUniform3f(uniformLocation, x, y, z);
+	glProgramUniform3f(this->ProgramId, uniformLocation, x, y, z);
 }
 
 auto Shader::SetVector4Uniform(CONST std::string& name, FLOAT x, FLOAT y, FLOAT z, FLOAT w) -> VOID
@@ -152,7 +152,7 @@ auto Shader::SetVector4Uniform(CONST std::string& name, FLOAT x, FLOAT y, FLOAT 
 	if(!this->UniformMap.contains(name)) return;
 
 	INT uniformLocation = this->UniformMap.at(name);
-	glUniform4f(uniformLocation, x, y, z, w);
+	glProgramUniform4f(this->ProgramId, uniformLocation, x, y, z, w);
 }
 
 auto Shader::CheckCompileErrors(GLuint shaderId, CONST std::string& type) -> BOOL
