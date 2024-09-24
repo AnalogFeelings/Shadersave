@@ -41,14 +41,6 @@ constexpr UINT QUAD_INDICES[6] =
 	0, 3, 1
 };
 
-auto SetUniformValues(CONST std::unique_ptr<Shader>& target, CONST PUNIFORMS uniforms) -> VOID;
-auto GenerateFramebuffer(PUINT targetFramebuffer, PUINT targetTexture) -> BOOL;
-auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
-auto GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string;
-auto LoadFileFromDisk(CONST std::string& filename) -> std::string;
-auto CreateShader(CONST std::unique_ptr<Shader>& target, CONST std::string& vertexSource, std::string& fragmentSource) -> BOOL;
-auto GetUnixTimeInMs() -> ULONG64;
-
 INT ViewportWidth = 0;
 INT ViewportHeight = 0;
 INT FrameCount = 0;
@@ -63,6 +55,14 @@ ULONG64 ProgramDelta = 0;
 
 std::unique_ptr<Shader> QuadShader;
 std::unique_ptr<Buffer> BufferA;
+
+auto SetUniformValues(CONST std::unique_ptr<Shader>& target, CONST PUNIFORMS uniforms) -> VOID;
+auto GenerateFramebuffer(PUINT targetFramebuffer, PUINT targetTexture) -> BOOL;
+auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
+auto GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string;
+auto LoadFileFromDisk(CONST std::string& filename) -> std::string;
+auto CreateShader(CONST std::unique_ptr<Shader>& target, CONST std::string& vertexSource, std::string& fragmentSource) -> BOOL;
+auto GetUnixTimeInMs() -> ULONG64;
 
 auto Renderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> BOOL
 {
@@ -166,6 +166,7 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 	}
 
 	// Actually load the shaders and compile them.
+	QuadShader = std::make_unique<Shader>();
 	BOOL quadResult = CreateShader(QuadShader, vertexSource, fragmentSource);
 	if (!quadResult)
 		return FALSE;
@@ -182,7 +183,7 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 		if (!shaderResult)
 			return FALSE;
 
-		BOOL bufferResult = BufferA->SetupBuffer(&Globals::BufferATexture, ViewportWidth, ViewportHeight, 0, std::move(shader));
+		BOOL bufferResult = BufferA->SetupBuffer(&Globals::BufferATexture, ViewportWidth, ViewportHeight, BUFFERA_START, shader);
 		if (!bufferResult)
 			return FALSE;
 	}
@@ -228,6 +229,9 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, Globals::BufferATexture);
 
 	QuadShader->UseShader();
 	SetUniformValues(QuadShader, &uniforms);

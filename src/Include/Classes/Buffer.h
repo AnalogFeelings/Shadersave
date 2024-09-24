@@ -31,7 +31,7 @@ public:
 	/// <param name="channelStart">The starting number of the buffer channel texture unit.</param>
 	/// <param name="shader">The shader to use.</param>
 	/// <returns>TRUE if initialized successfully.</returns>
-	auto SetupBuffer(PUINT textureGlobal, INT viewportWidth, INT viewportHeight, UINT channelStart, std::unique_ptr<Shader> shader) -> BOOL;
+	auto SetupBuffer(PUINT textureGlobal, INT viewportWidth, INT viewportHeight, UINT channelStart, std::unique_ptr<Shader>& shader) -> BOOL;
 
 	/// <summary>
 	/// Sets up the state machine to render the buffer.
@@ -53,5 +53,5 @@ private:
 
 	UINT ChannelStart = 0;
 
-	std::shared_ptr<Shader> BufferShader;
+	std::unique_ptr<Shader> BufferShader;
 };

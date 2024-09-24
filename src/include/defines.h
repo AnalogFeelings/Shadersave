@@ -25,6 +25,11 @@
 #define SHADER_LOG_SIZE 1024
 #define UNIFORM_BUFFER_SIZE 16
 
+#define BUFFERA_START 4
+#define BUFFERB_START 8
+#define BUFFERC_START 12
+#define BUFFERD_START 16
+
 #define REGISTRY_SUBKEY "SOFTWARE\\AnalogFeelings\\Shadersave"
 
 #define FRAMERATE_CAP "FramerateCap"

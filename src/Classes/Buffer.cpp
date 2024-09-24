@@ -17,7 +17,7 @@
 #include <Classes/Buffer.h>
 #include <Globals.h>
 
-auto Buffer::SetupBuffer(PUINT textureGlobal, INT viewportWidth, INT viewportHeight, UINT channelStart, std::unique_ptr<Shader> shader) -> BOOL
+auto Buffer::SetupBuffer(PUINT textureGlobal, INT viewportWidth, INT viewportHeight, UINT channelStart, std::unique_ptr<Shader>& shader) -> BOOL
 {
 	glGenFramebuffers(1, &this->BufferFramebuffer);
 	glGenTextures(1, &this->BufferTexture);
@@ -44,7 +44,7 @@ auto Buffer::SetupBuffer(PUINT textureGlobal, INT viewportWidth, INT viewportHei
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	this->BufferShader = shader;
+	this->BufferShader = std::move(shader);
 	this->BufferTextureGlobal = textureGlobal;
 	this->ChannelStart = channelStart;
 
