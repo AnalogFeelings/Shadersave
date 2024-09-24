@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Classes\Buffer.cpp" />
     <ClCompile Include="src\ConfigDialog.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\EntryPoint.cpp" />
@@ -27,6 +28,7 @@
     <ClCompile Include="src\Classes\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Include\Classes\Buffer.h" />
     <ClInclude Include="src\Include\Globals.h" />
     <ClInclude Include="src\Include\Defines.h" />
     <ClInclude Include="src\Include\Renderer.h" />

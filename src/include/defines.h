@@ -48,6 +48,9 @@ typedef std::chrono::time_point<std::chrono::system_clock> TIMEPOINT;
 
 typedef struct
 {
+	INT ViewportWidth;
+	INT ViewportHeight;
+
 	FLOAT Time;
 	FLOAT DeltaTime;
 	FLOAT FrameRate;
@@ -56,6 +59,8 @@ typedef struct
 	INT Month;
 	INT Day;
 	INT Seconds;
+
+	INT FrameCount;
 } UNIFORMS, * PUNIFORMS;
 
 typedef struct

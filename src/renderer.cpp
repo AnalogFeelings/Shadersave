@@ -14,8 +14,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <Classes/Shader.h>
+#include <Classes/Buffer.h>
+#include <Resources.h>
 #include <Renderer.h>
 #include <Globals.h>
+
+#include <memory>
+#include <string>
+#include <chrono>
+#include <iostream>
+#include <fstream>
+#include <GL/wglew.h>
+#include <format>
 
 constexpr FLOAT QUAD_VERTICES[12] =
 {
@@ -30,13 +41,12 @@ constexpr UINT QUAD_INDICES[6] =
 	0, 3, 1
 };
 
-auto SetUniformValues(std::shared_ptr<Shader> target, CONST PUNIFORMS uniforms) -> VOID;
+auto SetUniformValues(CONST std::unique_ptr<Shader>& target, CONST PUNIFORMS uniforms) -> VOID;
 auto GenerateFramebuffer(PUINT targetFramebuffer, PUINT targetTexture) -> BOOL;
-auto LabelObject(UINT type, UINT object, PCSTR label) -> VOID;
 auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
 auto GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string;
 auto LoadFileFromDisk(CONST std::string& filename) -> std::string;
-auto CreateShader(std::shared_ptr<Shader>& target, CONST std::string& vertexSource, std::string& fragmentSource) -> BOOL;
+auto CreateShader(CONST std::unique_ptr<Shader>& target, CONST std::string& vertexSource, std::string& fragmentSource) -> BOOL;
 auto GetUnixTimeInMs() -> ULONG64;
 
 INT ViewportWidth = 0;
@@ -47,40 +57,12 @@ UINT QuadVao = 0;
 UINT QuadVbo = 0;
 UINT QuadEbo = 0;
 
-UINT BufferAFramebuffer = 0;
-UINT BufferATexture = 0;
-
-UINT BufferBFramebuffer = 0;
-UINT BufferBTexture = 0;
-
-UINT BufferCFramebuffer = 0;
-UINT BufferCTexture = 0;
-
-UINT BufferDFramebuffer = 0;
-UINT BufferDTexture = 0;
-
 ULONG64 ProgramStart = 0;
 ULONG64 ProgramNow = 0;
 ULONG64 ProgramDelta = 0;
 
-UINT Channel0Texture = 0;
-UINT Channel0TextureCopy = 0;
-UINT Channel0LastFrame = 0;
-
-UINT Channel1Texture = 0;
-UINT Channel1TextureCopy = 0;
-
-UINT Channel2Texture = 0;
-UINT Channel2TextureCopy = 0;
-
-UINT Channel3Texture = 0;
-UINT Channel3TextureCopy = 0;
-
-std::shared_ptr<Shader> QuadShader;
-std::shared_ptr<Shader> BufferAShader;
-std::shared_ptr<Shader> BufferBShader;
-std::shared_ptr<Shader> BufferCShader;
-std::shared_ptr<Shader> BufferDShader;
+std::unique_ptr<Shader> QuadShader;
+std::unique_ptr<Buffer> BufferA;
 
 auto Renderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> BOOL
 {
@@ -119,6 +101,12 @@ auto Renderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext
 	GLenum glError = glewInit();
 	if (glError != GLEW_OK)
 	{
+		GLenum error = glGetError();
+		CHAR buffer[GLEW_ERROR_SIZE];
+
+		std::snprintf(buffer, GLEW_ERROR_SIZE, "%s", glewGetErrorString(error));
+		Globals::LastError = buffer;
+
 		return FALSE;
 	}
 
@@ -133,14 +121,8 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 	glViewport(0, 0, ViewportWidth, ViewportHeight);
 
 	glGenVertexArrays(1, &QuadVao);
-	LabelObject(GL_VERTEX_ARRAY, QuadVao, "Screen VAO");
-
 	glGenBuffers(1, &QuadVbo);
-	LabelObject(GL_BUFFER, QuadVbo, "Screen VBO");
-
 	glGenBuffers(1, &QuadEbo);
-	LabelObject(GL_BUFFER, QuadEbo, "Screen EBO");
-
 	glBindVertexArray(QuadVao);
 
 	glBindBuffer(GL_ARRAY_BUFFER, QuadVbo);
@@ -154,44 +136,6 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-
-	// Generate framebuffers.
-	if (!settings.BufferAPath.empty())
-	{
-		BOOL result = GenerateFramebuffer(&BufferAFramebuffer, &BufferATexture);
-		if (!result)
-			return FALSE;
-
-		LabelObject(GL_FRAMEBUFFER, BufferAFramebuffer, "BufferA Framebuffer");
-		LabelObject(GL_TEXTURE, BufferATexture, "BufferA Texture");
-	}
-	if (!settings.BufferBPath.empty())
-	{
-		BOOL result = GenerateFramebuffer(&BufferBFramebuffer, &BufferBTexture);
-		if (!result)
-			return FALSE;
-
-		LabelObject(GL_FRAMEBUFFER, BufferBFramebuffer, "BufferB Framebuffer");
-		LabelObject(GL_TEXTURE, BufferBTexture, "BufferB Texture");
-	}
-	if (!settings.BufferCPath.empty())
-	{
-		BOOL result = GenerateFramebuffer(&BufferCFramebuffer, &BufferCTexture);
-		if (!result)
-			return FALSE;
-
-		LabelObject(GL_FRAMEBUFFER, BufferCFramebuffer, "BufferC Framebuffer");
-		LabelObject(GL_TEXTURE, BufferCTexture, "BufferC Texture");
-	}
-	if (!settings.BufferDPath.empty())
-	{
-		BOOL result = GenerateFramebuffer(&BufferDFramebuffer, &BufferDTexture);
-		if (!result)
-			return FALSE;
-
-		LabelObject(GL_FRAMEBUFFER, BufferDFramebuffer, "BufferD Framebuffer");
-		LabelObject(GL_TEXTURE, BufferDTexture, "BufferD Texture");
-	}
 
 	UINT vertexSize;
 	PCSTR vertexData;
@@ -229,144 +173,18 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 	// Create buffer shaders.
 	if (!settings.BufferAPath.empty())
 	{
+		BufferA = std::make_unique<Buffer>();
+
 		std::string bufferASource = LoadFileFromDisk(settings.BufferAPath);
+		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		BOOL bufferAResult = CreateShader(BufferAShader, vertexSource, bufferASource);
-		if (!bufferAResult)
+		BOOL shaderResult = CreateShader(shader, vertexSource, bufferASource);
+		if (!shaderResult)
 			return FALSE;
 
-		if (settings.Channel0 == BUFFER_A)
-		{
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, BufferATexture);
-			Channel0Texture = BufferATexture;
-
-			glGenTextures(1, &Channel0TextureCopy);
-			glBindTexture(GL_TEXTURE_2D, Channel0TextureCopy);
-
-			LabelObject(GL_TEXTURE, Channel0TextureCopy, "Channel 0 Copy");
-
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ViewportWidth, ViewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		}
-		if (settings.Channel1 == BUFFER_A)
-		{
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, BufferATexture);
-			Channel1Texture = BufferATexture;
-		}
-		if (settings.Channel2 == BUFFER_A)
-		{
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, BufferATexture);
-			Channel1Texture = BufferATexture;
-		}
-		if (settings.Channel3 == BUFFER_A)
-		{
-			glActiveTexture(GL_TEXTURE3);
-			glBindTexture(GL_TEXTURE_2D, BufferATexture);
-			Channel1Texture = BufferATexture;
-		}
-	}
-	if (!settings.BufferBPath.empty())
-	{
-		std::string bufferBSource = LoadFileFromDisk(settings.BufferBPath);
-
-		BOOL bufferBResult = CreateShader(BufferBShader, vertexSource, bufferBSource);
-		if (!bufferBResult)
+		BOOL bufferResult = BufferA->SetupBuffer(&Globals::BufferATexture, ViewportWidth, ViewportHeight, 0, std::move(shader));
+		if (!bufferResult)
 			return FALSE;
-
-		if (settings.Channel0 == BUFFER_B)
-		{
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, BufferBTexture);
-			Channel0Texture = BufferBTexture;
-		}
-		if (settings.Channel1 == BUFFER_B)
-		{
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, BufferBTexture);
-			Channel1Texture = BufferBTexture;
-		}
-		if (settings.Channel2 == BUFFER_B)
-		{
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, BufferBTexture);
-			Channel2Texture = BufferBTexture;
-		}
-		if (settings.Channel3 == BUFFER_B)
-		{
-			glActiveTexture(GL_TEXTURE3);
-			glBindTexture(GL_TEXTURE_2D, BufferBTexture);
-			Channel3Texture = BufferBTexture;
-		}
-	}
-	if (!settings.BufferCPath.empty())
-	{
-		std::string bufferCSource = LoadFileFromDisk(settings.BufferCPath);
-
-		BOOL bufferCResult = CreateShader(BufferCShader, vertexSource, bufferCSource);
-		if (!bufferCResult)
-			return FALSE;
-
-		if (settings.Channel0 == BUFFER_C)
-		{
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, BufferCTexture);
-			Channel0Texture = BufferCTexture;
-		}
-		if (settings.Channel1 == BUFFER_C)
-		{
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, BufferCTexture);
-			Channel1Texture = BufferCTexture;
-		}
-		if (settings.Channel2 == BUFFER_C)
-		{
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, BufferCTexture);
-			Channel2Texture = BufferCTexture;
-		}
-		if (settings.Channel3 == BUFFER_C)
-		{
-			glActiveTexture(GL_TEXTURE3);
-			glBindTexture(GL_TEXTURE_2D, BufferCTexture);
-			Channel3Texture = BufferCTexture;
-		}
-	}
-	if (!settings.BufferDPath.empty())
-	{
-		std::string bufferDSource = LoadFileFromDisk(settings.BufferDPath);
-
-		BOOL bufferDResult = CreateShader(BufferDShader, vertexSource, bufferDSource);
-		if (!bufferDResult)
-			return FALSE;
-
-		if (settings.Channel0 == BUFFER_D)
-		{
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, BufferDTexture);
-			Channel0Texture = BufferDTexture;
-		}
-		if (settings.Channel1 == BUFFER_D)
-		{
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, BufferDTexture);
-			Channel1Texture = BufferDTexture;
-		}
-		if (settings.Channel2 == BUFFER_D)
-		{
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, BufferDTexture);
-			Channel2Texture = BufferDTexture;
-		}
-		if (settings.Channel3 == BUFFER_D)
-		{
-			glActiveTexture(GL_TEXTURE3);
-			glBindTexture(GL_TEXTURE_2D, BufferDTexture);
-			Channel3Texture = BufferDTexture;
-		}
 	}
 
 	// Set up startup time.
@@ -384,6 +202,9 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 
 	UNIFORMS uniforms =
 	{
+		.ViewportWidth = ViewportWidth,
+		.ViewportHeight = ViewportHeight,
+
 		.Time = (ProgramNow - ProgramStart) / 1000.0f,
 		.DeltaTime = ProgramDelta / 1000.0f,
 		.FrameRate = 1000.0f / ProgramDelta,
@@ -391,53 +212,22 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 		.Year = detailedTime->tm_year + 1900,
 		.Month = detailedTime->tm_mon + 1,
 		.Day = detailedTime->tm_mday,
-		.Seconds = (detailedTime->tm_hour * 3600) + (detailedTime->tm_min * 60) + detailedTime->tm_sec
+		.Seconds = (detailedTime->tm_hour * 3600) + (detailedTime->tm_min * 60) + detailedTime->tm_sec,
+
+		.FrameCount = FrameCount
 	};
 
-	if (BufferAFramebuffer)
+	if (BufferA)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, BufferAFramebuffer);
-
-		if(Channel0LastFrame == Channel0Texture)
-		{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, Channel0TextureCopy, 0);
-
-			glClearColor(0, 0, 0, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, Channel0Texture);
-
-			Channel0LastFrame = Channel0TextureCopy;
-		}
-		else
-		{
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, Channel0Texture, 0);
-
-			glClearColor(0, 0, 0, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
-
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, Channel0TextureCopy);
-
-			Channel0LastFrame = Channel0Texture;
-		}
-		
-		BufferAShader->UseShader();
-		SetUniformValues(BufferAShader, &uniforms);
+		BufferA->SetupRender(&uniforms);
 
 		glBindVertexArray(QuadVao);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 	}
-
+	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Channel0Texture);
 
 	QuadShader->UseShader();
 	SetUniformValues(QuadShader, &uniforms);
@@ -459,27 +249,12 @@ auto Renderer::UninitializeRenderer() -> VOID
 	glDeleteBuffers(1, &QuadVbo);
 	glDeleteBuffers(1, &QuadEbo);
 
-	glDeleteFramebuffers(1, &BufferAFramebuffer);
-	glDeleteFramebuffers(1, &BufferBFramebuffer);
-	glDeleteFramebuffers(1, &BufferCFramebuffer);
-	glDeleteFramebuffers(1, &BufferDFramebuffer);
-
-	glDeleteTextures(1, &BufferATexture);
-	glDeleteTextures(1, &BufferBTexture);
-	glDeleteTextures(1, &BufferCTexture);
-	glDeleteTextures(1, &BufferDTexture);
-
-	glDeleteTextures(1, &Channel0Texture);
-	glDeleteTextures(1, &Channel1Texture);
-	glDeleteTextures(1, &Channel2Texture);
-	glDeleteTextures(1, &Channel3Texture);
-
 	wglMakeCurrent(nullptr, nullptr);
 	wglDeleteContext(Globals::GlRenderContext);
 	::ReleaseDC(Globals::MainWindow, Globals::DeviceContext);
 }
 
-auto SetUniformValues(std::shared_ptr<Shader> target, CONST PUNIFORMS uniforms) -> VOID
+auto SetUniformValues(CONST std::unique_ptr<Shader>& target, CONST PUNIFORMS uniforms) -> VOID
 {
 	target->SetVector3Uniform("iResolution", ViewportWidth, ViewportHeight, 0);
 	target->SetFloatUniform("iTime", uniforms->Time);
@@ -511,13 +286,6 @@ auto GenerateFramebuffer(PUINT targetFramebuffer, PUINT targetTexture) -> BOOL
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *targetTexture, 0);
 
 	return TRUE;
-}
-
-auto LabelObject(UINT type, UINT object, PCSTR label) -> VOID
-{
-	UINT stringLength = std::strlen(label);
-
-	glObjectLabel(type, object, stringLength, label);
 }
 
 auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL
@@ -562,9 +330,8 @@ auto LoadFileFromDisk(CONST std::string& filename) -> std::string
 	return text;
 }
 
-auto CreateShader(std::shared_ptr<Shader>& target, CONST std::string& vertexSource, std::string& fragmentSource) -> BOOL
+auto CreateShader(CONST std::unique_ptr<Shader>& target, CONST std::string& vertexSource, std::string& fragmentSource) -> BOOL
 {
-	target = std::make_shared<Shader>();
 	BOOL shaderResult = target->LoadShader(vertexSource);
 	if (!shaderResult)
 		return FALSE;

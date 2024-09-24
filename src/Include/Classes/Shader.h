@@ -22,6 +22,7 @@
 #include <sstream>
 #include <memory>
 #include <unordered_map>
+#include <Defines.h>
 
 class Shader
 {

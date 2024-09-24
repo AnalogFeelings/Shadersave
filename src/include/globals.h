@@ -24,4 +24,11 @@ namespace Globals
 	inline HDC DeviceContext;
 	inline HGLRC GlRenderContext;
 	inline RECT ClientRect;
+
+	inline std::string LastError;
+
+	inline UINT BufferATexture;
+	inline UINT BufferBTexture;
+	inline UINT BufferCTexture;
+	inline UINT BufferDTexture;
 }

@@ -40,12 +40,9 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			BOOL contextResult = Renderer::InitContext(hWnd, Globals::DeviceContext, Globals::GlRenderContext);
 			if (!contextResult)
 			{
-				GLenum error = glGetError();
-				CHAR buffer[GLEW_ERROR_SIZE];
+				std::string error = "Error initializing OpenGL context.\n" + Globals::LastError;
 
-				std::snprintf(buffer, GLEW_ERROR_SIZE, "Error initializing GLEW.\n%s", glewGetErrorString(error));
-
-				::MessageBox(hWnd, buffer, "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+				::MessageBox(hWnd, error.c_str(), "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
 
 				return -1;
 			}

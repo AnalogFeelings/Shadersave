@@ -17,17 +17,7 @@
 #pragma once
 
 #include <windows.h>
-#include <format>
-#include <memory>
-#include <string>
-#include <Classes/Shader.h>
-#include <Resources.h>
-#include <chrono>
 #include <Defines.h>
-#include <iostream>
-#include <fstream>
-#include <Settings.h>
-#include <GL/wglew.h>
 
 namespace Renderer
 {
