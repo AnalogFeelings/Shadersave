@@ -17,6 +17,7 @@
 #pragma once
 
 #include <chrono>
+#include <Windows.h>
 
 #define SHADERSAVE_VERSION "0.5"
 
@@ -38,11 +39,32 @@
 #define BUFFERB_PATH "BufferBPath"
 #define BUFFERC_PATH "BufferCPath"
 #define BUFFERD_PATH "BufferDPath"
+#define COMMON_PATH "CommonPath"
 
-#define CHANNEL0_BINDING "Channel0Binding"
-#define CHANNEL1_BINDING "Channel1Binding"
-#define CHANNEL2_BINDING "Channel2Binding"
-#define CHANNEL3_BINDING "Channel3Binding"
+#define SHADER_CHANNEL0_BINDING "ShaderChannel0"
+#define SHADER_CHANNEL1_BINDING "ShaderChannel1"
+#define SHADER_CHANNEL2_BINDING "ShaderChannel2"
+#define SHADER_CHANNEL3_BINDING "ShaderChannel3"
+
+#define BUFFERA_CHANNEL0_BINDING "BufferAChannel0"
+#define BUFFERA_CHANNEL1_BINDING "BufferAChannel1"
+#define BUFFERA_CHANNEL2_BINDING "BufferAChannel2"
+#define BUFFERA_CHANNEL3_BINDING "BufferAChannel3"
+
+#define BUFFERB_CHANNEL0_BINDING "BufferBChannel0"
+#define BUFFERB_CHANNEL1_BINDING "BufferBChannel1"
+#define BUFFERB_CHANNEL2_BINDING "BufferBChannel2"
+#define BUFFERB_CHANNEL3_BINDING "BufferBChannel3"
+
+#define BUFFERC_CHANNEL0_BINDING "BufferCChannel0"
+#define BUFFERC_CHANNEL1_BINDING "BufferCChannel1"
+#define BUFFERC_CHANNEL2_BINDING "BufferCChannel2"
+#define BUFFERC_CHANNEL3_BINDING "BufferCChannel3"
+
+#define BUFFERD_CHANNEL0_BINDING "BufferDChannel0"
+#define BUFFERD_CHANNEL1_BINDING "BufferDChannel1"
+#define BUFFERD_CHANNEL2_BINDING "BufferDChannel2"
+#define BUFFERD_CHANNEL3_BINDING "BufferDChannel3"
 
 #define BUFFER_A "BUFFER_A"
 #define BUFFER_B "BUFFER_B"
@@ -75,11 +97,30 @@ typedef struct
 	std::string BufferBPath;
 	std::string BufferCPath;
 	std::string BufferDPath;
+	std::string CommonPath;
 
-	std::string Channel0;
-	std::string Channel1;
-	std::string Channel2;
-	std::string Channel3;
+	std::string MainChannel0;
+	std::string MainChannel1;
+	std::string MainChannel2;
+	std::string MainChannel3;
 
-	UINT FramerateCap;
+	std::string BufferAChannel0;
+	std::string BufferAChannel1;
+	std::string BufferAChannel2;
+	std::string BufferAChannel3;
+
+	std::string BufferBChannel0;
+	std::string BufferBChannel1;
+	std::string BufferBChannel2;
+	std::string BufferBChannel3;
+
+	std::string BufferCChannel0;
+	std::string BufferCChannel1;
+	std::string BufferCChannel2;
+	std::string BufferCChannel3;
+
+	std::string BufferDChannel0;
+	std::string BufferDChannel1;
+	std::string BufferDChannel2;
+	std::string BufferDChannel3;
 } SETTINGS, * PSETTINGS;

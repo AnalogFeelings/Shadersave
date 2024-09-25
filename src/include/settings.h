@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include <windows.h>
-#include <string>
 #include <Defines.h>
+
+#include <windows.h>
 
 namespace Settings
 {
