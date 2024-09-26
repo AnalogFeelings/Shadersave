@@ -50,10 +50,9 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 			BOOL rendererResult = Renderer::InitRenderer(windowWidth, windowHeight, settings);
 			if (!rendererResult)
 			{
-				CHAR buffer[OPENGL_ERROR_SIZE];
-				std::snprintf(buffer, OPENGL_ERROR_SIZE, "Error initializing OpenGL renderer.\n%s", "placeholder");
+				std::string error = "Error initializing OpenGL renderer.\n" + Globals::LastError;
 
-				::MessageBox(hWnd, buffer, "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+				::MessageBox(hWnd, error.c_str(), "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
 
 				return -1;
 			}
