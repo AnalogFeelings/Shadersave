@@ -28,6 +28,47 @@
 #include <GL/wglew.h>
 #include <format>
 
+#define SETUP_BUFFER_BINDINGS(Buffer) \
+	UINT channel0 = 0; \
+	UINT channel1 = 0; \
+	UINT channel2 = 0; \
+	UINT channel3 = 0; \
+	if (settings.Buffer##Channel0 == BUFFER_A) \
+		channel0 = Globals::BufferATexture; \
+	if (settings.Buffer##Channel0 == BUFFER_B) \
+		channel0 = Globals::BufferBTexture; \
+	if (settings.Buffer##Channel0 == BUFFER_C) \
+		channel0 = Globals::BufferCTexture; \
+	if (settings.Buffer##Channel0 == BUFFER_D) \
+		channel0 = Globals::BufferDTexture; \
+	 \
+	if (settings.Buffer##Channel1 == BUFFER_A) \
+		channel1 = Globals::BufferATexture; \
+	if (settings.Buffer##Channel1 == BUFFER_B) \
+		channel1 = Globals::BufferBTexture; \
+	if (settings.Buffer##Channel1 == BUFFER_C) \
+		channel1 = Globals::BufferCTexture; \
+	if (settings.Buffer##Channel1 == BUFFER_D) \
+		channel1 = Globals::BufferDTexture; \
+	 \
+	if (settings.Buffer##Channel2 == BUFFER_A) \
+		channel2 = Globals::BufferATexture; \
+	if (settings.Buffer##Channel2 == BUFFER_B) \
+		channel2 = Globals::BufferBTexture; \
+	if (settings.Buffer##Channel2 == BUFFER_C) \
+		channel2 = Globals::BufferCTexture; \
+	if (settings.Buffer##Channel2 == BUFFER_D) \
+		channel2 = Globals::BufferDTexture; \
+	 \
+	if (settings.Buffer##Channel3 == BUFFER_A) \
+		channel3 = Globals::BufferATexture; \
+	if (settings.Buffer##Channel3 == BUFFER_B) \
+		channel3 = Globals::BufferBTexture; \
+	if (settings.Buffer##Channel3 == BUFFER_C) \
+		channel3 = Globals::BufferCTexture; \
+	if (settings.Buffer##Channel3 == BUFFER_D) \
+		channel3 = Globals::BufferDTexture
+
 constexpr FLOAT QUAD_VERTICES[12] =
 {
 	-1.0f, -1.0f, -0.0f,
@@ -52,6 +93,11 @@ UINT QuadEbo = 0;
 ULONG64 ProgramStart = 0;
 ULONG64 ProgramNow = 0;
 ULONG64 ProgramDelta = 0;
+
+UINT QuadChannel0 = 0;
+UINT QuadChannel1 = 0;
+UINT QuadChannel2 = 0;
+UINT QuadChannel3 = 0;
 
 std::unique_ptr<Shader> QuadShader;
 std::unique_ptr<Buffer> BufferA;
@@ -137,6 +183,35 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	// Initialize buffer textures.
+	glGenTextures(1, &Globals::BufferATexture);
+
+	glBindTexture(GL_TEXTURE_2D, Globals::BufferATexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glGenTextures(1, &Globals::BufferBTexture);
+
+	glBindTexture(GL_TEXTURE_2D, Globals::BufferBTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glGenTextures(1, &Globals::BufferCTexture);
+
+	glBindTexture(GL_TEXTURE_2D, Globals::BufferCTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glGenTextures(1, &Globals::BufferDTexture);
+
+	glBindTexture(GL_TEXTURE_2D, Globals::BufferDTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 	UINT vertexSize;
 	PCSTR vertexData;
 
@@ -171,7 +246,17 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 	if (!quadResult)
 		return FALSE;
 
-	// Create buffer shaders.
+	// Initialize main quad shader bindings.
+	{
+		SETUP_BUFFER_BINDINGS(Main);
+
+		QuadChannel0 = channel0;
+		QuadChannel1 = channel1;
+		QuadChannel2 = channel2;
+		QuadChannel3 = channel3;
+	}
+
+	// Create buffers.
 	if (!settings.BufferAPath.empty())
 	{
 		BufferA = std::make_unique<Buffer>();
@@ -186,6 +271,11 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 		BOOL bufferResult = BufferA->SetupBuffer(&Globals::BufferATexture, ViewportWidth, ViewportHeight, BUFFERA_START, shader);
 		if (!bufferResult)
 			return FALSE;
+
+		// Let's initialize the channels.
+		SETUP_BUFFER_BINDINGS(BufferA);
+
+		BufferA->SetupChannels(channel0, channel1, channel2, channel3);
 	}
 
 	// Set up startup time.
@@ -231,7 +321,13 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, Globals::BufferATexture);
+	glBindTexture(GL_TEXTURE_2D, QuadChannel0);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, QuadChannel1);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, QuadChannel2);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, QuadChannel3);
 
 	QuadShader->UseShader();
 	SetUniformValues(QuadShader, &uniforms);

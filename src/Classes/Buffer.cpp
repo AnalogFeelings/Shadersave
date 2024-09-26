@@ -28,11 +28,6 @@ auto Buffer::SetupBuffer(PUINT textureGlobal, INT viewportWidth, INT viewportHei
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glBindTexture(GL_TEXTURE_2D, this->BufferTextureCopy);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	glBindFramebuffer(GL_FRAMEBUFFER, this->BufferFramebuffer);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferTexture, 0);
 
@@ -44,6 +39,8 @@ auto Buffer::SetupBuffer(PUINT textureGlobal, INT viewportWidth, INT viewportHei
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	this->ViewportWidth = viewportWidth;
+	this->ViewportHeight = viewportHeight;
 	this->BufferShader = std::move(shader);
 	this->BufferTextureGlobal = textureGlobal;
 	this->ChannelStart = channelStart;
@@ -51,11 +48,19 @@ auto Buffer::SetupBuffer(PUINT textureGlobal, INT viewportWidth, INT viewportHei
 	return TRUE;
 }
 
+auto Buffer::SetupChannels(UINT channel0, UINT channel1, UINT channel2, UINT channel3) -> VOID
+{
+	this->Channel0 = channel0;
+	this->Channel1 = channel1;
+	this->Channel2 = channel2;
+	this->Channel3 = channel3;
+}
+
 auto Buffer::SetupRender(PUNIFORMS uniforms) -> VOID
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, this->BufferFramebuffer);
 
-	if (*this->BufferTextureGlobal == this->BufferTexture)
+	if (this->BufferTextureLast == this->BufferTexture)
 	{
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferTextureCopy, 0);
@@ -63,9 +68,11 @@ auto Buffer::SetupRender(PUNIFORMS uniforms) -> VOID
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glBindTexture(GL_TEXTURE_2D, this->BufferTexture);
+		this->BufferTextureLast = this->BufferTextureCopy;
 
-		*this->BufferTextureGlobal = this->BufferTextureCopy;
+		glCopyImageSubData(this->BufferTexture, GL_TEXTURE_2D, 0, 0, 0, 0,
+			*this->BufferTextureGlobal, GL_TEXTURE_2D, 0, 0, 0, 0,
+			this->ViewportWidth, this->ViewportHeight, 1);
 	}
 	else
 	{
@@ -75,9 +82,11 @@ auto Buffer::SetupRender(PUNIFORMS uniforms) -> VOID
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glBindTexture(GL_TEXTURE_2D, this->BufferTextureCopy);
+		this->BufferTextureLast = this->BufferTexture;
 
-		*this->BufferTextureGlobal = this->BufferTexture;
+		glCopyImageSubData(this->BufferTextureCopy, GL_TEXTURE_2D, 0, 0, 0, 0,
+			*this->BufferTextureGlobal, GL_TEXTURE_2D, 0, 0, 0, 0,
+			this->ViewportWidth, this->ViewportHeight, 1);
 	}
 
 	this->BufferShader->SetVector3Uniform("iResolution", uniforms->ViewportWidth, uniforms->ViewportHeight, 0);
@@ -94,6 +103,18 @@ auto Buffer::SetupRender(PUNIFORMS uniforms) -> VOID
 	this->BufferShader->SetIntUniform("iChannel3", this->ChannelStart + 3);
 
 	this->BufferShader->UseShader();
+
+	glActiveTexture(GL_TEXTURE0 + this->ChannelStart);
+	glBindTexture(GL_TEXTURE_2D, this->Channel0);
+
+	glActiveTexture(GL_TEXTURE0 + this->ChannelStart + 1);
+	glBindTexture(GL_TEXTURE_2D, this->Channel1);
+
+	glActiveTexture(GL_TEXTURE0 + this->ChannelStart + 2);
+	glBindTexture(GL_TEXTURE_2D, this->Channel2);
+
+	glActiveTexture(GL_TEXTURE0 + this->ChannelStart + 3);
+	glBindTexture(GL_TEXTURE_2D, this->Channel3);
 }
 
 Buffer::~Buffer()

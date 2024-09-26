@@ -34,6 +34,16 @@ public:
 	auto SetupBuffer(PUINT textureGlobal, INT viewportWidth, INT viewportHeight, UINT channelStart, std::unique_ptr<Shader>& shader) -> BOOL;
 
 	/// <summary>
+	/// Initializes the channel bindings.
+	/// </summary>
+	/// <param name="channel0">The texture ID for channel 0.</param>
+	/// <param name="channel1">The texture ID for channel 1.</param>
+	/// <param name="channel2">The texture ID for channel 2.</param>
+	/// <param name="channel3">The texture ID for channel 3.</param>
+	/// <returns></returns>
+	auto SetupChannels(UINT channel0, UINT channel1, UINT channel2, UINT channel3) -> VOID;
+
+	/// <summary>
 	/// Sets up the state machine to render the buffer.
 	/// </summary>
 	/// <param name="uniforms">A reference to the uniforms to use.</param>
@@ -45,13 +55,21 @@ public:
 	~Buffer();
 
 private:
+	INT ViewportWidth;
+	INT ViewportHeight;
+
 	UINT BufferFramebuffer = 0;
 	UINT BufferTexture = 0;
 	UINT BufferTextureCopy = 0;
+	UINT BufferTextureLast = 0;
 
 	PUINT BufferTextureGlobal = nullptr;
 
 	UINT ChannelStart = 0;
+	UINT Channel0 = 0;
+	UINT Channel1 = 0;
+	UINT Channel2 = 0;
+	UINT Channel3 = 0;
 
 	std::unique_ptr<Shader> BufferShader;
 };

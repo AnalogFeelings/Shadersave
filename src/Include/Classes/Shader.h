@@ -16,13 +16,12 @@
 
 #pragma once
 
-#include <windows.h>
+#include <Defines.h>
+
+#include <Windows.h>
 #include <GL/glew.h>
 #include <string>
-#include <sstream>
-#include <memory>
 #include <unordered_map>
-#include <Defines.h>
 
 class Shader
 {
