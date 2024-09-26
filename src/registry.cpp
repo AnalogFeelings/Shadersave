@@ -29,33 +29,9 @@ auto Registry::ReadString(CONST std::string& subKey, CONST std::string& item) ->
     return std::string(data);
 }
 
-auto Registry::ReadInteger(CONST std::string& subKey, CONST std::string& item) -> UINT
-{
-    DWORD data;
-    DWORD bufferSize = sizeof(DWORD);
-
-    LSTATUS result = ::RegGetValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), RRF_RT_DWORD, nullptr, &data, &bufferSize);
-    if (result != ERROR_SUCCESS)
-        return INFINITE;
-
-    return data;
-}
-
 auto Registry::SetString(CONST std::string& subKey, CONST std::string& item, CONST std::string& value) -> BOOL
 {
     LSTATUS result = ::RegSetKeyValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), REG_SZ, value.c_str(), value.length());
-    if (result != ERROR_SUCCESS)
-    {
-        Globals::LastError = Globals::GetLastErrorAsString();
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
-auto Registry::SetInteger(CONST std::string& subKey, CONST std::string& item, UINT value) -> BOOL
-{
-    LSTATUS result = ::RegSetKeyValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), REG_DWORD, &value, sizeof(UINT));
     if (result != ERROR_SUCCESS)
     {
         Globals::LastError = Globals::GetLastErrorAsString();

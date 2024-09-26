@@ -22,8 +22,5 @@
 namespace Registry
 {
 	auto ReadString(CONST std::string& subKey, CONST std::string& item) -> std::string;
-	auto ReadInteger(CONST std::string& subKey, CONST std::string& item) -> UINT;
-
 	auto SetString(CONST std::string& subKey, CONST std::string& item, CONST std::string& value) -> BOOL;
-	auto SetInteger(CONST std::string& subKey, CONST std::string& item, UINT value) -> BOOL;
 }

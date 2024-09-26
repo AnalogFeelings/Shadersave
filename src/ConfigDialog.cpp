@@ -17,6 +17,7 @@
 #include <Resources.h>
 #include <Defines.h>
 #include <Settings.h>
+#include <Globals.h>
 
 #include <windows.h>
 #include <scrnsave.h>
@@ -177,7 +178,8 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 					BOOL saveResult = Settings::SaveToRegistry(&settings);
 					if (!saveResult)
 					{
-						::MessageBox(hDlg, "Could not save settings!", "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+						std::string error = "Could not save settings!\n" + Globals::LastError;
+						::MessageBox(hDlg, error.c_str(), "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
 
 						::EndDialog(hDlg, -1);
 						break;
