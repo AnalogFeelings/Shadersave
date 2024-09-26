@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <Globals.h>
 #include <Registry.h>
 
 auto Registry::ReadString(CONST std::string& subKey, CONST std::string& item) -> std::string
@@ -43,8 +44,11 @@ auto Registry::ReadInteger(CONST std::string& subKey, CONST std::string& item) -
 auto Registry::SetString(CONST std::string& subKey, CONST std::string& item, CONST std::string& value) -> BOOL
 {
     LSTATUS result = ::RegSetKeyValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), REG_SZ, value.c_str(), value.length());
-    if(result != ERROR_SUCCESS)
+    if (result != ERROR_SUCCESS)
+    {
+        Globals::LastError = Globals::GetLastErrorAsString();
         return FALSE;
+    }
 
     return TRUE;
 }
@@ -52,8 +56,11 @@ auto Registry::SetString(CONST std::string& subKey, CONST std::string& item, CON
 auto Registry::SetInteger(CONST std::string& subKey, CONST std::string& item, UINT value) -> BOOL
 {
     LSTATUS result = ::RegSetKeyValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), REG_DWORD, &value, sizeof(UINT));
-    if(result != ERROR_SUCCESS)
+    if (result != ERROR_SUCCESS)
+    {
+        Globals::LastError = Globals::GetLastErrorAsString();
         return FALSE;
+    }
 
     return TRUE;
 }

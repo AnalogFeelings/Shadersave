@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\Classes\Buffer.cpp" />
     <ClCompile Include="src\ConfigDialog.cpp" />
+    <ClCompile Include="src\Globals.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\EntryPoint.cpp" />
     <ClCompile Include="src\Registry.cpp" />

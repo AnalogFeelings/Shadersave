@@ -47,5 +47,11 @@ private:
 
 	std::unordered_map<std::string, INT> UniformMap = {};
 
+	/// <summary>
+	/// Checks if a shader has compile errors. Sets LastError on failure.
+	/// </summary>
+	/// <param name="shaderId">The ID of the shader object.</param>
+	/// <param name="type">The type of the shader object.</param>
+	/// <returns>TRUE if there are no errors.</returns>
 	auto CheckCompileErrors(GLuint shaderId, CONST std::string& type) -> BOOL;
 };

@@ -101,9 +101,10 @@ UINT QuadChannel3 = 0;
 
 std::unique_ptr<Shader> QuadShader;
 std::unique_ptr<Buffer> BufferA;
+std::unique_ptr<Buffer> BufferB;
+std::unique_ptr<Buffer> BufferC;
+std::unique_ptr<Buffer> BufferD;
 
-auto SetUniformValues(CONST std::unique_ptr<Shader>& target, CONST PUNIFORMS uniforms) -> VOID;
-auto GenerateFramebuffer(PUINT targetFramebuffer, PUINT targetTexture) -> BOOL;
 auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
 auto GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string;
 auto LoadFileFromDisk(CONST std::string& filename) -> std::string;
@@ -261,10 +262,10 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 	{
 		BufferA = std::make_unique<Buffer>();
 
-		std::string bufferASource = LoadFileFromDisk(settings.BufferAPath);
+		std::string bufferSource = LoadFileFromDisk(settings.BufferAPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		BOOL shaderResult = CreateShader(shader, vertexSource, bufferASource);
+		BOOL shaderResult = CreateShader(shader, vertexSource, bufferSource);
 		if (!shaderResult)
 			return FALSE;
 
@@ -276,6 +277,66 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 		SETUP_BUFFER_BINDINGS(BufferA);
 
 		BufferA->SetupChannels(channel0, channel1, channel2, channel3);
+	}
+	if (!settings.BufferBPath.empty())
+	{
+		BufferB = std::make_unique<Buffer>();
+
+		std::string bufferSource = LoadFileFromDisk(settings.BufferBPath);
+		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
+
+		BOOL shaderResult = CreateShader(shader, vertexSource, bufferSource);
+		if (!shaderResult)
+			return FALSE;
+
+		BOOL bufferResult = BufferB->SetupBuffer(&Globals::BufferBTexture, ViewportWidth, ViewportHeight, BUFFERB_START, shader);
+		if (!bufferResult)
+			return FALSE;
+
+		// Let's initialize the channels.
+		SETUP_BUFFER_BINDINGS(BufferB);
+
+		BufferB->SetupChannels(channel0, channel1, channel2, channel3);
+	}
+	if (!settings.BufferCPath.empty())
+	{
+		BufferC = std::make_unique<Buffer>();
+
+		std::string bufferSource = LoadFileFromDisk(settings.BufferCPath);
+		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
+
+		BOOL shaderResult = CreateShader(shader, vertexSource, bufferSource);
+		if (!shaderResult)
+			return FALSE;
+
+		BOOL bufferResult = BufferC->SetupBuffer(&Globals::BufferCTexture, ViewportWidth, ViewportHeight, BUFFERC_START, shader);
+		if (!bufferResult)
+			return FALSE;
+
+		// Let's initialize the channels.
+		SETUP_BUFFER_BINDINGS(BufferC);
+
+		BufferC->SetupChannels(channel0, channel1, channel2, channel3);
+	}
+	if (!settings.BufferDPath.empty())
+	{
+		BufferD = std::make_unique<Buffer>();
+
+		std::string bufferSource = LoadFileFromDisk(settings.BufferDPath);
+		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
+
+		BOOL shaderResult = CreateShader(shader, vertexSource, bufferSource);
+		if (!shaderResult)
+			return FALSE;
+
+		BOOL bufferResult = BufferD->SetupBuffer(&Globals::BufferDTexture, ViewportWidth, ViewportHeight, BUFFERD_START, shader);
+		if (!bufferResult)
+			return FALSE;
+
+		// Let's initialize the channels.
+		SETUP_BUFFER_BINDINGS(BufferD);
+
+		BufferD->SetupChannels(channel0, channel1, channel2, channel3);
 	}
 
 	// Set up startup time.
@@ -315,6 +376,27 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 		glBindVertexArray(QuadVao);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 	}
+	if (BufferB)
+	{
+		BufferB->SetupRender(&uniforms);
+
+		glBindVertexArray(QuadVao);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+	}
+	if (BufferC)
+	{
+		BufferC->SetupRender(&uniforms);
+
+		glBindVertexArray(QuadVao);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+	}
+	if (BufferD)
+	{
+		BufferD->SetupRender(&uniforms);
+
+		glBindVertexArray(QuadVao);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+	}
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0, 0, 0, 1);
@@ -329,8 +411,20 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, QuadChannel3);
 
+	QuadShader->SetVector3Uniform("iResolution", uniforms.ViewportWidth, uniforms.ViewportHeight, 0);
+	QuadShader->SetFloatUniform("iTime", uniforms.Time);
+	QuadShader->SetFloatUniform("iTimeDelta", uniforms.DeltaTime);
+	QuadShader->SetFloatUniform("iFrameRate", uniforms.FrameRate);
+	QuadShader->SetIntUniform("iFrame", FrameCount);
+
+	// Set texture units.
+	QuadShader->SetIntUniform("iChannel0", 0);
+	QuadShader->SetIntUniform("iChannel1", 1);
+	QuadShader->SetIntUniform("iChannel2", 2);
+	QuadShader->SetIntUniform("iChannel3", 3);
+
+	QuadShader->SetVector4Uniform("iDate", uniforms.Year, uniforms.Month, uniforms.Day, uniforms.Seconds);
 	QuadShader->UseShader();
-	SetUniformValues(QuadShader, &uniforms);
 
 	glBindVertexArray(QuadVao);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
@@ -349,43 +443,24 @@ auto Renderer::UninitializeRenderer() -> VOID
 	glDeleteBuffers(1, &QuadVbo);
 	glDeleteBuffers(1, &QuadEbo);
 
+	glDeleteTextures(1, &Globals::BufferATexture);
+	glDeleteTextures(1, &Globals::BufferBTexture);
+	glDeleteTextures(1, &Globals::BufferCTexture);
+	glDeleteTextures(1, &Globals::BufferDTexture);
+
+	glDeleteTextures(1, &QuadChannel0);
+	glDeleteTextures(1, &QuadChannel1);
+	glDeleteTextures(1, &QuadChannel2);
+	glDeleteTextures(1, &QuadChannel3);
+
+	BufferA.reset();
+	BufferB.reset();
+	BufferC.reset();
+	BufferD.reset();
+
 	wglMakeCurrent(nullptr, nullptr);
 	wglDeleteContext(Globals::GlRenderContext);
 	::ReleaseDC(Globals::MainWindow, Globals::DeviceContext);
-}
-
-auto SetUniformValues(CONST std::unique_ptr<Shader>& target, CONST PUNIFORMS uniforms) -> VOID
-{
-	target->SetVector3Uniform("iResolution", ViewportWidth, ViewportHeight, 0);
-	target->SetFloatUniform("iTime", uniforms->Time);
-	target->SetFloatUniform("iTimeDelta", uniforms->DeltaTime);
-	target->SetFloatUniform("iFrameRate", uniforms->FrameRate);
-	target->SetIntUniform("iFrame", FrameCount);
-
-	// Set texture units.
-	target->SetIntUniform("iChannel0", 0);
-	target->SetIntUniform("iChannel1", 1);
-	target->SetIntUniform("iChannel2", 2);
-	target->SetIntUniform("iChannel3", 3);
-
-	target->SetVector4Uniform("iDate", uniforms->Year, uniforms->Month, uniforms->Day, uniforms->Seconds);
-}
-
-auto GenerateFramebuffer(PUINT targetFramebuffer, PUINT targetTexture) -> BOOL
-{
-	glGenFramebuffers(1, targetFramebuffer);
-	glGenTextures(1, targetTexture);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, *targetFramebuffer);
-	glBindTexture(GL_TEXTURE_2D, *targetTexture);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, ViewportWidth, ViewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, *targetTexture, 0);
-
-	return TRUE;
 }
 
 auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL

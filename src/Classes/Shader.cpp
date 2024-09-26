@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <Globals.h>
 #include <Classes/Shader.h>
 
 #include <sstream>
@@ -87,6 +88,8 @@ auto Shader::CreateProgram() -> BOOL
 	glLinkProgram(this->ProgramId);
 
 	BOOL programResult = this->CheckCompileErrors(this->ProgramId, "PROGRAM");
+	if (!programResult)
+		return FALSE;
 
 	glDeleteShader(this->VertexShader);
 	glDeleteShader(this->FragmentShader);
@@ -108,7 +111,7 @@ auto Shader::CreateProgram() -> BOOL
 		this->UniformMap.insert(std::pair(bufferString, location));
 	}
 
-	return programResult;
+	return TRUE;
 }
 
 auto Shader::UseShader() -> VOID
@@ -171,6 +174,7 @@ auto Shader::CheckCompileErrors(GLuint shaderId, CONST std::string& type) -> BOO
 		if (!isSuccess)
 		{
 			glGetShaderInfoLog(shaderId, SHADER_LOG_SIZE, nullptr, this->ShaderLog);
+			Globals::LastError = this->ShaderLog;
 		}
 	}
 	else
@@ -179,6 +183,7 @@ auto Shader::CheckCompileErrors(GLuint shaderId, CONST std::string& type) -> BOO
 		if (!isSuccess)
 		{
 			glGetProgramInfoLog(shaderId, SHADER_LOG_SIZE, nullptr, this->ShaderLog);
+			Globals::LastError = this->ShaderLog;
 		}
 	}
 

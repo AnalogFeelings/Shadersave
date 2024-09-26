@@ -14,28 +14,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
+#include <Globals.h>
 
-#include <windows.h>
-#include <string>
-
-namespace Globals
+auto Globals::GetLastErrorAsString() -> std::string
 {
-	inline HWND MainWindow;
-	inline HDC DeviceContext;
-	inline HGLRC GlRenderContext;
-	inline RECT ClientRect;
+    DWORD errorMessageID = ::GetLastError();
+    if (errorMessageID == 0)
+        return std::string();
 
-	inline std::string LastError;
+    LPSTR messageBuffer = nullptr;
+    SIZE_T size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), messageBuffer, 0, NULL);
 
-	inline UINT BufferATexture;
-	inline UINT BufferBTexture;
-	inline UINT BufferCTexture;
-	inline UINT BufferDTexture;
+    std::string message(messageBuffer, size);
 
-	/// <summary>
-	/// Returns the last Win32 error in string representation.
-	/// </summary>
-	/// <returns>Self-explanatory.</returns>
-	auto GetLastErrorAsString() -> std::string;
+    // FormatMessage uses LocalAlloc so use LocalFree.
+    LocalFree(messageBuffer);
+
+    return message;
 }
