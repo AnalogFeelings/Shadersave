@@ -33,12 +33,32 @@ Shadersave is a Windows screensaver that can run Shadertoy shaders locally under
 
 # :hammer_and_wrench: Building
 
-To build this, you need Visual Studio 2022 with the C++ workload installed alongside the Windows 11 SDK.  
-You must also place the libraries below in a "lib" folder.
+To build this, you will need the following:
+- Visual Studio 2022.
+- The **Desktop development with C++** workload.
+- The **Windows SDK**.
 
-- [GLEW](https://glew.sourceforge.net/)
+You must also place [GLEW](https://glew.sourceforge.net/) under the **"libs"** folder.
 
-I still haven't heard of ways to debug screensavers properly.
+# :beetle: Debugging
+
+Debugging screensavers is kind of a hassle, but it can be done.
+
+1. Open a Win32 window, for example Control Panel.
+2. Grab its window handle with Spy++ or some other software.
+3. Convert the handle from hexadecimal to decimal.
+4. Go into **Shadersave -> Properties -> Debugging**.
+5. On **Command Arguments**, write **/p (window handle)** and hit **Apply**.
+6. You can now debug the screensaver as long as you don't close the window you opened.
+
+> [!TIP]
+> **Renderdoc** can be used this way as well, if you want to debug the graphics side.
+
+To debug the configuration dialog, do the following:
+
+1. Do steps 1 to 4 from above.
+2. On **Command Arguments**, write **/c:(window handle)** and hit **Apply**.
+3. You can now debug the config dialog.
 
 # :camera: Screenshots
 
