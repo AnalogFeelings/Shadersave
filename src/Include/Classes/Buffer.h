@@ -55,8 +55,8 @@ public:
 	~Buffer();
 
 private:
-	INT ViewportWidth;
-	INT ViewportHeight;
+	INT ViewportWidth = 0;
+	INT ViewportHeight = 0;
 
 	UINT BufferFramebuffer = 0;
 	UINT BufferTexture = 0;
