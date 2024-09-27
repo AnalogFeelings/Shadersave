@@ -34,40 +34,40 @@
 	UINT channel2 = 0; \
 	UINT channel3 = 0; \
 	if (settings.Buffer##Channel0 == BUFFER_A) \
-		channel0 = Globals::BufferATexture; \
+		channel0 = BufferATexture; \
 	if (settings.Buffer##Channel0 == BUFFER_B) \
-		channel0 = Globals::BufferBTexture; \
+		channel0 = BufferBTexture; \
 	if (settings.Buffer##Channel0 == BUFFER_C) \
-		channel0 = Globals::BufferCTexture; \
+		channel0 = BufferCTexture; \
 	if (settings.Buffer##Channel0 == BUFFER_D) \
-		channel0 = Globals::BufferDTexture; \
+		channel0 = BufferDTexture; \
 	 \
 	if (settings.Buffer##Channel1 == BUFFER_A) \
-		channel1 = Globals::BufferATexture; \
+		channel1 = BufferATexture; \
 	if (settings.Buffer##Channel1 == BUFFER_B) \
-		channel1 = Globals::BufferBTexture; \
+		channel1 = BufferBTexture; \
 	if (settings.Buffer##Channel1 == BUFFER_C) \
-		channel1 = Globals::BufferCTexture; \
+		channel1 = BufferCTexture; \
 	if (settings.Buffer##Channel1 == BUFFER_D) \
-		channel1 = Globals::BufferDTexture; \
+		channel1 = BufferDTexture; \
 	 \
 	if (settings.Buffer##Channel2 == BUFFER_A) \
-		channel2 = Globals::BufferATexture; \
+		channel2 = BufferATexture; \
 	if (settings.Buffer##Channel2 == BUFFER_B) \
-		channel2 = Globals::BufferBTexture; \
+		channel2 = BufferBTexture; \
 	if (settings.Buffer##Channel2 == BUFFER_C) \
-		channel2 = Globals::BufferCTexture; \
+		channel2 = BufferCTexture; \
 	if (settings.Buffer##Channel2 == BUFFER_D) \
-		channel2 = Globals::BufferDTexture; \
+		channel2 = BufferDTexture; \
 	 \
 	if (settings.Buffer##Channel3 == BUFFER_A) \
-		channel3 = Globals::BufferATexture; \
+		channel3 = BufferATexture; \
 	if (settings.Buffer##Channel3 == BUFFER_B) \
-		channel3 = Globals::BufferBTexture; \
+		channel3 = BufferBTexture; \
 	if (settings.Buffer##Channel3 == BUFFER_C) \
-		channel3 = Globals::BufferCTexture; \
+		channel3 = BufferCTexture; \
 	if (settings.Buffer##Channel3 == BUFFER_D) \
-		channel3 = Globals::BufferDTexture
+		channel3 = BufferDTexture
 
 constexpr FLOAT QUAD_VERTICES[12] =
 {
@@ -81,6 +81,11 @@ constexpr UINT QUAD_INDICES[6] =
 	0, 1, 2,
 	0, 3, 1
 };
+
+UINT BufferATexture;
+UINT BufferBTexture;
+UINT BufferCTexture;
+UINT BufferDTexture;
 
 INT ViewportWidth = 0;
 INT ViewportHeight = 0;
@@ -185,30 +190,30 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 	glBindVertexArray(0);
 
 	// Initialize buffer textures.
-	glGenTextures(1, &Globals::BufferATexture);
+	glGenTextures(1, &BufferATexture);
 
-	glBindTexture(GL_TEXTURE_2D, Globals::BufferATexture);
+	glBindTexture(GL_TEXTURE_2D, BufferATexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glGenTextures(1, &Globals::BufferBTexture);
+	glGenTextures(1, &BufferBTexture);
 
-	glBindTexture(GL_TEXTURE_2D, Globals::BufferBTexture);
+	glBindTexture(GL_TEXTURE_2D, BufferBTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glGenTextures(1, &Globals::BufferCTexture);
+	glGenTextures(1, &BufferCTexture);
 
-	glBindTexture(GL_TEXTURE_2D, Globals::BufferCTexture);
+	glBindTexture(GL_TEXTURE_2D, BufferCTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glGenTextures(1, &Globals::BufferDTexture);
+	glGenTextures(1, &BufferDTexture);
 
-	glBindTexture(GL_TEXTURE_2D, Globals::BufferDTexture);
+	glBindTexture(GL_TEXTURE_2D, BufferDTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -269,7 +274,7 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 		if (!shaderResult)
 			return FALSE;
 
-		BOOL bufferResult = BufferA->SetupBuffer(&Globals::BufferATexture, ViewportWidth, ViewportHeight, BUFFERA_START, shader);
+		BOOL bufferResult = BufferA->SetupBuffer(&BufferATexture, ViewportWidth, ViewportHeight, BUFFERA_START, shader);
 		if (!bufferResult)
 			return FALSE;
 
@@ -289,7 +294,7 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 		if (!shaderResult)
 			return FALSE;
 
-		BOOL bufferResult = BufferB->SetupBuffer(&Globals::BufferBTexture, ViewportWidth, ViewportHeight, BUFFERB_START, shader);
+		BOOL bufferResult = BufferB->SetupBuffer(&BufferBTexture, ViewportWidth, ViewportHeight, BUFFERB_START, shader);
 		if (!bufferResult)
 			return FALSE;
 
@@ -309,7 +314,7 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 		if (!shaderResult)
 			return FALSE;
 
-		BOOL bufferResult = BufferC->SetupBuffer(&Globals::BufferCTexture, ViewportWidth, ViewportHeight, BUFFERC_START, shader);
+		BOOL bufferResult = BufferC->SetupBuffer(&BufferCTexture, ViewportWidth, ViewportHeight, BUFFERC_START, shader);
 		if (!bufferResult)
 			return FALSE;
 
@@ -329,7 +334,7 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 		if (!shaderResult)
 			return FALSE;
 
-		BOOL bufferResult = BufferD->SetupBuffer(&Globals::BufferDTexture, ViewportWidth, ViewportHeight, BUFFERD_START, shader);
+		BOOL bufferResult = BufferD->SetupBuffer(&BufferDTexture, ViewportWidth, ViewportHeight, BUFFERD_START, shader);
 		if (!bufferResult)
 			return FALSE;
 
@@ -443,10 +448,10 @@ auto Renderer::UninitializeRenderer() -> VOID
 	glDeleteBuffers(1, &QuadVbo);
 	glDeleteBuffers(1, &QuadEbo);
 
-	glDeleteTextures(1, &Globals::BufferATexture);
-	glDeleteTextures(1, &Globals::BufferBTexture);
-	glDeleteTextures(1, &Globals::BufferCTexture);
-	glDeleteTextures(1, &Globals::BufferDTexture);
+	glDeleteTextures(1, &BufferATexture);
+	glDeleteTextures(1, &BufferBTexture);
+	glDeleteTextures(1, &BufferCTexture);
+	glDeleteTextures(1, &BufferDTexture);
 
 	glDeleteTextures(1, &QuadChannel0);
 	glDeleteTextures(1, &QuadChannel1);

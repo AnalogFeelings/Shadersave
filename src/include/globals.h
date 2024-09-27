@@ -28,11 +28,6 @@ namespace Globals
 
 	inline std::string LastError;
 
-	inline UINT BufferATexture;
-	inline UINT BufferBTexture;
-	inline UINT BufferCTexture;
-	inline UINT BufferDTexture;
-
 	/// <summary>
 	/// Returns the last Win32 error in string representation.
 	/// </summary>
