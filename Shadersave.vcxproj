@@ -44,8 +44,8 @@
     <Manifest Include="src\resources\Manifest.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\shaders\main.frag" />
-    <None Include="src\shaders\main.vert" />
+    <None Include="src\shaders\Main.frag" />
+    <None Include="src\shaders\Main.vert" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\resources\Resources.rc" />
