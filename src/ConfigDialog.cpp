@@ -90,30 +90,30 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, unsigned int message, WPARAM w
 			::SetDlgItemText(hDlg, IDC_BUFFERDSHADERPATH, settings.BufferDPath.c_str());
 			::SetDlgItemText(hDlg, IDC_COMMONSHADERPATH, settings.CommonPath.c_str());
 
-			::SetDlgItemText(hDlg, IDC_MAINCHANNEL0, settings.MainChannel0.c_str());
-			::SetDlgItemText(hDlg, IDC_MAINCHANNEL1, settings.MainChannel1.c_str());
-			::SetDlgItemText(hDlg, IDC_MAINCHANNEL2, settings.MainChannel2.c_str());
-			::SetDlgItemText(hDlg, IDC_MAINCHANNEL3, settings.MainChannel3.c_str());
+			::SetDlgItemText(hDlg, IDC_MAINCHANNEL0, settings.MainChannels[0].c_str());
+			::SetDlgItemText(hDlg, IDC_MAINCHANNEL1, settings.MainChannels[1].c_str());
+			::SetDlgItemText(hDlg, IDC_MAINCHANNEL2, settings.MainChannels[2].c_str());
+			::SetDlgItemText(hDlg, IDC_MAINCHANNEL3, settings.MainChannels[3].c_str());
 
-			::SetDlgItemText(hDlg, IDC_BUFFERACHANNEL0, settings.BufferAChannel0.c_str());
-			::SetDlgItemText(hDlg, IDC_BUFFERACHANNEL1, settings.BufferAChannel1.c_str());
-			::SetDlgItemText(hDlg, IDC_BUFFERACHANNEL2, settings.BufferAChannel2.c_str());
-			::SetDlgItemText(hDlg, IDC_BUFFERACHANNEL3, settings.BufferAChannel3.c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERACHANNEL0, settings.BufferAChannels[0].c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERACHANNEL1, settings.BufferAChannels[1].c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERACHANNEL2, settings.BufferAChannels[2].c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERACHANNEL3, settings.BufferAChannels[3].c_str());
 
-			::SetDlgItemText(hDlg, IDC_BUFFERBCHANNEL0, settings.BufferBChannel0.c_str());
-			::SetDlgItemText(hDlg, IDC_BUFFERBCHANNEL1, settings.BufferBChannel1.c_str());
-			::SetDlgItemText(hDlg, IDC_BUFFERBCHANNEL2, settings.BufferBChannel2.c_str());
-			::SetDlgItemText(hDlg, IDC_BUFFERBCHANNEL3, settings.BufferBChannel3.c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERBCHANNEL0, settings.BufferBChannels[0].c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERBCHANNEL1, settings.BufferBChannels[1].c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERBCHANNEL2, settings.BufferBChannels[2].c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERBCHANNEL3, settings.BufferBChannels[3].c_str());
 
-			::SetDlgItemText(hDlg, IDC_BUFFERCCHANNEL0, settings.BufferCChannel0.c_str());
-			::SetDlgItemText(hDlg, IDC_BUFFERCCHANNEL1, settings.BufferCChannel1.c_str());
-			::SetDlgItemText(hDlg, IDC_BUFFERCCHANNEL2, settings.BufferCChannel2.c_str());
-			::SetDlgItemText(hDlg, IDC_BUFFERCCHANNEL3, settings.BufferCChannel3.c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERCCHANNEL0, settings.BufferCChannels[0].c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERCCHANNEL1, settings.BufferCChannels[1].c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERCCHANNEL2, settings.BufferCChannels[2].c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERCCHANNEL3, settings.BufferCChannels[3].c_str());
 
-			::SetDlgItemText(hDlg, IDC_BUFFERDCHANNEL0, settings.BufferDChannel0.c_str());
-			::SetDlgItemText(hDlg, IDC_BUFFERDCHANNEL1, settings.BufferDChannel1.c_str());
-			::SetDlgItemText(hDlg, IDC_BUFFERDCHANNEL2, settings.BufferDChannel2.c_str());
-			::SetDlgItemText(hDlg, IDC_BUFFERDCHANNEL3, settings.BufferDChannel3.c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERDCHANNEL0, settings.BufferDChannels[0].c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERDCHANNEL1, settings.BufferDChannels[1].c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERDCHANNEL2, settings.BufferDChannels[2].c_str());
+			::SetDlgItemText(hDlg, IDC_BUFFERDCHANNEL3, settings.BufferDChannels[3].c_str());
 
 			return true;
 		}
@@ -141,37 +141,52 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, unsigned int message, WPARAM w
 				{
 					RenderSettings settings =
 					{
-						.MainPath = ::GetControlText(hDlg, IDC_MAINSHADERPATH),
-						.BufferAPath = ::GetControlText(hDlg, IDC_BUFFERASHADERPATH),
-						.BufferBPath = ::GetControlText(hDlg, IDC_BUFFERBSHADERPATH),
-						.BufferCPath = ::GetControlText(hDlg, IDC_BUFFERCSHADERPATH),
-						.BufferDPath = ::GetControlText(hDlg, IDC_BUFFERDSHADERPATH),
 						.CommonPath = ::GetControlText(hDlg, IDC_COMMONSHADERPATH),
 
-						.MainChannel0 = ::GetControlText(hDlg, IDC_MAINCHANNEL0),
-						.MainChannel1 = ::GetControlText(hDlg, IDC_MAINCHANNEL1),
-						.MainChannel2 = ::GetControlText(hDlg, IDC_MAINCHANNEL2),
-						.MainChannel3 = ::GetControlText(hDlg, IDC_MAINCHANNEL3),
+						.MainPath = ::GetControlText(hDlg, IDC_MAINSHADERPATH),
+						.MainChannels = 
+						{
+							::GetControlText(hDlg, IDC_MAINCHANNEL0),
+							::GetControlText(hDlg, IDC_MAINCHANNEL1),
+							::GetControlText(hDlg, IDC_MAINCHANNEL2),
+							::GetControlText(hDlg, IDC_MAINCHANNEL3)
+						},
 
-						.BufferAChannel0 = ::GetControlText(hDlg, IDC_BUFFERACHANNEL0),
-						.BufferAChannel1 = ::GetControlText(hDlg, IDC_BUFFERACHANNEL1),
-						.BufferAChannel2 = ::GetControlText(hDlg, IDC_BUFFERACHANNEL2),
-						.BufferAChannel3 = ::GetControlText(hDlg, IDC_BUFFERACHANNEL3),
+						.BufferAPath = ::GetControlText(hDlg, IDC_BUFFERASHADERPATH),
+						.BufferAChannels = 
+						{
+							::GetControlText(hDlg, IDC_BUFFERACHANNEL0),
+							::GetControlText(hDlg, IDC_BUFFERACHANNEL1),
+							::GetControlText(hDlg, IDC_BUFFERACHANNEL2),
+							::GetControlText(hDlg, IDC_BUFFERACHANNEL3)
+						},
 
-						.BufferBChannel0 = ::GetControlText(hDlg, IDC_BUFFERBCHANNEL0),
-						.BufferBChannel1 = ::GetControlText(hDlg, IDC_BUFFERBCHANNEL1),
-						.BufferBChannel2 = ::GetControlText(hDlg, IDC_BUFFERBCHANNEL2),
-						.BufferBChannel3 = ::GetControlText(hDlg, IDC_BUFFERBCHANNEL3),
+						.BufferBPath = ::GetControlText(hDlg, IDC_BUFFERBSHADERPATH),
+						.BufferBChannels =
+						{
+							::GetControlText(hDlg, IDC_BUFFERBCHANNEL0),
+							::GetControlText(hDlg, IDC_BUFFERBCHANNEL1),
+							::GetControlText(hDlg, IDC_BUFFERBCHANNEL2),
+							::GetControlText(hDlg, IDC_BUFFERBCHANNEL3)
+						},
 
-						.BufferCChannel0 = ::GetControlText(hDlg, IDC_BUFFERCCHANNEL0),
-						.BufferCChannel1 = ::GetControlText(hDlg, IDC_BUFFERCCHANNEL1),
-						.BufferCChannel2 = ::GetControlText(hDlg, IDC_BUFFERCCHANNEL2),
-						.BufferCChannel3 = ::GetControlText(hDlg, IDC_BUFFERCCHANNEL3),
+						.BufferCPath = ::GetControlText(hDlg, IDC_BUFFERCSHADERPATH),
+						.BufferCChannels = 
+						{
+							::GetControlText(hDlg, IDC_BUFFERCCHANNEL0),
+							::GetControlText(hDlg, IDC_BUFFERCCHANNEL1),
+							::GetControlText(hDlg, IDC_BUFFERCCHANNEL2),
+							::GetControlText(hDlg, IDC_BUFFERCCHANNEL3)
+						},
 
-						.BufferDChannel0 = ::GetControlText(hDlg, IDC_BUFFERDCHANNEL0),
-						.BufferDChannel1 = ::GetControlText(hDlg, IDC_BUFFERDCHANNEL1),
-						.BufferDChannel2 = ::GetControlText(hDlg, IDC_BUFFERDCHANNEL2),
-						.BufferDChannel3 = ::GetControlText(hDlg, IDC_BUFFERDCHANNEL3),
+						.BufferDPath = ::GetControlText(hDlg, IDC_BUFFERDSHADERPATH),
+						.BufferDChannels = 
+						{
+							::GetControlText(hDlg, IDC_BUFFERDCHANNEL0),
+							::GetControlText(hDlg, IDC_BUFFERDCHANNEL1),
+							::GetControlText(hDlg, IDC_BUFFERDCHANNEL2),
+							::GetControlText(hDlg, IDC_BUFFERDCHANNEL3)
+						}
 					};
 
 					bool saveResult = Settings::SaveToRegistry(settings);

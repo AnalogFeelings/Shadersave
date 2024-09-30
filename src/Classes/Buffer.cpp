@@ -49,12 +49,9 @@ auto Buffer::SetupBuffer(unsigned int* textureGlobal, int viewportWidth, int vie
 	return true;
 }
 
-auto Buffer::SetupChannels(unsigned int channel0, unsigned int channel1, unsigned int channel2, unsigned int channel3) -> void
+auto Buffer::SetupChannels(const unsigned int(&channels)[4]) -> void
 {
-	this->Channel0 = channel0;
-	this->Channel1 = channel1;
-	this->Channel2 = channel2;
-	this->Channel3 = channel3;
+	std::memcpy(this->Channels, channels, CHANNEL_COUNT);
 }
 
 auto Buffer::SetupRender(Uniforms& uniforms) -> void
@@ -106,16 +103,16 @@ auto Buffer::SetupRender(Uniforms& uniforms) -> void
 	this->BufferShader->UseShader();
 
 	glActiveTexture(GL_TEXTURE0 + this->ChannelStart);
-	glBindTexture(GL_TEXTURE_2D, this->Channel0);
+	glBindTexture(GL_TEXTURE_2D, this->Channels[0]);
 
 	glActiveTexture(GL_TEXTURE0 + this->ChannelStart + 1);
-	glBindTexture(GL_TEXTURE_2D, this->Channel1);
+	glBindTexture(GL_TEXTURE_2D, this->Channels[1]);
 
 	glActiveTexture(GL_TEXTURE0 + this->ChannelStart + 2);
-	glBindTexture(GL_TEXTURE_2D, this->Channel2);
+	glBindTexture(GL_TEXTURE_2D, this->Channels[2]);
 
 	glActiveTexture(GL_TEXTURE0 + this->ChannelStart + 3);
-	glBindTexture(GL_TEXTURE_2D, this->Channel3);
+	glBindTexture(GL_TEXTURE_2D, this->Channels[3]);
 }
 
 Buffer::~Buffer()

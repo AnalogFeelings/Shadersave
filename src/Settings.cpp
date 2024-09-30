@@ -36,37 +36,52 @@ auto Settings::LoadFromRegistry() -> RenderSettings
 {
 	RenderSettings settings =
 	{
-		.MainPath = Registry::ReadString(REGISTRY_SUBKEY, SHADER_PATH),
-		.BufferAPath = Registry::ReadString(REGISTRY_SUBKEY, BUFFERA_PATH),
-		.BufferBPath = Registry::ReadString(REGISTRY_SUBKEY, BUFFERB_PATH),
-		.BufferCPath = Registry::ReadString(REGISTRY_SUBKEY, BUFFERC_PATH),
-		.BufferDPath = Registry::ReadString(REGISTRY_SUBKEY, BUFFERD_PATH),
 		.CommonPath = Registry::ReadString(REGISTRY_SUBKEY, COMMON_PATH),
 
-		.MainChannel0 = Registry::ReadString(REGISTRY_SUBKEY, SHADER_CHANNEL0_BINDING),
-		.MainChannel1 = Registry::ReadString(REGISTRY_SUBKEY, SHADER_CHANNEL1_BINDING),
-		.MainChannel2 = Registry::ReadString(REGISTRY_SUBKEY, SHADER_CHANNEL2_BINDING),
-		.MainChannel3 = Registry::ReadString(REGISTRY_SUBKEY, SHADER_CHANNEL3_BINDING),
+		.MainPath = Registry::ReadString(REGISTRY_SUBKEY, SHADER_PATH),
+		.MainChannels =
+		{
+			Registry::ReadString(REGISTRY_SUBKEY, SHADER_CHANNEL0_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, SHADER_CHANNEL1_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, SHADER_CHANNEL2_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, SHADER_CHANNEL3_BINDING)
+		},
 
-		.BufferAChannel0 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERA_CHANNEL0_BINDING),
-		.BufferAChannel1 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERA_CHANNEL1_BINDING),
-		.BufferAChannel2 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERA_CHANNEL2_BINDING),
-		.BufferAChannel3 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERA_CHANNEL3_BINDING),
+		.BufferAPath = Registry::ReadString(REGISTRY_SUBKEY, BUFFERA_PATH),
+		.BufferAChannels =
+		{
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERA_CHANNEL0_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERA_CHANNEL1_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERA_CHANNEL2_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERA_CHANNEL3_BINDING)
+		},
 
-		.BufferBChannel0 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERB_CHANNEL0_BINDING),
-		.BufferBChannel1 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERB_CHANNEL1_BINDING),
-		.BufferBChannel2 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERB_CHANNEL2_BINDING),
-		.BufferBChannel3 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERB_CHANNEL3_BINDING),
+		.BufferBPath = Registry::ReadString(REGISTRY_SUBKEY, BUFFERB_PATH),
+		.BufferBChannels = 
+		{
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERB_CHANNEL0_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERB_CHANNEL1_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERB_CHANNEL2_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERB_CHANNEL3_BINDING)
+		},
 
-		.BufferCChannel0 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERC_CHANNEL0_BINDING),
-		.BufferCChannel1 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERC_CHANNEL1_BINDING),
-		.BufferCChannel2 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERC_CHANNEL2_BINDING),
-		.BufferCChannel3 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERC_CHANNEL3_BINDING),
+		.BufferCPath = Registry::ReadString(REGISTRY_SUBKEY, BUFFERC_PATH),
+		.BufferCChannels = 
+		{
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERC_CHANNEL0_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERC_CHANNEL1_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERC_CHANNEL2_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERC_CHANNEL3_BINDING)
+		},
 
-		.BufferDChannel0 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERD_CHANNEL0_BINDING),
-		.BufferDChannel1 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERD_CHANNEL1_BINDING),
-		.BufferDChannel2 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERD_CHANNEL2_BINDING),
-		.BufferDChannel3 = Registry::ReadString(REGISTRY_SUBKEY, BUFFERD_CHANNEL3_BINDING)
+		.BufferDPath = Registry::ReadString(REGISTRY_SUBKEY, BUFFERD_PATH),
+		.BufferDChannels = 
+		{
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERD_CHANNEL0_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERD_CHANNEL1_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERD_CHANNEL2_BINDING),
+			Registry::ReadString(REGISTRY_SUBKEY, BUFFERD_CHANNEL3_BINDING)
+		}
 	};
 
 	ValidateSettings(settings);
@@ -78,7 +93,7 @@ auto Settings::SaveToRegistry(RenderSettings& settings) -> bool
 {
 	ValidateSettings(settings);
 
-	bool result = Registry::SetString(REGISTRY_SUBKEY, SHADER_PATH, settings.MainPath);
+	bool result = Registry::SetString(REGISTRY_SUBKEY, COMMON_PATH, settings.CommonPath);
 	if (!result)
 		return false;
 
@@ -102,68 +117,68 @@ auto Settings::SaveToRegistry(RenderSettings& settings) -> bool
 	if (!result)
 		return false;
 
-	result = Registry::SetString(REGISTRY_SUBKEY, SHADER_CHANNEL0_BINDING, settings.MainChannel0);
+	result = Registry::SetString(REGISTRY_SUBKEY, SHADER_CHANNEL0_BINDING, settings.MainChannels[0]);
 	if (!result)
 		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, SHADER_CHANNEL1_BINDING, settings.MainChannel1);
+	result = Registry::SetString(REGISTRY_SUBKEY, SHADER_CHANNEL1_BINDING, settings.MainChannels[1]);
 	if (!result)
 		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, SHADER_CHANNEL2_BINDING, settings.MainChannel2);
+	result = Registry::SetString(REGISTRY_SUBKEY, SHADER_CHANNEL2_BINDING, settings.MainChannels[2]);
 	if (!result)
 		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, SHADER_CHANNEL3_BINDING, settings.MainChannel3);
-	if (!result)
-		return false;
-
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERA_CHANNEL0_BINDING, settings.BufferAChannel0);
-	if (!result)
-		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERA_CHANNEL1_BINDING, settings.BufferAChannel1);
-	if (!result)
-		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERA_CHANNEL2_BINDING, settings.BufferAChannel2);
-	if (!result)
-		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERA_CHANNEL3_BINDING, settings.BufferAChannel3);
+	result = Registry::SetString(REGISTRY_SUBKEY, SHADER_CHANNEL3_BINDING, settings.MainChannels[3]);
 	if (!result)
 		return false;
 
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERB_CHANNEL0_BINDING, settings.BufferBChannel0);
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERA_CHANNEL0_BINDING, settings.BufferAChannels[0]);
 	if (!result)
 		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERB_CHANNEL1_BINDING, settings.BufferBChannel1);
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERA_CHANNEL1_BINDING, settings.BufferAChannels[1]);
 	if (!result)
 		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERB_CHANNEL2_BINDING, settings.BufferBChannel2);
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERA_CHANNEL2_BINDING, settings.BufferAChannels[2]);
 	if (!result)
 		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERB_CHANNEL3_BINDING, settings.BufferBChannel3);
-	if (!result)
-		return false;
-
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERC_CHANNEL0_BINDING, settings.BufferCChannel0);
-	if (!result)
-		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERC_CHANNEL1_BINDING, settings.BufferCChannel1);
-	if (!result)
-		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERC_CHANNEL2_BINDING, settings.BufferCChannel2);
-	if (!result)
-		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERC_CHANNEL3_BINDING, settings.BufferCChannel3);
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERA_CHANNEL3_BINDING, settings.BufferAChannels[3]);
 	if (!result)
 		return false;
 
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERD_CHANNEL0_BINDING, settings.BufferDChannel0);
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERB_CHANNEL0_BINDING, settings.BufferBChannels[0]);
 	if (!result)
 		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERD_CHANNEL1_BINDING, settings.BufferDChannel1);
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERB_CHANNEL1_BINDING, settings.BufferBChannels[1]);
 	if (!result)
 		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERD_CHANNEL2_BINDING, settings.BufferDChannel2);
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERB_CHANNEL2_BINDING, settings.BufferBChannels[2]);
 	if (!result)
 		return false;
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERD_CHANNEL3_BINDING, settings.BufferDChannel3);
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERB_CHANNEL3_BINDING, settings.BufferBChannels[3]);
+	if (!result)
+		return false;
+
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERC_CHANNEL0_BINDING, settings.BufferCChannels[0]);
+	if (!result)
+		return false;
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERC_CHANNEL1_BINDING, settings.BufferCChannels[1]);
+	if (!result)
+		return false;
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERC_CHANNEL2_BINDING, settings.BufferCChannels[2]);
+	if (!result)
+		return false;
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERC_CHANNEL3_BINDING, settings.BufferCChannels[3]);
+	if (!result)
+		return false;
+
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERD_CHANNEL0_BINDING, settings.BufferDChannels[0]);
+	if (!result)
+		return false;
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERD_CHANNEL1_BINDING, settings.BufferDChannels[1]);
+	if (!result)
+		return false;
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERD_CHANNEL2_BINDING, settings.BufferDChannels[2]);
+	if (!result)
+		return false;
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERD_CHANNEL3_BINDING, settings.BufferDChannels[3]);
 	if (!result)
 		return false;
 
@@ -172,61 +187,46 @@ auto Settings::SaveToRegistry(RenderSettings& settings) -> bool
 
 auto ValidateSettings(RenderSettings& settings) -> void
 {
-	if(!std::filesystem::is_regular_file(settings.MainPath))
-		settings.MainPath = std::string();
-	if(!std::filesystem::is_regular_file(settings.BufferAPath))
-		settings.BufferAPath = std::string();
-	if(!std::filesystem::is_regular_file(settings.BufferBPath))
-		settings.BufferBPath = std::string();
-	if(!std::filesystem::is_regular_file(settings.BufferCPath))
-		settings.BufferCPath = std::string();
-	if(!std::filesystem::is_regular_file(settings.BufferDPath))
-		settings.BufferDPath = std::string();
 	if (!std::filesystem::is_regular_file(settings.CommonPath))
 		settings.CommonPath = std::string();
 
-	if(!std::filesystem::is_regular_file(settings.MainChannel0) && !ValidBindings.contains(settings.MainChannel0))
-		settings.MainChannel0 = std::string();
-	if(!std::filesystem::is_regular_file(settings.MainChannel1) && !ValidBindings.contains(settings.MainChannel1))
-		settings.MainChannel1 = std::string();
-	if(!std::filesystem::is_regular_file(settings.MainChannel2) && !ValidBindings.contains(settings.MainChannel2))
-		settings.MainChannel2 = std::string();
-	if(!std::filesystem::is_regular_file(settings.MainChannel3) && !ValidBindings.contains(settings.MainChannel3))
-		settings.MainChannel3 = std::string();
+	if (!std::filesystem::is_regular_file(settings.MainPath))
+		settings.MainPath = std::string();
+	for (std::string& MainChannel : settings.MainChannels)
+	{
+		if (!std::filesystem::is_regular_file(MainChannel) && !ValidBindings.contains(MainChannel))
+			MainChannel = std::string();
+	}
 
-	if (!std::filesystem::is_regular_file(settings.BufferAChannel0) && !ValidBindings.contains(settings.BufferAChannel0))
-		settings.BufferAChannel0 = std::string();
-	if (!std::filesystem::is_regular_file(settings.BufferAChannel1) && !ValidBindings.contains(settings.BufferAChannel1))
-		settings.BufferAChannel1 = std::string();
-	if (!std::filesystem::is_regular_file(settings.BufferAChannel2) && !ValidBindings.contains(settings.BufferAChannel2))
-		settings.BufferAChannel2 = std::string();
-	if (!std::filesystem::is_regular_file(settings.BufferAChannel3) && !ValidBindings.contains(settings.BufferAChannel3))
-		settings.BufferAChannel3 = std::string();
+	if (!std::filesystem::is_regular_file(settings.BufferAPath))
+		settings.BufferAPath = std::string();
+	for (std::string& BufferAChannel : settings.BufferAChannels)
+	{
+		if (!std::filesystem::is_regular_file(BufferAChannel) && !ValidBindings.contains(BufferAChannel))
+			BufferAChannel = std::string();
+	}
 
-	if (!std::filesystem::is_regular_file(settings.BufferBChannel0) && !ValidBindings.contains(settings.BufferBChannel0))
-		settings.BufferBChannel0 = std::string();
-	if (!std::filesystem::is_regular_file(settings.BufferBChannel1) && !ValidBindings.contains(settings.BufferBChannel1))
-		settings.BufferBChannel1 = std::string();
-	if (!std::filesystem::is_regular_file(settings.BufferBChannel2) && !ValidBindings.contains(settings.BufferBChannel2))
-		settings.BufferBChannel2 = std::string();
-	if (!std::filesystem::is_regular_file(settings.BufferBChannel3) && !ValidBindings.contains(settings.BufferBChannel3))
-		settings.BufferBChannel3 = std::string();
+	if (!std::filesystem::is_regular_file(settings.BufferBPath))
+		settings.BufferBPath = std::string();
+	for (std::string& BufferBChannel : settings.BufferBChannels)
+	{
+		if (!std::filesystem::is_regular_file(BufferBChannel) && !ValidBindings.contains(BufferBChannel))
+			BufferBChannel = std::string();
+	}
 
-	if (!std::filesystem::is_regular_file(settings.BufferCChannel0) && !ValidBindings.contains(settings.BufferCChannel0))
-		settings.BufferCChannel0 = std::string();
-	if (!std::filesystem::is_regular_file(settings.BufferCChannel1) && !ValidBindings.contains(settings.BufferCChannel1))
-		settings.BufferCChannel1 = std::string();
-	if (!std::filesystem::is_regular_file(settings.BufferCChannel2) && !ValidBindings.contains(settings.BufferCChannel2))
-		settings.BufferCChannel2 = std::string();
-	if (!std::filesystem::is_regular_file(settings.BufferCChannel3) && !ValidBindings.contains(settings.BufferCChannel3))
-		settings.BufferCChannel3 = std::string();
+	if (!std::filesystem::is_regular_file(settings.BufferCPath))
+		settings.BufferCPath = std::string();
+	for (std::string& BufferCChannel : settings.BufferCChannels)
+	{
+		if (!std::filesystem::is_regular_file(BufferCChannel) && !ValidBindings.contains(BufferCChannel))
+			BufferCChannel = std::string();
+	}
 
-	if (!std::filesystem::is_regular_file(settings.BufferDChannel0) && !ValidBindings.contains(settings.BufferDChannel0))
-		settings.BufferDChannel0 = std::string();
-	if (!std::filesystem::is_regular_file(settings.BufferDChannel1) && !ValidBindings.contains(settings.BufferDChannel1))
-		settings.BufferDChannel1 = std::string();
-	if (!std::filesystem::is_regular_file(settings.BufferDChannel2) && !ValidBindings.contains(settings.BufferDChannel2))
-		settings.BufferDChannel2 = std::string();
-	if (!std::filesystem::is_regular_file(settings.BufferDChannel3) && !ValidBindings.contains(settings.BufferDChannel3))
-		settings.BufferDChannel3 = std::string();
+	if (!std::filesystem::is_regular_file(settings.BufferDPath))
+		settings.BufferDPath = std::string();
+	for (std::string& BufferDChannel : settings.BufferDChannels)
+	{
+		if (!std::filesystem::is_regular_file(BufferDChannel) && !ValidBindings.contains(BufferDChannel))
+			BufferDChannel = std::string();
+	}
 }

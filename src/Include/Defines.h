@@ -30,6 +30,9 @@
 #define BUFFERC_START 12
 #define BUFFERD_START 16
 
+#define BUFFER_COUNT 4
+#define CHANNEL_COUNT 4
+
 #define REGISTRY_SUBKEY "SOFTWARE\\AnalogFeelings\\Shadersave"
 
 #define FRAMERATE_CAP "FramerateCap"
@@ -91,35 +94,20 @@ struct Uniforms
 
 struct RenderSettings
 {
-	std::string MainPath;
-	std::string BufferAPath;
-	std::string BufferBPath;
-	std::string BufferCPath;
-	std::string BufferDPath;
 	std::string CommonPath;
 
-	std::string MainChannel0;
-	std::string MainChannel1;
-	std::string MainChannel2;
-	std::string MainChannel3;
+	std::string MainPath;
+	std::string MainChannels[CHANNEL_COUNT];
 
-	std::string BufferAChannel0;
-	std::string BufferAChannel1;
-	std::string BufferAChannel2;
-	std::string BufferAChannel3;
+	std::string BufferAPath;
+	std::string BufferAChannels[CHANNEL_COUNT];
 
-	std::string BufferBChannel0;
-	std::string BufferBChannel1;
-	std::string BufferBChannel2;
-	std::string BufferBChannel3;
+	std::string BufferBPath;
+	std::string BufferBChannels[CHANNEL_COUNT];
 
-	std::string BufferCChannel0;
-	std::string BufferCChannel1;
-	std::string BufferCChannel2;
-	std::string BufferCChannel3;
+	std::string BufferCPath;
+	std::string BufferCChannels[CHANNEL_COUNT];
 
-	std::string BufferDChannel0;
-	std::string BufferDChannel1;
-	std::string BufferDChannel2;
-	std::string BufferDChannel3;
+	std::string BufferDPath;
+	std::string BufferDChannels[CHANNEL_COUNT];
 };

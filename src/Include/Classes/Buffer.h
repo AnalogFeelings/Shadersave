@@ -36,12 +36,9 @@ public:
 	/// <summary>
 	/// Initializes the channel bindings.
 	/// </summary>
-	/// <param name="channel0">The texture ID for channel 0.</param>
-	/// <param name="channel1">The texture ID for channel 1.</param>
-	/// <param name="channel2">The texture ID for channel 2.</param>
-	/// <param name="channel3">The texture ID for channel 3.</param>
+	/// <param name="channels">The texture ID array for the channels.</param>
 	/// <returns></returns>
-	auto SetupChannels(unsigned int channel0, unsigned int channel1, unsigned int channel2, unsigned int channel3) -> void;
+	auto SetupChannels(const unsigned int (&channels)[4]) -> void;
 
 	/// <summary>
 	/// Sets up the state machine to render the buffer.
@@ -66,10 +63,7 @@ private:
 
 	unsigned int* BufferTextureGlobal = nullptr;
 
-	unsigned int Channel0 = 0;
-	unsigned int Channel1 = 0;
-	unsigned int Channel2 = 0;
-	unsigned int Channel3 = 0;
+	unsigned int Channels[4] = {};
 
 	std::unique_ptr<Shader> BufferShader;
 };

@@ -28,47 +28,6 @@
 #include <GL/wglew.h>
 #include <format>
 
-#define SETUP_BUFFER_BINDINGS(Buffer) \
-	unsigned int channel0 = 0; \
-	unsigned int channel1 = 0; \
-	unsigned int channel2 = 0; \
-	unsigned int channel3 = 0; \
-	if (settings.Buffer##Channel0 == BUFFER_A) \
-		channel0 = BufferATexture; \
-	if (settings.Buffer##Channel0 == BUFFER_B) \
-		channel0 = BufferBTexture; \
-	if (settings.Buffer##Channel0 == BUFFER_C) \
-		channel0 = BufferCTexture; \
-	if (settings.Buffer##Channel0 == BUFFER_D) \
-		channel0 = BufferDTexture; \
-	 \
-	if (settings.Buffer##Channel1 == BUFFER_A) \
-		channel1 = BufferATexture; \
-	if (settings.Buffer##Channel1 == BUFFER_B) \
-		channel1 = BufferBTexture; \
-	if (settings.Buffer##Channel1 == BUFFER_C) \
-		channel1 = BufferCTexture; \
-	if (settings.Buffer##Channel1 == BUFFER_D) \
-		channel1 = BufferDTexture; \
-	 \
-	if (settings.Buffer##Channel2 == BUFFER_A) \
-		channel2 = BufferATexture; \
-	if (settings.Buffer##Channel2 == BUFFER_B) \
-		channel2 = BufferBTexture; \
-	if (settings.Buffer##Channel2 == BUFFER_C) \
-		channel2 = BufferCTexture; \
-	if (settings.Buffer##Channel2 == BUFFER_D) \
-		channel2 = BufferDTexture; \
-	 \
-	if (settings.Buffer##Channel3 == BUFFER_A) \
-		channel3 = BufferATexture; \
-	if (settings.Buffer##Channel3 == BUFFER_B) \
-		channel3 = BufferBTexture; \
-	if (settings.Buffer##Channel3 == BUFFER_C) \
-		channel3 = BufferCTexture; \
-	if (settings.Buffer##Channel3 == BUFFER_D) \
-		channel3 = BufferDTexture
-
 constexpr float QUAD_VERTICES[12] =
 {
 	-1.0f, -1.0f, -0.0f,
@@ -82,11 +41,6 @@ constexpr unsigned int QUAD_INDICES[6] =
 	0, 3, 1
 };
 
-unsigned int BufferATexture;
-unsigned int BufferBTexture;
-unsigned int BufferCTexture;
-unsigned int BufferDTexture;
-
 int ViewportWidth = 0;
 int ViewportHeight = 0;
 int FrameCount = 0;
@@ -99,16 +53,10 @@ unsigned long ProgramStart = 0;
 unsigned long ProgramNow = 0;
 unsigned long ProgramDelta = 0;
 
-unsigned int QuadChannel0 = 0;
-unsigned int QuadChannel1 = 0;
-unsigned int QuadChannel2 = 0;
-unsigned int QuadChannel3 = 0;
-
 std::unique_ptr<Shader> QuadShader;
-std::unique_ptr<Buffer> BufferA;
-std::unique_ptr<Buffer> BufferB;
-std::unique_ptr<Buffer> BufferC;
-std::unique_ptr<Buffer> BufferD;
+unsigned int QuadChannels[CHANNEL_COUNT];
+std::unique_ptr<Buffer> Buffers[BUFFER_COUNT];
+unsigned int BufferTextures[BUFFER_COUNT];
 
 auto LoadFileFromResource(int resourceId, unsigned int& size, const char* data) -> bool;
 auto GuaranteeNullTermination(unsigned int size, const char* data) -> std::string;
@@ -190,33 +138,15 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 	glBindVertexArray(0);
 
 	// Initialize buffer textures.
-	glGenTextures(1, &BufferATexture);
+	for (unsigned int& bufferTexture : BufferTextures)
+	{
+		glGenTextures(1, &bufferTexture);
 
-	glBindTexture(GL_TEXTURE_2D, BufferATexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glGenTextures(1, &BufferBTexture);
-
-	glBindTexture(GL_TEXTURE_2D, BufferBTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glGenTextures(1, &BufferCTexture);
-
-	glBindTexture(GL_TEXTURE_2D, BufferCTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glGenTextures(1, &BufferDTexture);
-
-	glBindTexture(GL_TEXTURE_2D, BufferDTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glBindTexture(GL_TEXTURE_2D, bufferTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, viewportWidth, viewportHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	}
 
 	unsigned int vertexSize = 0;
 	const char* vertexData = nullptr;
@@ -253,19 +183,24 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		return false;
 
 	// Initialize main quad shader bindings.
+	for (int i = 0; i < 4; i++)
 	{
-		SETUP_BUFFER_BINDINGS(Main);
+		const std::string mainChannel = settings.MainChannels[i];
 
-		QuadChannel0 = channel0;
-		QuadChannel1 = channel1;
-		QuadChannel2 = channel2;
-		QuadChannel3 = channel3;
+		if (mainChannel == BUFFER_A)
+			QuadChannels[i] = BufferTextures[0];
+		if (mainChannel == BUFFER_B)
+			QuadChannels[i] = BufferTextures[1];
+		if (mainChannel == BUFFER_C)
+			QuadChannels[i] = BufferTextures[2];
+		if (mainChannel == BUFFER_D)
+			QuadChannels[i] = BufferTextures[3];
 	}
 
 	// Create buffers.
 	if (!settings.BufferAPath.empty())
 	{
-		BufferA = std::make_unique<Buffer>();
+		Buffers[0] = std::make_unique<Buffer>();
 
 		std::string bufferSource = LoadFileFromDisk(settings.BufferAPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
@@ -274,18 +209,31 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		if (!shaderResult)
 			return false;
 
-		bool bufferResult = BufferA->SetupBuffer(&BufferATexture, ViewportWidth, ViewportHeight, BUFFERA_START, shader);
+		bool bufferResult = Buffers[0]->SetupBuffer(&BufferTextures[0], ViewportWidth, ViewportHeight, BUFFERA_START, shader);
 		if (!bufferResult)
 			return false;
 
 		// Let's initialize the channels.
-		SETUP_BUFFER_BINDINGS(BufferA);
+		unsigned int channels[CHANNEL_COUNT];
+		for (int i = 0; i < CHANNEL_COUNT; i++)
+		{
+			const std::string bufferAChannel = settings.BufferAChannels[i];
 
-		BufferA->SetupChannels(channel0, channel1, channel2, channel3);
+			if (bufferAChannel == BUFFER_A)
+				channels[i] = BufferTextures[0];
+			if (bufferAChannel == BUFFER_B)
+				channels[i] = BufferTextures[1];
+			if (bufferAChannel == BUFFER_C)
+				channels[i] = BufferTextures[2];
+			if (bufferAChannel == BUFFER_D)
+				channels[i] = BufferTextures[3];
+		}
+
+		Buffers[0]->SetupChannels(channels);
 	}
 	if (!settings.BufferBPath.empty())
 	{
-		BufferB = std::make_unique<Buffer>();
+		Buffers[1] = std::make_unique<Buffer>();
 
 		std::string bufferSource = LoadFileFromDisk(settings.BufferBPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
@@ -294,18 +242,31 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		if (!shaderResult)
 			return false;
 
-		bool bufferResult = BufferB->SetupBuffer(&BufferBTexture, ViewportWidth, ViewportHeight, BUFFERB_START, shader);
+		bool bufferResult = Buffers[1]->SetupBuffer(&BufferTextures[1], ViewportWidth, ViewportHeight, BUFFERB_START, shader);
 		if (!bufferResult)
 			return false;
 
 		// Let's initialize the channels.
-		SETUP_BUFFER_BINDINGS(BufferB);
+		unsigned int channels[CHANNEL_COUNT];
+		for (int i = 0; i < CHANNEL_COUNT; i++)
+		{
+			const std::string bufferBChannels = settings.BufferBChannels[i];
 
-		BufferB->SetupChannels(channel0, channel1, channel2, channel3);
+			if (bufferBChannels == BUFFER_A)
+				channels[i] = BufferTextures[0];
+			if (bufferBChannels == BUFFER_B)
+				channels[i] = BufferTextures[1];
+			if (bufferBChannels == BUFFER_C)
+				channels[i] = BufferTextures[2];
+			if (bufferBChannels == BUFFER_D)
+				channels[i] = BufferTextures[3];
+		}
+
+		Buffers[1]->SetupChannels(channels);
 	}
 	if (!settings.BufferCPath.empty())
 	{
-		BufferC = std::make_unique<Buffer>();
+		Buffers[2] = std::make_unique<Buffer>();
 
 		std::string bufferSource = LoadFileFromDisk(settings.BufferCPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
@@ -314,18 +275,31 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		if (!shaderResult)
 			return false;
 
-		bool bufferResult = BufferC->SetupBuffer(&BufferCTexture, ViewportWidth, ViewportHeight, BUFFERC_START, shader);
+		bool bufferResult = Buffers[2]->SetupBuffer(&BufferTextures[2], ViewportWidth, ViewportHeight, BUFFERC_START, shader);
 		if (!bufferResult)
 			return false;
 
 		// Let's initialize the channels.
-		SETUP_BUFFER_BINDINGS(BufferC);
+		unsigned int channels[CHANNEL_COUNT];
+		for (int i = 0; i < CHANNEL_COUNT; i++)
+		{
+			const std::string bufferCChannels = settings.BufferCChannels[i];
 
-		BufferC->SetupChannels(channel0, channel1, channel2, channel3);
+			if (bufferCChannels == BUFFER_A)
+				channels[i] = BufferTextures[0];
+			if (bufferCChannels == BUFFER_B)
+				channels[i] = BufferTextures[1];
+			if (bufferCChannels == BUFFER_C)
+				channels[i] = BufferTextures[2];
+			if (bufferCChannels == BUFFER_D)
+				channels[i] = BufferTextures[3];
+		}
+
+		Buffers[2]->SetupChannels(channels);
 	}
 	if (!settings.BufferDPath.empty())
 	{
-		BufferD = std::make_unique<Buffer>();
+		Buffers[3] = std::make_unique<Buffer>();
 
 		std::string bufferSource = LoadFileFromDisk(settings.BufferDPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
@@ -334,14 +308,27 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		if (!shaderResult)
 			return false;
 
-		bool bufferResult = BufferD->SetupBuffer(&BufferDTexture, ViewportWidth, ViewportHeight, BUFFERD_START, shader);
+		bool bufferResult = Buffers[3]->SetupBuffer(&BufferTextures[3], ViewportWidth, ViewportHeight, BUFFERD_START, shader);
 		if (!bufferResult)
 			return false;
 
 		// Let's initialize the channels.
-		SETUP_BUFFER_BINDINGS(BufferD);
+		unsigned int channels[CHANNEL_COUNT];
+		for (int i = 0; i < CHANNEL_COUNT; i++)
+		{
+			const std::string bufferDChannels = settings.BufferDChannels[i];
 
-		BufferD->SetupChannels(channel0, channel1, channel2, channel3);
+			if (bufferDChannels == BUFFER_A)
+				channels[i] = BufferTextures[0];
+			if (bufferDChannels == BUFFER_B)
+				channels[i] = BufferTextures[1];
+			if (bufferDChannels == BUFFER_C)
+				channels[i] = BufferTextures[2];
+			if (bufferDChannels == BUFFER_D)
+				channels[i] = BufferTextures[3];
+		}
+
+		Buffers[3]->SetupChannels(channels);
 	}
 
 	// Set up startup time.
@@ -374,47 +361,26 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 		.FrameCount = FrameCount
 	};
 
-	if (BufferA)
+	glBindVertexArray(QuadVao);
+	for (std::unique_ptr<Buffer>& buffer : Buffers)
 	{
-		BufferA->SetupRender(uniforms);
+		if (buffer)
+		{
+			buffer->SetupRender(uniforms);
 
-		glBindVertexArray(QuadVao);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-	}
-	if (BufferB)
-	{
-		BufferB->SetupRender(uniforms);
-
-		glBindVertexArray(QuadVao);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-	}
-	if (BufferC)
-	{
-		BufferC->SetupRender(uniforms);
-
-		glBindVertexArray(QuadVao);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-	}
-	if (BufferD)
-	{
-		BufferD->SetupRender(uniforms);
-
-		glBindVertexArray(QuadVao);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		}
 	}
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, QuadChannel0);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, QuadChannel1);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, QuadChannel2);
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, QuadChannel3);
+	for (int i = 0; i < CHANNEL_COUNT; i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, QuadChannels[i]);
+	}
 
 	QuadShader->SetVector3Uniform("iResolution", uniforms.ViewportWidth, uniforms.ViewportHeight, 0);
 	QuadShader->SetFloatUniform("iTime", uniforms.Time);
@@ -448,20 +414,20 @@ auto Renderer::UninitializeRenderer() -> void
 	glDeleteBuffers(1, &QuadVbo);
 	glDeleteBuffers(1, &QuadEbo);
 
-	glDeleteTextures(1, &BufferATexture);
-	glDeleteTextures(1, &BufferBTexture);
-	glDeleteTextures(1, &BufferCTexture);
-	glDeleteTextures(1, &BufferDTexture);
+	for (unsigned int& bufferTexture : BufferTextures)
+	{
+		glDeleteTextures(1, &bufferTexture);
+	}
 
-	glDeleteTextures(1, &QuadChannel0);
-	glDeleteTextures(1, &QuadChannel1);
-	glDeleteTextures(1, &QuadChannel2);
-	glDeleteTextures(1, &QuadChannel3);
+	for (unsigned int& quadChannel : QuadChannels)
+	{
+		glDeleteTextures(1, &quadChannel);
+	}
 
-	BufferA.reset();
-	BufferB.reset();
-	BufferC.reset();
-	BufferD.reset();
+	for (std::unique_ptr<Buffer>& buffer : Buffers)
+	{
+		buffer.reset();
+	}
 
 	wglMakeCurrent(nullptr, nullptr);
 	wglDeleteContext(Globals::GlRenderContext);
