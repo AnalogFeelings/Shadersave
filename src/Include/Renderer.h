@@ -21,6 +21,19 @@
 
 namespace Renderer
 {
+	constexpr float QUAD_VERTICES[12] =
+	{
+		-1.0f, -1.0f, -0.0f,
+		+1.0f, +1.0f, -0.0f,
+		-1.0f, +1.0f, -0.0f,
+		+1.0f, -1.0f, -0.0f
+	};
+	constexpr unsigned int QUAD_INDICES[6] =
+	{
+		0, 1, 2,
+		0, 3, 1
+	};
+
 	auto InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> bool;
 	auto InitRenderer(int viewportWidth, int viewportHeight, const RenderSettings& settings) -> bool;
 	auto UninitializeRenderer() -> void;

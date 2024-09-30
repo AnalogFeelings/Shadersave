@@ -28,19 +28,6 @@
 #include <GL/wglew.h>
 #include <format>
 
-constexpr float QUAD_VERTICES[12] =
-{
-	-1.0f, -1.0f, -0.0f,
-	+1.0f, +1.0f, -0.0f,
-	-1.0f, +1.0f, -0.0f,
-	+1.0f, -1.0f, -0.0f
-};
-constexpr unsigned int QUAD_INDICES[6] =
-{
-	0, 1, 2,
-	0, 3, 1
-};
-
 int ViewportWidth = 0;
 int ViewportHeight = 0;
 int FrameCount = 0;
