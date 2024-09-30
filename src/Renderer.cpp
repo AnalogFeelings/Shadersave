@@ -29,10 +29,10 @@
 #include <format>
 
 #define SETUP_BUFFER_BINDINGS(Buffer) \
-	UINT channel0 = 0; \
-	UINT channel1 = 0; \
-	UINT channel2 = 0; \
-	UINT channel3 = 0; \
+	unsigned int channel0 = 0; \
+	unsigned int channel1 = 0; \
+	unsigned int channel2 = 0; \
+	unsigned int channel3 = 0; \
 	if (settings.Buffer##Channel0 == BUFFER_A) \
 		channel0 = BufferATexture; \
 	if (settings.Buffer##Channel0 == BUFFER_B) \
@@ -69,40 +69,40 @@
 	if (settings.Buffer##Channel3 == BUFFER_D) \
 		channel3 = BufferDTexture
 
-constexpr FLOAT QUAD_VERTICES[12] =
+constexpr float QUAD_VERTICES[12] =
 {
 	-1.0f, -1.0f, -0.0f,
 	+1.0f, +1.0f, -0.0f,
 	-1.0f, +1.0f, -0.0f,
 	+1.0f, -1.0f, -0.0f
 };
-constexpr UINT QUAD_INDICES[6] =
+constexpr unsigned int QUAD_INDICES[6] =
 {
 	0, 1, 2,
 	0, 3, 1
 };
 
-UINT BufferATexture;
-UINT BufferBTexture;
-UINT BufferCTexture;
-UINT BufferDTexture;
+unsigned int BufferATexture;
+unsigned int BufferBTexture;
+unsigned int BufferCTexture;
+unsigned int BufferDTexture;
 
-INT ViewportWidth = 0;
-INT ViewportHeight = 0;
-INT FrameCount = 0;
+int ViewportWidth = 0;
+int ViewportHeight = 0;
+int FrameCount = 0;
 
-UINT QuadVao = 0;
-UINT QuadVbo = 0;
-UINT QuadEbo = 0;
+unsigned int QuadVao = 0;
+unsigned int QuadVbo = 0;
+unsigned int QuadEbo = 0;
 
-ULONG64 ProgramStart = 0;
-ULONG64 ProgramNow = 0;
-ULONG64 ProgramDelta = 0;
+unsigned long ProgramStart = 0;
+unsigned long ProgramNow = 0;
+unsigned long ProgramDelta = 0;
 
-UINT QuadChannel0 = 0;
-UINT QuadChannel1 = 0;
-UINT QuadChannel2 = 0;
-UINT QuadChannel3 = 0;
+unsigned int QuadChannel0 = 0;
+unsigned int QuadChannel1 = 0;
+unsigned int QuadChannel2 = 0;
+unsigned int QuadChannel3 = 0;
 
 std::unique_ptr<Shader> QuadShader;
 std::unique_ptr<Buffer> BufferA;
@@ -110,13 +110,13 @@ std::unique_ptr<Buffer> BufferB;
 std::unique_ptr<Buffer> BufferC;
 std::unique_ptr<Buffer> BufferD;
 
-auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL;
-auto GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string;
-auto LoadFileFromDisk(CONST std::string& filename) -> std::string;
-auto CreateShader(CONST std::unique_ptr<Shader>& target, CONST std::string& vertexSource, std::string& fragmentSource) -> BOOL;
-auto GetUnixTimeInMs() -> ULONG64;
+auto LoadFileFromResource(int resourceId, unsigned int& size, const char* data) -> bool;
+auto GuaranteeNullTermination(unsigned int size, const char* data) -> std::string;
+auto LoadFileFromDisk(const std::string& filename) -> std::string;
+auto CreateShader(const std::unique_ptr<Shader>& target, const std::string& vertexSource, std::string& fragmentSource) -> bool;
+auto GetUnixTimeInMs() -> unsigned long;
 
-auto Renderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> BOOL
+auto Renderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> bool
 {
 	PIXELFORMATDESCRIPTOR pixelFormatDescriptor =
 	{
@@ -136,7 +136,7 @@ auto Renderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext
 	HGLRC fakeContext = wglCreateContext(deviceContext);
 	wglMakeCurrent(deviceContext, fakeContext);
 
-	INT attribs[] =
+	int attribs[] =
 	{
 		WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
 		WGL_CONTEXT_MINOR_VERSION_ARB, 3,
@@ -154,18 +154,18 @@ auto Renderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext
 	if (glError != GLEW_OK)
 	{
 		GLenum error = glGetError();
-		CHAR buffer[GLEW_ERROR_SIZE];
+		char buffer[GLEW_ERROR_SIZE];
 
 		std::snprintf(buffer, GLEW_ERROR_SIZE, "%s", glewGetErrorString(error));
 		Globals::LastError = buffer;
 
-		return FALSE;
+		return false;
 	}
 
-	return TRUE;
+	return true;
 }
 
-auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTINGS& settings) -> BOOL
+auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderSettings& settings) -> bool
 {
 	ViewportWidth = viewportWidth;
 	ViewportHeight = viewportHeight;
@@ -183,7 +183,7 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, QuadEbo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(QUAD_INDICES), QUAD_INDICES, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(FLOAT), nullptr);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
 	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -218,26 +218,26 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	UINT vertexSize;
-	PCSTR vertexData;
+	unsigned int vertexSize = 0;
+	const char* vertexData = nullptr;
 
 	// Load vertex shader text.
-	BOOL vertexResult = LoadFileFromResource(IDR_VERTEXSHADER, vertexSize, vertexData);
+	bool vertexResult = LoadFileFromResource(IDR_VERTEXSHADER, vertexSize, vertexData);
 	if (!vertexResult)
-		return FALSE;
+		return false;
 
 	std::string vertexSource = GuaranteeNullTermination(vertexSize, vertexData);
 	std::string fragmentSource;
 
 	if (settings.MainPath.empty())
 	{
-		UINT fragmentSize;
-		PCSTR fragmentData;
+		unsigned int fragmentSize = 0;
+		const char* fragmentData = nullptr;
 
 		// Load fragment shader text.
-		BOOL fragmentResult = LoadFileFromResource(IDR_FRAGMENTSHADER, fragmentSize, fragmentData);
+		bool fragmentResult = LoadFileFromResource(IDR_FRAGMENTSHADER, fragmentSize, fragmentData);
 		if (!fragmentResult)
-			return FALSE;
+			return false;
 
 		fragmentSource = GuaranteeNullTermination(fragmentSize, fragmentData);
 	}
@@ -248,9 +248,9 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 
 	// Actually load the shaders and compile them.
 	QuadShader = std::make_unique<Shader>();
-	BOOL quadResult = CreateShader(QuadShader, vertexSource, fragmentSource);
+	bool quadResult = CreateShader(QuadShader, vertexSource, fragmentSource);
 	if (!quadResult)
-		return FALSE;
+		return false;
 
 	// Initialize main quad shader bindings.
 	{
@@ -270,13 +270,13 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 		std::string bufferSource = LoadFileFromDisk(settings.BufferAPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		BOOL shaderResult = CreateShader(shader, vertexSource, bufferSource);
+		bool shaderResult = CreateShader(shader, vertexSource, bufferSource);
 		if (!shaderResult)
-			return FALSE;
+			return false;
 
-		BOOL bufferResult = BufferA->SetupBuffer(&BufferATexture, ViewportWidth, ViewportHeight, BUFFERA_START, shader);
+		bool bufferResult = BufferA->SetupBuffer(&BufferATexture, ViewportWidth, ViewportHeight, BUFFERA_START, shader);
 		if (!bufferResult)
-			return FALSE;
+			return false;
 
 		// Let's initialize the channels.
 		SETUP_BUFFER_BINDINGS(BufferA);
@@ -290,13 +290,13 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 		std::string bufferSource = LoadFileFromDisk(settings.BufferBPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		BOOL shaderResult = CreateShader(shader, vertexSource, bufferSource);
+		bool shaderResult = CreateShader(shader, vertexSource, bufferSource);
 		if (!shaderResult)
-			return FALSE;
+			return false;
 
-		BOOL bufferResult = BufferB->SetupBuffer(&BufferBTexture, ViewportWidth, ViewportHeight, BUFFERB_START, shader);
+		bool bufferResult = BufferB->SetupBuffer(&BufferBTexture, ViewportWidth, ViewportHeight, BUFFERB_START, shader);
 		if (!bufferResult)
-			return FALSE;
+			return false;
 
 		// Let's initialize the channels.
 		SETUP_BUFFER_BINDINGS(BufferB);
@@ -310,13 +310,13 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 		std::string bufferSource = LoadFileFromDisk(settings.BufferCPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		BOOL shaderResult = CreateShader(shader, vertexSource, bufferSource);
+		bool shaderResult = CreateShader(shader, vertexSource, bufferSource);
 		if (!shaderResult)
-			return FALSE;
+			return false;
 
-		BOOL bufferResult = BufferC->SetupBuffer(&BufferCTexture, ViewportWidth, ViewportHeight, BUFFERC_START, shader);
+		bool bufferResult = BufferC->SetupBuffer(&BufferCTexture, ViewportWidth, ViewportHeight, BUFFERC_START, shader);
 		if (!bufferResult)
-			return FALSE;
+			return false;
 
 		// Let's initialize the channels.
 		SETUP_BUFFER_BINDINGS(BufferC);
@@ -330,13 +330,13 @@ auto Renderer::InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTING
 		std::string bufferSource = LoadFileFromDisk(settings.BufferDPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		BOOL shaderResult = CreateShader(shader, vertexSource, bufferSource);
+		bool shaderResult = CreateShader(shader, vertexSource, bufferSource);
 		if (!shaderResult)
-			return FALSE;
+			return false;
 
-		BOOL bufferResult = BufferD->SetupBuffer(&BufferDTexture, ViewportWidth, ViewportHeight, BUFFERD_START, shader);
+		bool bufferResult = BufferD->SetupBuffer(&BufferDTexture, ViewportWidth, ViewportHeight, BUFFERD_START, shader);
 		if (!bufferResult)
-			return FALSE;
+			return false;
 
 		// Let's initialize the channels.
 		SETUP_BUFFER_BINDINGS(BufferD);
@@ -357,7 +357,7 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 	std::time_t currentCTime = std::time(nullptr);
 	std::tm* detailedTime = std::localtime(&currentCTime);
 
-	UNIFORMS uniforms =
+	Uniforms uniforms =
 	{
 		.ViewportWidth = ViewportWidth,
 		.ViewportHeight = ViewportHeight,
@@ -376,28 +376,28 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 
 	if (BufferA)
 	{
-		BufferA->SetupRender(&uniforms);
+		BufferA->SetupRender(uniforms);
 
 		glBindVertexArray(QuadVao);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 	}
 	if (BufferB)
 	{
-		BufferB->SetupRender(&uniforms);
+		BufferB->SetupRender(uniforms);
 
 		glBindVertexArray(QuadVao);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 	}
 	if (BufferC)
 	{
-		BufferC->SetupRender(&uniforms);
+		BufferC->SetupRender(uniforms);
 
 		glBindVertexArray(QuadVao);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 	}
 	if (BufferD)
 	{
-		BufferD->SetupRender(&uniforms);
+		BufferD->SetupRender(uniforms);
 
 		glBindVertexArray(QuadVao);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
@@ -436,13 +436,13 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 
 	::SwapBuffers(deviceContext);
 
-	ULONG64 currentTime = GetUnixTimeInMs();
+	unsigned long currentTime = GetUnixTimeInMs();
 	ProgramDelta = currentTime - ProgramNow;
 
 	FrameCount++;
 }
 
-auto Renderer::UninitializeRenderer() -> VOID
+auto Renderer::UninitializeRenderer() -> void
 {
 	glDeleteVertexArrays(1, &QuadVao);
 	glDeleteBuffers(1, &QuadVbo);
@@ -468,26 +468,26 @@ auto Renderer::UninitializeRenderer() -> VOID
 	::ReleaseDC(Globals::MainWindow, Globals::DeviceContext);
 }
 
-auto LoadFileFromResource(INT resourceId, UINT& size, PCSTR& data) -> BOOL
+auto LoadFileFromResource(int resourceId, unsigned int& size, const char* data) -> bool
 {
 	HMODULE moduleHandle = ::GetModuleHandle(nullptr);
 	HRSRC resourceHandle = ::FindResource(moduleHandle, MAKEINTRESOURCE(resourceId), "TEXT");
 
 	if (!resourceHandle)
-		return FALSE;
+		return false;
 
 	HGLOBAL resourceData = ::LoadResource(moduleHandle, resourceHandle);
 
 	if (!resourceData)
-		return FALSE;
+		return false;
 
 	size = ::SizeofResource(moduleHandle, resourceHandle);
 	data = static_cast<PCSTR>(::LockResource(resourceData));
 
-	return TRUE;
+	return true;
 }
 
-auto GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string
+auto GuaranteeNullTermination(unsigned int size, const char* data) -> std::string
 {
 	std::unique_ptr<CHAR[]> buffer = std::make_unique<CHAR[]>(size + 1);
 	std::memcpy(buffer.get(), data, size);
@@ -497,7 +497,7 @@ auto GuaranteeNullTermination(UINT size, CONST PCSTR& data) -> std::string
 	return std::string(buffer.get());
 }
 
-auto LoadFileFromDisk(CONST std::string& filename) -> std::string
+auto LoadFileFromDisk(const std::string& filename) -> std::string
 {
 	std::ifstream fileStream(filename);
 	std::stringstream stringStream;
@@ -510,26 +510,26 @@ auto LoadFileFromDisk(CONST std::string& filename) -> std::string
 	return text;
 }
 
-auto CreateShader(CONST std::unique_ptr<Shader>& target, CONST std::string& vertexSource, std::string& fragmentSource) -> BOOL
+auto CreateShader(const std::unique_ptr<Shader>& target, const std::string& vertexSource, std::string& fragmentSource) -> bool
 {
-	BOOL shaderResult = target->LoadShader(vertexSource);
+	bool shaderResult = target->LoadShader(vertexSource);
 	if (!shaderResult)
-		return FALSE;
+		return false;
 
-	BOOL shadertoyResult = target->LoadShadertoyShader(fragmentSource);
+	bool shadertoyResult = target->LoadShadertoyShader(fragmentSource);
 	if (!shadertoyResult)
-		return FALSE;
+		return false;
 
-	BOOL compileResult = target->CreateProgram();
+	bool compileResult = target->CreateProgram();
 	if (!compileResult)
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 }
 
-auto GetUnixTimeInMs() -> ULONG64
+auto GetUnixTimeInMs() -> unsigned long
 {
-	TIMEPOINT currentPoint = std::chrono::system_clock::now();
+	Timepoint currentPoint = std::chrono::system_clock::now();
 
 	return std::chrono::duration_cast<std::chrono::milliseconds>(currentPoint.time_since_epoch()).count();
 }

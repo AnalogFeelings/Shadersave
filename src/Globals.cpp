@@ -18,13 +18,13 @@
 
 auto Globals::GetLastErrorAsString() -> std::string
 {
-    DWORD errorMessageID = ::GetLastError();
+    long errorMessageID = ::GetLastError();
     if (errorMessageID == 0)
         return std::string();
 
-    LPSTR messageBuffer = nullptr;
-    SIZE_T size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPSTR>(&messageBuffer), 0, NULL);
+    char* messageBuffer = nullptr;
+    size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPSTR>(&messageBuffer), 0, nullptr);
 
     std::string message(messageBuffer, size);
 

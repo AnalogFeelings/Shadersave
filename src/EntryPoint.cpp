@@ -24,20 +24,20 @@
 #include <atlbase.h>
 #include <Globals.h>
 
-auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) -> LRESULT
+auto WINAPI ScreenSaverProc(HWND hWnd, unsigned int message, WPARAM wParam, LPARAM lParam) -> LRESULT
 {
 	switch (message)
 	{
 		case WM_CREATE:
 		{
 			::GetClientRect(hWnd, &Globals::ClientRect);
-			INT windowWidth = Globals::ClientRect.right;
-			INT windowHeight = Globals::ClientRect.bottom;
-			SETTINGS settings = Settings::LoadFromRegistry();
+			int windowWidth = Globals::ClientRect.right;
+			int windowHeight = Globals::ClientRect.bottom;
+			RenderSettings settings = Settings::LoadFromRegistry();
 
 			Globals::MainWindow = hWnd;
 
-			BOOL contextResult = Renderer::InitContext(hWnd, Globals::DeviceContext, Globals::GlRenderContext);
+			bool contextResult = Renderer::InitContext(hWnd, Globals::DeviceContext, Globals::GlRenderContext);
 			if (!contextResult)
 			{
 				std::string error = "Error initializing OpenGL context.\n" + Globals::LastError;
@@ -47,7 +47,7 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 				return -1;
 			}
 
-			BOOL rendererResult = Renderer::InitRenderer(windowWidth, windowHeight, settings);
+			bool rendererResult = Renderer::InitRenderer(windowWidth, windowHeight, settings);
 			if (!rendererResult)
 			{
 				std::string error = "Error initializing OpenGL renderer.\n" + Globals::LastError;
@@ -80,5 +80,5 @@ auto WINAPI ScreenSaverProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 auto WINAPI RegisterDialogClasses(HANDLE hInst) -> BOOL
 {
-	return TRUE;
+	return true;
 }

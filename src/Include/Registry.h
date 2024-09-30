@@ -16,11 +16,10 @@
 
 #pragma once
 
-#include <Windows.h>
 #include <string>
 
 namespace Registry
 {
-	auto ReadString(CONST std::string& subKey, CONST std::string& item) -> std::string;
-	auto SetString(CONST std::string& subKey, CONST std::string& item, CONST std::string& value) -> BOOL;
+	auto ReadString(const std::string& subKey, const std::string& item) -> std::string;
+	auto SetString(const std::string& subKey, const std::string& item, const std::string& value) -> bool;
 }

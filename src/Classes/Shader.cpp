@@ -19,22 +19,22 @@
 
 #include <sstream>
 
-auto Shader::LoadShader(CONST std::string& vertexText) -> BOOL
+auto Shader::LoadShader(const std::string& vertexText) -> bool
 {
-	PCSTR constVertex = vertexText.c_str();
-	UINT createdVertex = glCreateShader(GL_VERTEX_SHADER);
+	const char* constVertex = vertexText.c_str();
+	unsigned int createdVertex = glCreateShader(GL_VERTEX_SHADER);
 
 	glShaderSource(createdVertex, 1, &constVertex, nullptr);
 	glCompileShader(createdVertex);
 
-	BOOL vertexResult = this->CheckCompileErrors(createdVertex, "VERTEX");
+	bool vertexResult = this->CheckCompileErrors(createdVertex, "VERTEX");
 
 	this->VertexShader = createdVertex;
 
 	return vertexResult;
 }
 
-auto Shader::LoadShadertoyShader(std::string& fragmentText) -> BOOL
+auto Shader::LoadShadertoyShader(std::string& fragmentText) -> bool
 {
 	std::stringstream stream;
 
@@ -68,18 +68,20 @@ auto Shader::LoadShadertoyShader(std::string& fragmentText) -> BOOL
 
 	fragmentText = stream.str();
 
-	PCSTR constFragment = fragmentText.c_str();
-	UINT createdFragment = glCreateShader(GL_FRAGMENT_SHADER);
+	const char* constFragment = fragmentText.c_str();
+	unsigned int createdFragment = glCreateShader(GL_FRAGMENT_SHADER);
+
 	glShaderSource(createdFragment, 1, &constFragment, nullptr);
 	glCompileShader(createdFragment);
-	BOOL fragmentResult = this->CheckCompileErrors(createdFragment, "FRAGMENT");
+
+	bool fragmentResult = this->CheckCompileErrors(createdFragment, "FRAGMENT");
 
 	this->FragmentShader = createdFragment;
 
 	return fragmentResult;
 }
 
-auto Shader::CreateProgram() -> BOOL
+auto Shader::CreateProgram() -> bool
 {
 	this->ProgramId = glCreateProgram();
 
@@ -87,34 +89,34 @@ auto Shader::CreateProgram() -> BOOL
 	glAttachShader(this->ProgramId, this->FragmentShader);
 	glLinkProgram(this->ProgramId);
 
-	BOOL programResult = this->CheckCompileErrors(this->ProgramId, "PROGRAM");
+	bool programResult = this->CheckCompileErrors(this->ProgramId, "PROGRAM");
 	if (!programResult)
-		return FALSE;
+		return false;
 
 	glDeleteShader(this->VertexShader);
 	glDeleteShader(this->FragmentShader);
 
-	INT uniformCount;
+	int uniformCount;
 	glGetProgramiv(this->ProgramId, GL_ACTIVE_UNIFORMS, &uniformCount);
 
-	for (INT i = 0; i < uniformCount; i++)
+	for (int i = 0; i < uniformCount; i++)
 	{
-		INT length, size;
-		UINT type;
-		CHAR buffer[UNIFORM_BUFFER_SIZE] = {};
+		int length, size;
+		unsigned int type;
+		char buffer[UNIFORM_BUFFER_SIZE] = {};
 
 		glGetActiveUniform(this->ProgramId, i, UNIFORM_BUFFER_SIZE, &length, &size, &type, buffer);
 
 		std::string bufferString(buffer);
-		INT location = glGetUniformLocation(this->ProgramId, buffer);
+		int location = glGetUniformLocation(this->ProgramId, buffer);
 
 		this->UniformMap.insert(std::pair(bufferString, location));
 	}
 
-	return TRUE;
+	return true;
 }
 
-auto Shader::UseShader() -> VOID
+auto Shader::UseShader() -> void
 {
 	glUseProgram(this->ProgramId);
 }
@@ -124,49 +126,49 @@ Shader::~Shader()
 	glDeleteProgram(this->ProgramId);
 }
 
-auto Shader::SetIntUniform(CONST std::string& name, INT value) -> VOID
+auto Shader::SetIntUniform(const std::string& name, int value) -> void
 {
 	if(!this->UniformMap.contains(name)) return;
 
-	INT uniformLocation = this->UniformMap.at(name);
+	int uniformLocation = this->UniformMap.at(name);
 	glProgramUniform1i(this->ProgramId, uniformLocation, value);
 }
 
-auto Shader::SetFloatUniform(CONST std::string& name, FLOAT value) -> VOID
+auto Shader::SetFloatUniform(const std::string& name, float value) -> void
 {
 	if(!this->UniformMap.contains(name)) return;
 
-	INT uniformLocation = this->UniformMap.at(name);
+	int uniformLocation = this->UniformMap.at(name);
 	glProgramUniform1f(this->ProgramId, uniformLocation, value);
 }
 
-auto Shader::SetVector2Uniform(CONST std::string& name, FLOAT x, FLOAT y) -> VOID
+auto Shader::SetVector2Uniform(const std::string& name, float x, float y) -> void
 {
 	if(!this->UniformMap.contains(name)) return;
 
-	INT uniformLocation = this->UniformMap.at(name);
+	int uniformLocation = this->UniformMap.at(name);
 	glProgramUniform2f(this->ProgramId, uniformLocation, x, y);
 }
 
-auto Shader::SetVector3Uniform(CONST std::string& name, FLOAT x, FLOAT y, FLOAT z) -> VOID
+auto Shader::SetVector3Uniform(const std::string& name, float x, float y, float z) -> void
 {
 	if(!this->UniformMap.contains(name)) return;
 
-	INT uniformLocation = this->UniformMap.at(name);
+	int uniformLocation = this->UniformMap.at(name);
 	glProgramUniform3f(this->ProgramId, uniformLocation, x, y, z);
 }
 
-auto Shader::SetVector4Uniform(CONST std::string& name, FLOAT x, FLOAT y, FLOAT z, FLOAT w) -> VOID
+auto Shader::SetVector4Uniform(const std::string& name, float x, float y, float z, float w) -> void
 {
 	if(!this->UniformMap.contains(name)) return;
 
-	INT uniformLocation = this->UniformMap.at(name);
+	int uniformLocation = this->UniformMap.at(name);
 	glProgramUniform4f(this->ProgramId, uniformLocation, x, y, z, w);
 }
 
-auto Shader::CheckCompileErrors(GLuint shaderId, CONST std::string& type) -> BOOL
+auto Shader::CheckCompileErrors(unsigned int shaderId, const std::string& type) -> bool
 {
-	GLint isSuccess;
+	int isSuccess;
 
 	if (type != "PROGRAM")
 	{

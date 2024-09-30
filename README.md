@@ -14,7 +14,7 @@ Shadersave is a Windows screensaver that can run Shadertoy shaders locally under
 # :world_map: Roadmap
 
 - [ ] Add image loading support.
-- [ ] Refactor to use standard C++ naming.
+- [x] Refactor to use standard C++ naming.
 - [ ] Move buffers to an array.
 - [x] Rewrite renderer entirely.
 - [x] Get buffers and channels working.

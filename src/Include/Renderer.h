@@ -21,9 +21,9 @@
 
 namespace Renderer
 {
-	auto InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> BOOL;
-	auto InitRenderer(INT viewportWidth, INT viewportHeight, CONST SETTINGS& settings) -> BOOL;
-	auto UninitializeRenderer() -> VOID;
+	auto InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> bool;
+	auto InitRenderer(int viewportWidth, int viewportHeight, const RenderSettings& settings) -> bool;
+	auto UninitializeRenderer() -> void;
 
-	auto DoRender(HDC deviceContext) -> VOID;
+	auto DoRender(HDC deviceContext) -> void;
 }

@@ -29,7 +29,7 @@
 /// <summary>
 /// A map of which browse button maps to which text box.
 /// </summary>
-std::unordered_map<INT, INT> BrowseButtonMap =
+std::unordered_map<int, int> BrowseButtonMap =
 {
 	{ IDC_MAINSHADERBROWSE, IDC_MAINSHADERPATH },
 	{ IDC_MAINCHANN0BROWSE, IDC_MAINCHANNEL0 },
@@ -65,9 +65,9 @@ std::unordered_map<INT, INT> BrowseButtonMap =
 };
 
 auto OpenFilePicker(HWND owner) -> std::string;
-auto GetControlText(HWND hDlg, INT control) -> std::string;
+auto GetControlText(HWND hDlg, int control) -> std::string;
 
-auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) -> BOOL
+auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, unsigned int message, WPARAM wParam, LPARAM lParam) -> BOOL
 {
 	switch (message)
 	{
@@ -81,7 +81,7 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 				return FALSE;
 			}
 
-			SETTINGS settings = Settings::LoadFromRegistry();
+			RenderSettings settings = Settings::LoadFromRegistry();
 
 			::SetDlgItemText(hDlg, IDC_MAINSHADERPATH, settings.MainPath.c_str());
 			::SetDlgItemText(hDlg, IDC_BUFFERASHADERPATH, settings.BufferAPath.c_str());
@@ -115,12 +115,11 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 			::SetDlgItemText(hDlg, IDC_BUFFERDCHANNEL2, settings.BufferDChannel2.c_str());
 			::SetDlgItemText(hDlg, IDC_BUFFERDCHANNEL3, settings.BufferDChannel3.c_str());
 
-			return TRUE;
+			return true;
 		}
 		case WM_COMMAND:
 		{
-			USHORT messageType = HIWORD(wParam);
-			USHORT senderControl = LOWORD(wParam);
+			unsigned short senderControl = LOWORD(wParam);
 
 			switch (senderControl)
 			{
@@ -140,7 +139,7 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 				}
 				case IDC_OKBUTT:
 				{
-					SETTINGS settings =
+					RenderSettings settings =
 					{
 						.MainPath = ::GetControlText(hDlg, IDC_MAINSHADERPATH),
 						.BufferAPath = ::GetControlText(hDlg, IDC_BUFFERASHADERPATH),
@@ -175,7 +174,7 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 						.BufferDChannel3 = ::GetControlText(hDlg, IDC_BUFFERDCHANNEL3),
 					};
 
-					BOOL saveResult = Settings::SaveToRegistry(&settings);
+					bool saveResult = Settings::SaveToRegistry(settings);
 					if (!saveResult)
 					{
 						std::string error = "Could not save settings!\n" + Globals::LastError;
@@ -194,14 +193,14 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 						break;
 					
 					std::string filePath = OpenFilePicker(hDlg);
-					INT correspondingTextBox = BrowseButtonMap.at(senderControl);
+					int correspondingTextBox = BrowseButtonMap.at(senderControl);
 
 					::SetDlgItemText(hDlg, correspondingTextBox, filePath.c_str());
 
 					break;
 				}
 			}
-			return FALSE;
+			return false;
 		}
 		case WM_CLOSE:
 		{
@@ -211,9 +210,9 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, UINT message, WPARAM wParam, L
 			break;
 		}
 		default:
-			return FALSE;
+			return false;
 	}
-	return TRUE;
+	return true;
 }
 
 // I hate working with COM.
@@ -244,7 +243,7 @@ auto OpenFilePicker(HWND owner) -> std::string
 	if(FAILED(currentResult))
 		return std::string();
 
-	ULONG64 pathLength = std::wcslen(filePath);
+	unsigned long pathLength = std::wcslen(filePath);
 	std::unique_ptr<CHAR[]> filePathConverted = std::make_unique<CHAR[]>(pathLength + 1);
 
 	std::wcstombs(filePathConverted.get(), filePath, pathLength);
@@ -256,9 +255,9 @@ auto OpenFilePicker(HWND owner) -> std::string
 	return result;
 }
 
-auto GetControlText(HWND hDlg, INT control) -> std::string
+auto GetControlText(HWND hDlg, int control) -> std::string
 {
-	CHAR buffer[MAX_PATH];
+	char buffer[MAX_PATH];
 	::GetDlgItemText(hDlg, control, buffer, MAX_PATH);
 
 	return std::string(buffer);

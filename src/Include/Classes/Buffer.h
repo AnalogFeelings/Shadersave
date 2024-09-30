@@ -30,8 +30,8 @@ public:
 	/// <param name="viewportHeight">The viewport height.</param>
 	/// <param name="channelStart">The starting number of the buffer channel texture unit.</param>
 	/// <param name="shader">The shader to use.</param>
-	/// <returns>TRUE if initialized successfully.</returns>
-	auto SetupBuffer(PUINT textureGlobal, INT viewportWidth, INT viewportHeight, UINT channelStart, std::unique_ptr<Shader>& shader) -> BOOL;
+	/// <returns>true if initialized successfully.</returns>
+	auto SetupBuffer(unsigned int* textureGlobal, int viewportWidth, int viewportHeight, int channelStart, std::unique_ptr<Shader>& shader) -> bool;
 
 	/// <summary>
 	/// Initializes the channel bindings.
@@ -41,13 +41,13 @@ public:
 	/// <param name="channel2">The texture ID for channel 2.</param>
 	/// <param name="channel3">The texture ID for channel 3.</param>
 	/// <returns></returns>
-	auto SetupChannels(UINT channel0, UINT channel1, UINT channel2, UINT channel3) -> VOID;
+	auto SetupChannels(unsigned int channel0, unsigned int channel1, unsigned int channel2, unsigned int channel3) -> void;
 
 	/// <summary>
 	/// Sets up the state machine to render the buffer.
 	/// </summary>
 	/// <param name="uniforms">A reference to the uniforms to use.</param>
-	auto SetupRender(PUNIFORMS uniforms) -> VOID;
+	auto SetupRender(Uniforms& uniforms) -> void;
 
 	/// <summary>
 	/// Destroys all resources.
@@ -55,21 +55,21 @@ public:
 	~Buffer();
 
 private:
-	INT ViewportWidth = 0;
-	INT ViewportHeight = 0;
+	int ViewportWidth = 0;
+	int ViewportHeight = 0;
+	int ChannelStart = 0;
 
-	UINT BufferFramebuffer = 0;
-	UINT BufferTexture = 0;
-	UINT BufferTextureCopy = 0;
-	UINT BufferTextureLast = 0;
+	unsigned int BufferFramebuffer = 0;
+	unsigned int BufferTexture = 0;
+	unsigned int BufferTextureCopy = 0;
+	unsigned int BufferTextureLast = 0;
 
-	PUINT BufferTextureGlobal = nullptr;
+	unsigned int* BufferTextureGlobal = nullptr;
 
-	UINT ChannelStart = 0;
-	UINT Channel0 = 0;
-	UINT Channel1 = 0;
-	UINT Channel2 = 0;
-	UINT Channel3 = 0;
+	unsigned int Channel0 = 0;
+	unsigned int Channel1 = 0;
+	unsigned int Channel2 = 0;
+	unsigned int Channel3 = 0;
 
 	std::unique_ptr<Shader> BufferShader;
 };

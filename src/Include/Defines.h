@@ -17,7 +17,6 @@
 #pragma once
 
 #include <chrono>
-#include <Windows.h>
 
 #define SHADERSAVE_VERSION "0.5"
 
@@ -71,26 +70,26 @@
 #define BUFFER_C "BUFFER_C"
 #define BUFFER_D "BUFFER_D"
 
-typedef std::chrono::time_point<std::chrono::system_clock> TIMEPOINT;
+typedef std::chrono::time_point<std::chrono::system_clock> Timepoint;
 
-typedef struct
+struct Uniforms
 {
-	INT ViewportWidth;
-	INT ViewportHeight;
+	int ViewportWidth;
+	int ViewportHeight;
 
-	FLOAT Time;
-	FLOAT DeltaTime;
-	FLOAT FrameRate;
+	float Time;
+	float DeltaTime;
+	float FrameRate;
 
-	INT Year;
-	INT Month;
-	INT Day;
-	INT Seconds;
+	int Year;
+	int Month;
+	int Day;
+	int Seconds;
 
-	INT FrameCount;
-} UNIFORMS, * PUNIFORMS;
+	int FrameCount;
+};
 
-typedef struct
+struct RenderSettings
 {
 	std::string MainPath;
 	std::string BufferAPath;
@@ -123,4 +122,4 @@ typedef struct
 	std::string BufferDChannel1;
 	std::string BufferDChannel2;
 	std::string BufferDChannel3;
-} SETTINGS, * PSETTINGS;
+};

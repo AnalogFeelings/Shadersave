@@ -17,10 +17,12 @@
 #include <Globals.h>
 #include <Registry.h>
 
-auto Registry::ReadString(CONST std::string& subKey, CONST std::string& item) -> std::string
+#include <Windows.h>
+
+auto Registry::ReadString(const std::string& subKey, const std::string& item) -> std::string
 {
-    CHAR data[MAX_PATH];
-    DWORD bufferSize = MAX_PATH;
+    char data[MAX_PATH];
+    unsigned long bufferSize = MAX_PATH;
 
     LSTATUS result = ::RegGetValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), RRF_RT_REG_SZ, nullptr, data, &bufferSize);
     if (result != ERROR_SUCCESS)
@@ -29,14 +31,15 @@ auto Registry::ReadString(CONST std::string& subKey, CONST std::string& item) ->
     return std::string(data);
 }
 
-auto Registry::SetString(CONST std::string& subKey, CONST std::string& item, CONST std::string& value) -> BOOL
+auto Registry::SetString(const std::string& subKey, const std::string& item, const std::string& value) -> bool
 {
     LSTATUS result = ::RegSetKeyValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), REG_SZ, value.c_str(), value.length());
     if (result != ERROR_SUCCESS)
     {
         Globals::LastError = Globals::GetLastErrorAsString();
-        return FALSE;
+
+        return false;
     }
 
-    return TRUE;
+    return true;
 }

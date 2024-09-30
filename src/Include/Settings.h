@@ -18,10 +18,8 @@
 
 #include <Defines.h>
 
-#include <windows.h>
-
 namespace Settings
 {
-	auto LoadFromRegistry() -> SETTINGS;
-	auto SaveToRegistry(PSETTINGS settings) -> BOOL;
+	auto LoadFromRegistry() -> RenderSettings;
+	auto SaveToRegistry(RenderSettings& settings) -> bool;
 }

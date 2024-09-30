@@ -18,7 +18,6 @@
 
 #include <Defines.h>
 
-#include <Windows.h>
 #include <GL/glew.h>
 #include <string>
 #include <unordered_map>
@@ -26,26 +25,26 @@
 class Shader
 {
 public:
-	CHAR ShaderLog[SHADER_LOG_SIZE] = {};
+	char ShaderLog[SHADER_LOG_SIZE] = {};
 
-	auto LoadShader(CONST std::string& vertexText) -> BOOL;
-	auto LoadShadertoyShader(std::string& fragmentText) -> BOOL;
-	auto CreateProgram() -> BOOL;
-	auto UseShader() -> VOID;
+	auto LoadShader(const std::string& vertexText) -> bool;
+	auto LoadShadertoyShader(std::string& fragmentText) -> bool;
+	auto CreateProgram() -> bool;
+	auto UseShader() -> void;
 	~Shader();
 
-	auto SetIntUniform(CONST std::string& name, INT value) -> VOID;
-	auto SetFloatUniform(CONST std::string& name, FLOAT value) -> VOID;
-	auto SetVector2Uniform(CONST std::string& name, FLOAT x, FLOAT y) -> VOID;
-	auto SetVector3Uniform(CONST std::string& name, FLOAT x, FLOAT y, FLOAT z) -> VOID;
-	auto SetVector4Uniform(CONST std::string& name, FLOAT x, FLOAT y, FLOAT z, FLOAT w) -> VOID;
+	auto SetIntUniform(const std::string& name, int value) -> void;
+	auto SetFloatUniform(const std::string& name, float value) -> void;
+	auto SetVector2Uniform(const std::string& name, float x, float y) -> void;
+	auto SetVector3Uniform(const std::string& name, float x, float y, float z) -> void;
+	auto SetVector4Uniform(const std::string& name, float x, float y, float z, float w) -> void;
 
 private:
-	UINT ProgramId = 0;
-	UINT VertexShader = 0;
-	UINT FragmentShader = 0;
+	unsigned int ProgramId = 0;
+	unsigned int VertexShader = 0;
+	unsigned int FragmentShader = 0;
 
-	std::unordered_map<std::string, INT> UniformMap = {};
+	std::unordered_map<std::string, int> UniformMap = {};
 
 	/// <summary>
 	/// Checks if a shader has compile errors. Sets LastError on failure.
@@ -53,5 +52,5 @@ private:
 	/// <param name="shaderId">The ID of the shader object.</param>
 	/// <param name="type">The type of the shader object.</param>
 	/// <returns>TRUE if there are no errors.</returns>
-	auto CheckCompileErrors(GLuint shaderId, CONST std::string& type) -> BOOL;
+	auto CheckCompileErrors(unsigned int shaderId, const std::string& type) -> bool;
 };
