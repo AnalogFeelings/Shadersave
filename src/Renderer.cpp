@@ -45,7 +45,7 @@ unsigned int QuadChannels[CHANNEL_COUNT];
 std::unique_ptr<Buffer> Buffers[BUFFER_COUNT];
 unsigned int BufferTextures[BUFFER_COUNT];
 
-auto LoadFileFromResource(int resourceId, unsigned int& size, const char* data) -> bool;
+auto LoadFileFromResource(int resourceId, unsigned int& size, const char*& data) -> bool;
 auto GuaranteeNullTermination(unsigned int size, const char* data) -> std::string;
 auto LoadFileFromDisk(const std::string& filename) -> std::string;
 auto CreateShader(const std::unique_ptr<Shader>& target, const std::string& vertexSource, std::string& fragmentSource) -> bool;
@@ -318,6 +318,14 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		Buffers[3]->SetupChannels(channels);
 	}
 
+	// Set some uniforms ahead of time for performance.
+	QuadShader->SetVector3Uniform("iResolution", viewportWidth, viewportHeight, 0);
+
+	QuadShader->SetIntUniform("iChannel0", 0);
+	QuadShader->SetIntUniform("iChannel1", 1);
+	QuadShader->SetIntUniform("iChannel2", 2);
+	QuadShader->SetIntUniform("iChannel3", 3);
+
 	// Set up startup time.
 	ProgramStart = GetUnixTimeInMs();
 
@@ -333,9 +341,6 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 
 	Uniforms uniforms =
 	{
-		.ViewportWidth = ViewportWidth,
-		.ViewportHeight = ViewportHeight,
-
 		.Time = (ProgramNow - ProgramStart) / 1000.0f,
 		.DeltaTime = ProgramDelta / 1000.0f,
 		.FrameRate = 1000.0f / ProgramDelta,
@@ -369,17 +374,10 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 		glBindTexture(GL_TEXTURE_2D, QuadChannels[i]);
 	}
 
-	QuadShader->SetVector3Uniform("iResolution", uniforms.ViewportWidth, uniforms.ViewportHeight, 0);
 	QuadShader->SetFloatUniform("iTime", uniforms.Time);
 	QuadShader->SetFloatUniform("iTimeDelta", uniforms.DeltaTime);
 	QuadShader->SetFloatUniform("iFrameRate", uniforms.FrameRate);
 	QuadShader->SetIntUniform("iFrame", FrameCount);
-
-	// Set texture units.
-	QuadShader->SetIntUniform("iChannel0", 0);
-	QuadShader->SetIntUniform("iChannel1", 1);
-	QuadShader->SetIntUniform("iChannel2", 2);
-	QuadShader->SetIntUniform("iChannel3", 3);
 
 	QuadShader->SetVector4Uniform("iDate", uniforms.Year, uniforms.Month, uniforms.Day, uniforms.Seconds);
 	QuadShader->UseShader();
@@ -421,7 +419,7 @@ auto Renderer::UninitializeRenderer() -> void
 	::ReleaseDC(Globals::MainWindow, Globals::DeviceContext);
 }
 
-auto LoadFileFromResource(int resourceId, unsigned int& size, const char* data) -> bool
+auto LoadFileFromResource(int resourceId, unsigned int& size, const char*& data) -> bool
 {
 	HMODULE moduleHandle = ::GetModuleHandle(nullptr);
 	HRSRC resourceHandle = ::FindResource(moduleHandle, MAKEINTRESOURCE(resourceId), "TEXT");
@@ -435,7 +433,7 @@ auto LoadFileFromResource(int resourceId, unsigned int& size, const char* data) 
 		return false;
 
 	size = ::SizeofResource(moduleHandle, resourceHandle);
-	data = static_cast<PCSTR>(::LockResource(resourceData));
+	data = static_cast<const char*>(::LockResource(resourceData));
 
 	return true;
 }

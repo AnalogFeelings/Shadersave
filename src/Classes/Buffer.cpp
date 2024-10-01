@@ -42,9 +42,19 @@ auto Buffer::SetupBuffer(unsigned int* textureGlobal, int viewportWidth, int vie
 
 	this->ViewportWidth = viewportWidth;
 	this->ViewportHeight = viewportHeight;
+
 	this->BufferShader = std::move(shader);
 	this->BufferTextureGlobal = textureGlobal;
+
 	this->ChannelStart = channelStart;
+
+	// Set some uniforms ahead of time for performance.
+	this->BufferShader->SetVector3Uniform("iResolution", ViewportWidth, ViewportHeight, 0);
+
+	this->BufferShader->SetIntUniform("iChannel0", this->ChannelStart);
+	this->BufferShader->SetIntUniform("iChannel1", this->ChannelStart + 1);
+	this->BufferShader->SetIntUniform("iChannel2", this->ChannelStart + 2);
+	this->BufferShader->SetIntUniform("iChannel3", this->ChannelStart + 3);
 
 	return true;
 }
@@ -87,18 +97,11 @@ auto Buffer::SetupRender(const Uniforms& uniforms) -> void
 			this->ViewportWidth, this->ViewportHeight, 1);
 	}
 
-	this->BufferShader->SetVector3Uniform("iResolution", uniforms.ViewportWidth, uniforms.ViewportHeight, 0);
 	this->BufferShader->SetFloatUniform("iTime", uniforms.Time);
 	this->BufferShader->SetFloatUniform("iTimeDelta", uniforms.DeltaTime);
 	this->BufferShader->SetFloatUniform("iFrameRate", uniforms.FrameRate);
 	this->BufferShader->SetIntUniform("iFrame", uniforms.FrameCount);
 	this->BufferShader->SetVector4Uniform("iDate", uniforms.Year, uniforms.Month, uniforms.Day, uniforms.Seconds);
-
-	// Set texture units.
-	this->BufferShader->SetIntUniform("iChannel0", this->ChannelStart);
-	this->BufferShader->SetIntUniform("iChannel1", this->ChannelStart + 1);
-	this->BufferShader->SetIntUniform("iChannel2", this->ChannelStart + 2);
-	this->BufferShader->SetIntUniform("iChannel3", this->ChannelStart + 3);
 
 	this->BufferShader->UseShader();
 

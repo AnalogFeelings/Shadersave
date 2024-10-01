@@ -77,9 +77,6 @@ typedef std::chrono::time_point<std::chrono::system_clock> Timepoint;
 
 struct Uniforms
 {
-	int ViewportWidth;
-	int ViewportHeight;
-
 	float Time;
 	float DeltaTime;
 	float FrameRate;
