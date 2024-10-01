@@ -44,7 +44,7 @@ public:
 	/// Sets up the state machine to render the buffer.
 	/// </summary>
 	/// <param name="uniforms">A reference to the uniforms to use.</param>
-	auto SetupRender(Uniforms& uniforms) -> void;
+	auto SetupRender(const Uniforms& uniforms) -> void;
 
 	/// <summary>
 	/// Destroys all resources.

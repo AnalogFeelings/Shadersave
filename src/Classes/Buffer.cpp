@@ -54,7 +54,7 @@ auto Buffer::SetupChannels(const unsigned int(&channels)[4]) -> void
 	std::memcpy(this->Channels, channels, CHANNEL_COUNT);
 }
 
-auto Buffer::SetupRender(Uniforms& uniforms) -> void
+auto Buffer::SetupRender(const Uniforms& uniforms) -> void
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, this->BufferFramebuffer);
 
