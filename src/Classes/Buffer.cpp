@@ -105,17 +105,11 @@ auto Buffer::SetupRender(const Uniforms& uniforms) -> void
 
 	this->BufferShader->UseShader();
 
-	glActiveTexture(GL_TEXTURE0 + this->ChannelStart);
-	glBindTexture(GL_TEXTURE_2D, this->Channels[0]);
-
-	glActiveTexture(GL_TEXTURE0 + this->ChannelStart + 1);
-	glBindTexture(GL_TEXTURE_2D, this->Channels[1]);
-
-	glActiveTexture(GL_TEXTURE0 + this->ChannelStart + 2);
-	glBindTexture(GL_TEXTURE_2D, this->Channels[2]);
-
-	glActiveTexture(GL_TEXTURE0 + this->ChannelStart + 3);
-	glBindTexture(GL_TEXTURE_2D, this->Channels[3]);
+	for (int i = 0; i < CHANNEL_COUNT; i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + this->ChannelStart + i);
+		glBindTexture(GL_TEXTURE_2D, this->Channels[i]);
+	}
 }
 
 Buffer::~Buffer()
