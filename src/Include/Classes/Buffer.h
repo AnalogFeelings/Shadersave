@@ -38,7 +38,7 @@ public:
 	/// </summary>
 	/// <param name="channels">The texture ID array for the channels.</param>
 	/// <returns></returns>
-	auto SetupChannels(const unsigned int (&channels)[4]) -> void;
+	auto SetupChannels(const unsigned int (&channels)[CHANNEL_COUNT]) -> void;
 
 	/// <summary>
 	/// Sets up the state machine to render the buffer.

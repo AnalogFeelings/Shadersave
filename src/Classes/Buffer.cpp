@@ -59,7 +59,7 @@ auto Buffer::SetupBuffer(unsigned int* textureGlobal, int viewportWidth, int vie
 	return true;
 }
 
-auto Buffer::SetupChannels(const unsigned int(&channels)[4]) -> void
+auto Buffer::SetupChannels(const unsigned int(&channels)[CHANNEL_COUNT]) -> void
 {
 	std::memcpy(this->Channels, channels, CHANNEL_COUNT);
 }
