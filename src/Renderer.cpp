@@ -170,7 +170,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		return false;
 
 	// Initialize main quad shader bindings.
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < CHANNEL_COUNT; i++)
 	{
 		const std::string mainChannel = settings.MainChannels[i];
 
@@ -185,6 +185,8 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 	}
 
 	// Create buffers.
+	unsigned int channels[CHANNEL_COUNT];
+
 	if (!settings.BufferAPath.empty())
 	{
 		Buffers[0] = std::make_unique<Buffer>();
@@ -201,7 +203,6 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			return false;
 
 		// Let's initialize the channels.
-		unsigned int channels[CHANNEL_COUNT];
 		for (int i = 0; i < CHANNEL_COUNT; i++)
 		{
 			const std::string bufferAChannel = settings.BufferAChannels[i];
@@ -234,7 +235,6 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			return false;
 
 		// Let's initialize the channels.
-		unsigned int channels[CHANNEL_COUNT];
 		for (int i = 0; i < CHANNEL_COUNT; i++)
 		{
 			const std::string bufferBChannels = settings.BufferBChannels[i];
@@ -267,7 +267,6 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			return false;
 
 		// Let's initialize the channels.
-		unsigned int channels[CHANNEL_COUNT];
 		for (int i = 0; i < CHANNEL_COUNT; i++)
 		{
 			const std::string bufferCChannels = settings.BufferCChannels[i];
@@ -300,7 +299,6 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			return false;
 
 		// Let's initialize the channels.
-		unsigned int channels[CHANNEL_COUNT];
 		for (int i = 0; i < CHANNEL_COUNT; i++)
 		{
 			const std::string bufferDChannels = settings.BufferDChannels[i];
