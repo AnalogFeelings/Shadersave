@@ -17,7 +17,6 @@
 #pragma once
 
 #include <chrono>
-#include <unordered_set>
 
 #define SHADERSAVE_VERSION "0.6"
 
@@ -73,14 +72,6 @@
 #define BUFFER_B "BUFFER_B"
 #define BUFFER_C "BUFFER_C"
 #define BUFFER_D "BUFFER_D"
-
-inline std::unordered_set<std::string> ValidBindings =
-{
-	BUFFER_A,
-	BUFFER_B,
-	BUFFER_C,
-	BUFFER_D
-};
 
 typedef std::chrono::time_point<std::chrono::system_clock> Timepoint;
 

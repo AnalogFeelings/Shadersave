@@ -185,7 +185,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		if (mainChannel == BUFFER_D)
 			QuadChannels[i] = BufferTextures[3];
 
-		if (ValidBindings.contains(mainChannel))
+		if (Globals::ValidBindings.contains(mainChannel))
 			QuadChannelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
 	}
 
@@ -222,7 +222,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			if (bufferAChannel == BUFFER_D)
 				channels[i] = BufferTextures[3];
 
-			if (ValidBindings.contains(bufferAChannel))
+			if (Globals::ValidBindings.contains(bufferAChannel))
 				channelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
 		}
 
@@ -257,7 +257,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			if (bufferBChannel == BUFFER_D)
 				channels[i] = BufferTextures[3];
 
-			if (ValidBindings.contains(bufferBChannel))
+			if (Globals::ValidBindings.contains(bufferBChannel))
 				channelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
 		}
 
@@ -292,7 +292,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			if (bufferCChannel == BUFFER_D)
 				channels[i] = BufferTextures[3];
 
-			if (ValidBindings.contains(bufferCChannel))
+			if (Globals::ValidBindings.contains(bufferCChannel))
 				channelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
 		}
 
@@ -327,7 +327,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			if (bufferDChannel == BUFFER_D)
 				channels[i] = BufferTextures[3];
 
-			if (ValidBindings.contains(bufferDChannel))
+			if (Globals::ValidBindings.contains(bufferDChannel))
 				channelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
 		}
 

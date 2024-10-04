@@ -16,8 +16,11 @@
 
 #pragma once
 
+#include <Defines.h>
+
 #include <windows.h>
 #include <string>
+#include <unordered_set>
 
 namespace Globals
 {
@@ -27,6 +30,14 @@ namespace Globals
 	inline RECT ClientRect;
 
 	inline std::string LastError;
+
+	inline std::unordered_set<std::string> ValidBindings =
+	{
+		BUFFER_A,
+		BUFFER_B,
+		BUFFER_C,
+		BUFFER_D
+	};
 
 	/// <summary>
 	/// Returns the last Win32 error in string representation.

@@ -17,9 +17,9 @@
 #include <Registry.h>
 #include <Settings.h>
 #include <Defines.h>
+#include <Globals.h>
 
 #include <filesystem>
-#include <unordered_set>
 #include <string>
 
 auto ValidateSettings(RenderSettings& settings) -> void;
@@ -186,7 +186,7 @@ auto ValidateSettings(RenderSettings& settings) -> void
 		settings.MainPath = std::string();
 	for (std::string& MainChannel : settings.MainChannels)
 	{
-		if (!std::filesystem::is_regular_file(MainChannel) && !ValidBindings.contains(MainChannel))
+		if (!std::filesystem::is_regular_file(MainChannel) && !Globals::ValidBindings.contains(MainChannel))
 			MainChannel = std::string();
 	}
 
@@ -194,7 +194,7 @@ auto ValidateSettings(RenderSettings& settings) -> void
 		settings.BufferAPath = std::string();
 	for (std::string& BufferAChannel : settings.BufferAChannels)
 	{
-		if (!std::filesystem::is_regular_file(BufferAChannel) && !ValidBindings.contains(BufferAChannel))
+		if (!std::filesystem::is_regular_file(BufferAChannel) && !Globals::ValidBindings.contains(BufferAChannel))
 			BufferAChannel = std::string();
 	}
 
@@ -202,7 +202,7 @@ auto ValidateSettings(RenderSettings& settings) -> void
 		settings.BufferBPath = std::string();
 	for (std::string& BufferBChannel : settings.BufferBChannels)
 	{
-		if (!std::filesystem::is_regular_file(BufferBChannel) && !ValidBindings.contains(BufferBChannel))
+		if (!std::filesystem::is_regular_file(BufferBChannel) && !Globals::ValidBindings.contains(BufferBChannel))
 			BufferBChannel = std::string();
 	}
 
@@ -210,7 +210,7 @@ auto ValidateSettings(RenderSettings& settings) -> void
 		settings.BufferCPath = std::string();
 	for (std::string& BufferCChannel : settings.BufferCChannels)
 	{
-		if (!std::filesystem::is_regular_file(BufferCChannel) && !ValidBindings.contains(BufferCChannel))
+		if (!std::filesystem::is_regular_file(BufferCChannel) && !Globals::ValidBindings.contains(BufferCChannel))
 			BufferCChannel = std::string();
 	}
 
@@ -218,7 +218,7 @@ auto ValidateSettings(RenderSettings& settings) -> void
 		settings.BufferDPath = std::string();
 	for (std::string& BufferDChannel : settings.BufferDChannels)
 	{
-		if (!std::filesystem::is_regular_file(BufferDChannel) && !ValidBindings.contains(BufferDChannel))
+		if (!std::filesystem::is_regular_file(BufferDChannel) && !Globals::ValidBindings.contains(BufferDChannel))
 			BufferDChannel = std::string();
 	}
 }
