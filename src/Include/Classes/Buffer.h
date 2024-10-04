@@ -16,8 +16,10 @@
 
 #pragma once
 
-#include <memory>
 #include <Classes/Shader.h>
+#include <Defines.h>
+
+#include <memory>
 
 class Buffer
 {
@@ -37,8 +39,9 @@ public:
 	/// Initializes the channel bindings.
 	/// </summary>
 	/// <param name="channels">The texture ID array for the channels.</param>
+	/// <param name="channelResolutions">The channel resolutions array.</param>
 	/// <returns></returns>
-	auto SetupChannels(const unsigned int (&channels)[CHANNEL_COUNT]) -> void;
+	auto SetupChannels(const unsigned int (&channels)[CHANNEL_COUNT], const Vector3 (&channelResolutions)[CHANNEL_COUNT]) -> void;
 
 	/// <summary>
 	/// Sets up the state machine to render the buffer.
@@ -63,7 +66,8 @@ private:
 
 	unsigned int* BufferTextureGlobal = nullptr;
 
-	unsigned int Channels[4] = {};
+	unsigned int Channels[CHANNEL_COUNT] = {};
+	Vector3 ChannelResolutions[CHANNEL_COUNT] = {};
 
 	std::unique_ptr<Shader> BufferShader;
 };

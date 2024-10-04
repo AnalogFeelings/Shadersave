@@ -110,6 +110,9 @@ auto Shader::CreateProgram() -> bool
 		std::string bufferString(buffer);
 		int location = glGetUniformLocation(this->ProgramId, buffer);
 
+		if (bufferString.ends_with("[0]"))
+			bufferString.resize(bufferString.size() - 3);
+
 		this->UniformMap.insert(std::pair(bufferString, location));
 	}
 
@@ -164,6 +167,14 @@ auto Shader::SetVector4Uniform(const std::string& name, float x, float y, float 
 
 	int uniformLocation = this->UniformMap.at(name);
 	glProgramUniform4f(this->ProgramId, uniformLocation, x, y, z, w);
+}
+
+auto Shader::SetVector3ArrayUniform(const std::string& name, Vector3* value, int size) -> void
+{
+	if (!this->UniformMap.contains(name)) return;
+
+	int uniformLocation = this->UniformMap.at(name);
+	glProgramUniform3fv(this->ProgramId, uniformLocation, size, reinterpret_cast<float*>(value));
 }
 
 auto Shader::CheckCompileErrors(unsigned int shaderId, const std::string& type) -> bool

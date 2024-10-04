@@ -42,6 +42,8 @@ unsigned long ProgramDelta = 0;
 
 std::unique_ptr<Shader> QuadShader;
 unsigned int QuadChannels[CHANNEL_COUNT];
+Vector3 QuadChannelResolutions[CHANNEL_COUNT];
+
 std::unique_ptr<Buffer> Buffers[BUFFER_COUNT];
 unsigned int BufferTextures[BUFFER_COUNT];
 
@@ -182,10 +184,14 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			QuadChannels[i] = BufferTextures[2];
 		if (mainChannel == BUFFER_D)
 			QuadChannels[i] = BufferTextures[3];
+
+		if (ValidBindings.contains(mainChannel))
+			QuadChannelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
 	}
 
 	// Create buffers.
 	unsigned int channels[CHANNEL_COUNT];
+	Vector3 channelResolutions[CHANNEL_COUNT];
 
 	if (!settings.BufferAPath.empty())
 	{
@@ -215,9 +221,12 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 				channels[i] = BufferTextures[2];
 			if (bufferAChannel == BUFFER_D)
 				channels[i] = BufferTextures[3];
+
+			if (ValidBindings.contains(bufferAChannel))
+				channelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
 		}
 
-		Buffers[0]->SetupChannels(channels);
+		Buffers[0]->SetupChannels(channels, channelResolutions);
 	}
 	if (!settings.BufferBPath.empty())
 	{
@@ -237,19 +246,22 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		// Let's initialize the channels.
 		for (int i = 0; i < CHANNEL_COUNT; i++)
 		{
-			const std::string bufferBChannels = settings.BufferBChannels[i];
+			const std::string bufferBChannel = settings.BufferBChannels[i];
 
-			if (bufferBChannels == BUFFER_A)
+			if (bufferBChannel == BUFFER_A)
 				channels[i] = BufferTextures[0];
-			if (bufferBChannels == BUFFER_B)
+			if (bufferBChannel == BUFFER_B)
 				channels[i] = BufferTextures[1];
-			if (bufferBChannels == BUFFER_C)
+			if (bufferBChannel == BUFFER_C)
 				channels[i] = BufferTextures[2];
-			if (bufferBChannels == BUFFER_D)
+			if (bufferBChannel == BUFFER_D)
 				channels[i] = BufferTextures[3];
+
+			if (ValidBindings.contains(bufferBChannel))
+				channelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
 		}
 
-		Buffers[1]->SetupChannels(channels);
+		Buffers[1]->SetupChannels(channels, channelResolutions);
 	}
 	if (!settings.BufferCPath.empty())
 	{
@@ -269,19 +281,22 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		// Let's initialize the channels.
 		for (int i = 0; i < CHANNEL_COUNT; i++)
 		{
-			const std::string bufferCChannels = settings.BufferCChannels[i];
+			const std::string bufferCChannel = settings.BufferCChannels[i];
 
-			if (bufferCChannels == BUFFER_A)
+			if (bufferCChannel == BUFFER_A)
 				channels[i] = BufferTextures[0];
-			if (bufferCChannels == BUFFER_B)
+			if (bufferCChannel == BUFFER_B)
 				channels[i] = BufferTextures[1];
-			if (bufferCChannels == BUFFER_C)
+			if (bufferCChannel == BUFFER_C)
 				channels[i] = BufferTextures[2];
-			if (bufferCChannels == BUFFER_D)
+			if (bufferCChannel == BUFFER_D)
 				channels[i] = BufferTextures[3];
+
+			if (ValidBindings.contains(bufferCChannel))
+				channelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
 		}
 
-		Buffers[2]->SetupChannels(channels);
+		Buffers[2]->SetupChannels(channels, channelResolutions);
 	}
 	if (!settings.BufferDPath.empty())
 	{
@@ -301,23 +316,27 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		// Let's initialize the channels.
 		for (int i = 0; i < CHANNEL_COUNT; i++)
 		{
-			const std::string bufferDChannels = settings.BufferDChannels[i];
+			const std::string bufferDChannel = settings.BufferDChannels[i];
 
-			if (bufferDChannels == BUFFER_A)
+			if (bufferDChannel == BUFFER_A)
 				channels[i] = BufferTextures[0];
-			if (bufferDChannels == BUFFER_B)
+			if (bufferDChannel == BUFFER_B)
 				channels[i] = BufferTextures[1];
-			if (bufferDChannels == BUFFER_C)
+			if (bufferDChannel == BUFFER_C)
 				channels[i] = BufferTextures[2];
-			if (bufferDChannels == BUFFER_D)
+			if (bufferDChannel == BUFFER_D)
 				channels[i] = BufferTextures[3];
+
+			if (ValidBindings.contains(bufferDChannel))
+				channelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
 		}
 
-		Buffers[3]->SetupChannels(channels);
+		Buffers[3]->SetupChannels(channels, channelResolutions);
 	}
 
 	// Set some uniforms ahead of time for performance.
 	QuadShader->SetVector3Uniform("iResolution", viewportWidth, viewportHeight, 0);
+	QuadShader->SetVector3ArrayUniform("iChannelResolution", QuadChannelResolutions, CHANNEL_COUNT);
 
 	QuadShader->SetIntUniform("iChannel0", 0);
 	QuadShader->SetIntUniform("iChannel1", 1);

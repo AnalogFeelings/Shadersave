@@ -22,14 +22,6 @@
 #include <unordered_set>
 #include <string>
 
-std::unordered_set<std::string> ValidBindings =
-{
-	BUFFER_A,
-	BUFFER_B,
-	BUFFER_C,
-	BUFFER_D
-};
-
 auto ValidateSettings(RenderSettings& settings) -> void;
 
 auto Settings::LoadFromRegistry() -> RenderSettings

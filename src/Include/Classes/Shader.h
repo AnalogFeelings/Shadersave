@@ -38,6 +38,7 @@ public:
 	auto SetVector2Uniform(const std::string& name, float x, float y) -> void;
 	auto SetVector3Uniform(const std::string& name, float x, float y, float z) -> void;
 	auto SetVector4Uniform(const std::string& name, float x, float y, float z, float w) -> void;
+	auto SetVector3ArrayUniform(const std::string& name, Vector3* value, int size) -> void;
 
 private:
 	unsigned int ProgramId = 0;

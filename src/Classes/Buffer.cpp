@@ -59,9 +59,12 @@ auto Buffer::SetupBuffer(unsigned int* textureGlobal, int viewportWidth, int vie
 	return true;
 }
 
-auto Buffer::SetupChannels(const unsigned int(&channels)[CHANNEL_COUNT]) -> void
+auto Buffer::SetupChannels(const unsigned int(&channels)[CHANNEL_COUNT], const Vector3(&channelResolutions)[CHANNEL_COUNT]) -> void
 {
-	std::memcpy(this->Channels, channels, CHANNEL_COUNT);
+	std::memcpy(this->Channels, channels, sizeof(unsigned int) * CHANNEL_COUNT);
+	std::memcpy(this->ChannelResolutions, channelResolutions, sizeof(Vector3) * CHANNEL_COUNT);
+
+	this->BufferShader->SetVector3ArrayUniform("iChannelResolution", this->ChannelResolutions, CHANNEL_COUNT);
 }
 
 auto Buffer::SetupRender(const Uniforms& uniforms) -> void

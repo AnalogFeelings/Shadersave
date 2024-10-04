@@ -17,13 +17,14 @@
 #pragma once
 
 #include <chrono>
+#include <unordered_set>
 
 #define SHADERSAVE_VERSION "0.6"
 
 #define GLEW_ERROR_SIZE 128
 #define OPENGL_ERROR_SIZE 128
 #define SHADER_LOG_SIZE 1024
-#define UNIFORM_BUFFER_SIZE 16
+#define UNIFORM_BUFFER_SIZE 24
 
 #define BUFFERA_START 4
 #define BUFFERB_START 8
@@ -73,6 +74,14 @@
 #define BUFFER_C "BUFFER_C"
 #define BUFFER_D "BUFFER_D"
 
+inline std::unordered_set<std::string> ValidBindings =
+{
+	BUFFER_A,
+	BUFFER_B,
+	BUFFER_C,
+	BUFFER_D
+};
+
 typedef std::chrono::time_point<std::chrono::system_clock> Timepoint;
 
 struct Uniforms
@@ -107,4 +116,18 @@ struct RenderSettings
 
 	std::string BufferDPath;
 	std::string BufferDChannels[CHANNEL_COUNT];
+};
+
+struct Vector3
+{
+	float X = 0;
+	float Y = 0;
+	float Z = 0;
+
+	Vector3() = default;
+
+	Vector3(float x, float y, float z) : X(x), Y(y), Z(z)
+	{
+
+	}
 };
