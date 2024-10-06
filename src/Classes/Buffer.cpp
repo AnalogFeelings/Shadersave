@@ -17,6 +17,8 @@
 #include <Classes/Buffer.h>
 #include <Globals.h>
 
+#include <GL/glew.h>
+
 auto Buffer::SetupBuffer(unsigned int* textureGlobal, int viewportWidth, int viewportHeight, int channelStart, std::unique_ptr<Shader>& shader) -> bool
 {
 	glGenFramebuffers(1, &this->BufferFramebuffer);

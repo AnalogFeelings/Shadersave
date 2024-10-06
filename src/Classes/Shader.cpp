@@ -17,6 +17,7 @@
 #include <Globals.h>
 #include <Classes/Shader.h>
 
+#include <GL/glew.h>
 #include <sstream>
 
 auto Shader::LoadShader(const std::string& vertexText) -> bool
@@ -34,7 +35,7 @@ auto Shader::LoadShader(const std::string& vertexText) -> bool
 	return vertexResult;
 }
 
-auto Shader::LoadShadertoyShader(std::string& fragmentText) -> bool
+auto Shader::LoadShadertoyShader(std::string& fragmentText, const std::string& commonText) -> bool
 {
 	std::stringstream stream;
 
@@ -57,10 +58,12 @@ auto Shader::LoadShadertoyShader(std::string& fragmentText) -> bool
 
 	stream << "uniform vec4 iDate;" << "\n";
 	stream << "uniform vec4 iMouse;" << "\n"; // This gets ignored but still needs a definition.
-	
-	stream << "out vec4 analogFeelings_Output;" << "\n";
+
+	stream << commonText << "\n";
 
 	stream << fragmentText << "\n";
+
+	stream << "out vec4 analogFeelings_Output;" << "\n";
 
 	stream << "void main() {" << "\n";
 	stream << "    mainImage(analogFeelings_Output, gl_FragCoord.xy);" << "\n";

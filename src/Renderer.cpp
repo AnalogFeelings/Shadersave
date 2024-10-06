@@ -25,6 +25,7 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#include <GL/glew.h>
 #include <GL/wglew.h>
 #include <format>
 
@@ -50,7 +51,7 @@ unsigned int BufferTextures[BUFFER_COUNT];
 auto LoadFileFromResource(int resourceId, unsigned int& size, const char*& data) -> bool;
 auto GuaranteeNullTermination(unsigned int size, const char* data) -> std::string;
 auto LoadFileFromDisk(const std::string& filename) -> std::string;
-auto CreateShader(const std::unique_ptr<Shader>& target, const std::string& vertexSource, std::string& fragmentSource) -> bool;
+auto CreateShader(const std::unique_ptr<Shader>& target, const std::string& vertexSource, std::string& fragmentSource, const std::string& commonSource) -> bool;
 auto GetUnixTimeInMs() -> unsigned long;
 
 auto Renderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> bool
@@ -165,9 +166,14 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		fragmentSource = LoadFileFromDisk(settings.MainPath);
 	}
 
+	std::string commonSource;
+
+	if (!settings.CommonPath.empty())
+		commonSource = LoadFileFromDisk(settings.CommonPath);
+
 	// Actually load the shaders and compile them.
 	QuadShader = std::make_unique<Shader>();
-	bool quadResult = CreateShader(QuadShader, vertexSource, fragmentSource);
+	bool quadResult = CreateShader(QuadShader, vertexSource, fragmentSource, commonSource);
 	if (!quadResult)
 		return false;
 
@@ -200,7 +206,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		std::string bufferSource = LoadFileFromDisk(settings.BufferAPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		bool shaderResult = CreateShader(shader, vertexSource, bufferSource);
+		bool shaderResult = CreateShader(shader, vertexSource, bufferSource, commonSource);
 		if (!shaderResult)
 			return false;
 
@@ -235,7 +241,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		std::string bufferSource = LoadFileFromDisk(settings.BufferBPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		bool shaderResult = CreateShader(shader, vertexSource, bufferSource);
+		bool shaderResult = CreateShader(shader, vertexSource, bufferSource, commonSource);
 		if (!shaderResult)
 			return false;
 
@@ -270,7 +276,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		std::string bufferSource = LoadFileFromDisk(settings.BufferCPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		bool shaderResult = CreateShader(shader, vertexSource, bufferSource);
+		bool shaderResult = CreateShader(shader, vertexSource, bufferSource, commonSource);
 		if (!shaderResult)
 			return false;
 
@@ -305,7 +311,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		std::string bufferSource = LoadFileFromDisk(settings.BufferDPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		bool shaderResult = CreateShader(shader, vertexSource, bufferSource);
+		bool shaderResult = CreateShader(shader, vertexSource, bufferSource, commonSource);
 		if (!shaderResult)
 			return false;
 
@@ -478,13 +484,13 @@ auto LoadFileFromDisk(const std::string& filename) -> std::string
 	return text;
 }
 
-auto CreateShader(const std::unique_ptr<Shader>& target, const std::string& vertexSource, std::string& fragmentSource) -> bool
+auto CreateShader(const std::unique_ptr<Shader>& target, const std::string& vertexSource, std::string& fragmentSource, const std::string& commonSource) -> bool
 {
 	bool shaderResult = target->LoadShader(vertexSource);
 	if (!shaderResult)
 		return false;
 
-	bool shadertoyResult = target->LoadShadertoyShader(fragmentSource);
+	bool shadertoyResult = target->LoadShadertoyShader(fragmentSource, commonSource);
 	if (!shadertoyResult)
 		return false;
 

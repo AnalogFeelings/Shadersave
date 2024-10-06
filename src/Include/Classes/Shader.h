@@ -18,7 +18,6 @@
 
 #include <Defines.h>
 
-#include <GL/glew.h>
 #include <string>
 #include <unordered_map>
 
@@ -28,7 +27,7 @@ public:
 	char ShaderLog[SHADER_LOG_SIZE] = {};
 
 	auto LoadShader(const std::string& vertexText) -> bool;
-	auto LoadShadertoyShader(std::string& fragmentText) -> bool;
+	auto LoadShadertoyShader(std::string& fragmentText, const std::string& commonText) -> bool;
 	auto CreateProgram() -> bool;
 	auto UseShader() -> void;
 	~Shader();
