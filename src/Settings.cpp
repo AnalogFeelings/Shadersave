@@ -89,26 +89,9 @@ auto Settings::SaveToRegistry(RenderSettings& settings) -> bool
 	if (!result)
 		return false;
 
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERA_PATH, settings.BufferAPath);
+	result = Registry::SetString(REGISTRY_SUBKEY, SHADER_PATH, settings.MainPath);
 	if (!result)
 		return false;
-
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERB_PATH, settings.BufferBPath);
-	if (!result)
-		return false;
-
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERC_PATH, settings.BufferCPath);
-	if (!result)
-		return false;
-
-	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERD_PATH, settings.BufferDPath);
-	if (!result)
-		return false;
-
-	result = Registry::SetString(REGISTRY_SUBKEY, COMMON_PATH, settings.CommonPath);
-	if (!result)
-		return false;
-
 	result = Registry::SetString(REGISTRY_SUBKEY, SHADER_CHANNEL0_BINDING, settings.MainChannels[0]);
 	if (!result)
 		return false;
@@ -122,6 +105,9 @@ auto Settings::SaveToRegistry(RenderSettings& settings) -> bool
 	if (!result)
 		return false;
 
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERA_PATH, settings.BufferAPath);
+	if (!result)
+		return false;
 	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERA_CHANNEL0_BINDING, settings.BufferAChannels[0]);
 	if (!result)
 		return false;
@@ -135,6 +121,9 @@ auto Settings::SaveToRegistry(RenderSettings& settings) -> bool
 	if (!result)
 		return false;
 
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERB_PATH, settings.BufferBPath);
+	if (!result)
+		return false;
 	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERB_CHANNEL0_BINDING, settings.BufferBChannels[0]);
 	if (!result)
 		return false;
@@ -148,6 +137,9 @@ auto Settings::SaveToRegistry(RenderSettings& settings) -> bool
 	if (!result)
 		return false;
 
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERC_PATH, settings.BufferCPath);
+	if (!result)
+		return false;
 	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERC_CHANNEL0_BINDING, settings.BufferCChannels[0]);
 	if (!result)
 		return false;
@@ -161,6 +153,9 @@ auto Settings::SaveToRegistry(RenderSettings& settings) -> bool
 	if (!result)
 		return false;
 
+	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERD_PATH, settings.BufferDPath);
+	if (!result)
+		return false;
 	result = Registry::SetString(REGISTRY_SUBKEY, BUFFERD_CHANNEL0_BINDING, settings.BufferDChannels[0]);
 	if (!result)
 		return false;
