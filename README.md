@@ -68,8 +68,8 @@ To debug the configuration dialog, do the following:
 [*pow(The Shining, 2.0)*](https://www.shadertoy.com/view/tlyfDV) by **dean_the_coder**  
 ![shining](screenshots/shining.png)
 
-[*Barber*](https://www.shadertoy.com/view/MsjXDm) by **okro**  
-![barber](screenshots/barber.png)
+[*isovalues 3*](https://www.shadertoy.com/view/ldfczS) by **FabriceNeyret2**  
+![isovalues](screenshots/isovalues.png)
 
 [*Cook-Torrance*](https://www.shadertoy.com/view/XsXXDB) by **xbe**  
 ![torrance](screenshots/raytracer.png)
