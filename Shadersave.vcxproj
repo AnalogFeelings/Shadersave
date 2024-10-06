@@ -29,7 +29,7 @@
     <ClInclude Include="src\Include\Settings.h" />
     <ClInclude Include="src\Include\Classes\Shader.h" />
     <ClInclude Include="src\resources\resource.h" />
-    <ClInclude Include="src\resources\Resources.h" />
+    <ClInclude Include="src\Resources\Resources.h" />
     <ClInclude Include="src\resources\TargetVer.h" />
   </ItemGroup>
   <ItemGroup>
