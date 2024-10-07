@@ -6,26 +6,10 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/analogfeelings/shadersave?label=Stargazers&style=flat-square&logo=github)](https://github.com/AnalogFeelings/shadersave/stargazers)
 [![Mastodon Follow](https://img.shields.io/mastodon/follow/109309123442839534?domain=https%3A%2F%2Ftech.lgbt%2F&style=flat-square&logo=mastodon&logoColor=white&label=Follow%20Me!&color=6364ff)](https://tech.lgbt/@analog_feelings)
 
-Shadersave is a Windows screensaver that can run Shadertoy shaders locally under OpenGL 4.3 core.
+Shadersave is a Windows screensaver that can run Shadertoy shaders locally under OpenGL 4.3 core, without using web technologies.
 
-> [!WARNING]
-> This is still under development and does not have most features implemented.
-
-# :world_map: Roadmap
-
-- [ ] Add image loading support.
-- [x] Refactor to use standard C++ naming.
-- [x] Move buffers to an array.
-- [x] Rewrite renderer entirely.
-- [x] Get buffers and channels working.
-- [x] Rewrite shadertoy loader.
-- [x] Implement remaining global variables.
-- [x] Get basic conversion code working.
-- [x] Get OpenGL renderer working.
-- [x] Clean up the code.
-- [x] Add support for loading from files instead of resources.
-- [x] Add config dialogue using Win32.
-- [x] Come up with something to get full 144Hz displaying.
+This is done by replicating the uniforms shadertoy provides to shaders, and wrapping each shader in a valid GLSL shader.  
+You can find more information by reading the source code at [Shader.cpp](https://github.com/AnalogFeelings/Shadersave/blob/master/src/Classes/Shader.cpp).
 
 # :warning: Limitations
 
@@ -33,6 +17,18 @@ Shadersave is a Windows screensaver that can run Shadertoy shaders locally under
 - Mouse and/or keyboard input wont be supported for obvious reasons.
 - Non-image and non-buffer channel inputs won't be supported.
 - Cubemap shaders will not be supported.
+
+# :package: Installing
+
+Due to a Windows design flaw, you must place screensavers in **C:\Windows\System32** for them to be recognized by the control panel
+applet.
+
+If you don't trust this project to be safe to place in system32, you can read through the code and build it yourself.  
+The program won't even have permissions to modify files in system32 unless it runs as admin.
+
+> [!WARNING]
+> Some shaders make heavy use of your system's GPU and thus can increase power usage significantly.  
+> Please take your power bill into consideration.
 
 # :hammer_and_wrench: Building
 
