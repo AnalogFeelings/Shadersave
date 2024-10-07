@@ -37,6 +37,12 @@ auto Shader::LoadShader(const std::string& vertexText) -> bool
 
 auto Shader::LoadShadertoyShader(std::string& fragmentText, const std::string& commonText) -> bool
 {
+	if (fragmentText.empty())
+	{
+		Globals::LastError = "Shader file was empty.";
+		return false;
+	}
+
 	std::stringstream stream;
 
 	stream << "#version 430 core" << "\n";
