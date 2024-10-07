@@ -20,6 +20,7 @@
 #include <Renderer.h>
 #include <Globals.h>
 
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <chrono>
@@ -28,6 +29,9 @@
 #include <GL/glew.h>
 #include <GL/wglew.h>
 #include <format>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 int ViewportWidth = 0;
 int ViewportHeight = 0;
@@ -48,6 +52,7 @@ Vector3 QuadChannelResolutions[CHANNEL_COUNT];
 std::unique_ptr<Buffer> Buffers[BUFFER_COUNT];
 unsigned int BufferTextures[BUFFER_COUNT];
 
+auto LoadTexture(const std::string& filename, unsigned int& texture, int& width, int& height) -> bool;
 auto LoadFileFromResource(int resourceId, unsigned int& size, const char*& data) -> bool;
 auto GuaranteeNullTermination(unsigned int size, const char* data) -> std::string;
 auto LoadFileFromDisk(const std::string& filename) -> std::string;
@@ -184,12 +189,22 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 
 		if (mainChannel == BUFFER_A)
 			QuadChannels[i] = BufferTextures[0];
-		if (mainChannel == BUFFER_B)
+		else if (mainChannel == BUFFER_B)
 			QuadChannels[i] = BufferTextures[1];
-		if (mainChannel == BUFFER_C)
+		else if (mainChannel == BUFFER_C)
 			QuadChannels[i] = BufferTextures[2];
-		if (mainChannel == BUFFER_D)
+		else if (mainChannel == BUFFER_D)
 			QuadChannels[i] = BufferTextures[3];
+		else if (std::filesystem::is_regular_file(mainChannel))
+		{
+			int width, height;
+			bool result = LoadTexture(mainChannel, QuadChannels[i], width, height);
+
+			if (!result)
+				return false;
+
+			QuadChannelResolutions[i] = Vector3(width, height, 0);
+		}
 
 		if (Globals::ValidBindings.contains(mainChannel))
 			QuadChannelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
@@ -227,6 +242,16 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 				channels[i] = BufferTextures[2];
 			if (bufferAChannel == BUFFER_D)
 				channels[i] = BufferTextures[3];
+			else if (std::filesystem::is_regular_file(bufferAChannel))
+			{
+				int width, height;
+				bool result = LoadTexture(bufferAChannel, channels[i], width, height);
+
+				if (!result)
+					return false;
+
+				channelResolutions[i] = Vector3(width, height, 0);
+			}
 
 			if (Globals::ValidBindings.contains(bufferAChannel))
 				channelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
@@ -262,6 +287,16 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 				channels[i] = BufferTextures[2];
 			if (bufferBChannel == BUFFER_D)
 				channels[i] = BufferTextures[3];
+			else if (std::filesystem::is_regular_file(bufferBChannel))
+			{
+				int width, height;
+				bool result = LoadTexture(bufferBChannel, channels[i], width, height);
+
+				if (!result)
+					return false;
+
+				channelResolutions[i] = Vector3(width, height, 0);
+			}
 
 			if (Globals::ValidBindings.contains(bufferBChannel))
 				channelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
@@ -297,6 +332,16 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 				channels[i] = BufferTextures[2];
 			if (bufferCChannel == BUFFER_D)
 				channels[i] = BufferTextures[3];
+			else if (std::filesystem::is_regular_file(bufferCChannel))
+			{
+				int width, height;
+				bool result = LoadTexture(bufferCChannel, channels[i], width, height);
+
+				if (!result)
+					return false;
+
+				channelResolutions[i] = Vector3(width, height, 0);
+			}
 
 			if (Globals::ValidBindings.contains(bufferCChannel))
 				channelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
@@ -332,6 +377,16 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 				channels[i] = BufferTextures[2];
 			if (bufferDChannel == BUFFER_D)
 				channels[i] = BufferTextures[3];
+			else if (std::filesystem::is_regular_file(bufferDChannel))
+			{
+				int width, height;
+				bool result = LoadTexture(bufferDChannel, channels[i], width, height);
+
+				if (!result)
+					return false;
+
+				channelResolutions[i] = Vector3(width, height, 0);
+			}
 
 			if (Globals::ValidBindings.contains(bufferDChannel))
 				channelResolutions[i] = Vector3(viewportWidth, viewportHeight, 0);
@@ -440,6 +495,30 @@ auto Renderer::UninitializeRenderer() -> void
 	wglMakeCurrent(nullptr, nullptr);
 	wglDeleteContext(Globals::GlRenderContext);
 	::ReleaseDC(Globals::MainWindow, Globals::DeviceContext);
+}
+
+auto LoadTexture(const std::string& filename, unsigned int& texture, int& width, int& height) -> bool
+{
+	stbi_set_flip_vertically_on_load(true);
+
+	int numberOfChannels;
+	unsigned char* image = stbi_load(filename.c_str(), &width, &height, &numberOfChannels, STBI_rgb_alpha);
+
+	if (!image)
+	{
+		Globals::LastError = "Could not load image file " + filename + ".";
+		return false;
+	}
+
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	stbi_image_free(image);
+
+	return true;
 }
 
 auto LoadFileFromResource(int resourceId, unsigned int& size, const char*& data) -> bool

@@ -18,6 +18,7 @@
 #include <Defines.h>
 #include <Settings.h>
 #include <Globals.h>
+#include <Utils.h>
 
 #include <windows.h>
 #include <scrnsave.h>
@@ -258,12 +259,7 @@ auto OpenFilePicker(HWND owner) -> std::string
 	if(FAILED(currentResult))
 		return std::string();
 
-	unsigned long pathLength = std::wcslen(filePath);
-	std::unique_ptr<CHAR[]> filePathConverted = std::make_unique<CHAR[]>(pathLength + 1);
-
-	std::wcstombs(filePathConverted.get(), filePath, pathLength);
-
-	std::string result = std::string(filePathConverted.get());
+	std::string result = Utils::ConvertWideStringToNarrow(filePath);
 
 	CoTaskMemFree(filePath);
 

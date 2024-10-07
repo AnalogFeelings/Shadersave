@@ -16,26 +16,20 @@
 
 #pragma once
 
-#include <Defines.h>
-
-#include <windows.h>
 #include <string>
-#include <unordered_set>
 
-namespace Globals
+namespace Utils
 {
-	inline HWND MainWindow;
-	inline HDC DeviceContext;
-	inline HGLRC GlRenderContext;
-	inline RECT ClientRect;
+	/// <summary>
+	/// Returns the last Win32 error in string representation.
+	/// </summary>
+	/// <returns>Self-explanatory.</returns>
+	auto GetLastErrorAsString() -> std::string;
 
-	inline std::string LastError;
-
-	inline std::unordered_set<std::string> ValidBindings =
-	{
-		BUFFER_A,
-		BUFFER_B,
-		BUFFER_C,
-		BUFFER_D
-	};
+	/// <summary>
+	/// Converts a wide string into a narrow C++ string.
+	/// </summary>
+	/// <param name="string">A pointer to the string to convert.</param>
+	/// <returns>A conversion to UTF-8 of the input string.</returns>
+	auto ConvertWideStringToNarrow(const wchar_t* string) -> std::string;
 }

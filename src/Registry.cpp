@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <Utils.h>
 #include <Globals.h>
 #include <Registry.h>
 
@@ -36,7 +37,7 @@ auto Registry::SetString(const std::string& subKey, const std::string& item, con
     LSTATUS result = ::RegSetKeyValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), REG_SZ, value.c_str(), value.length());
     if (result != ERROR_SUCCESS)
     {
-        Globals::LastError = Globals::GetLastErrorAsString();
+        Globals::LastError = Utils::GetLastErrorAsString();
 
         return false;
     }

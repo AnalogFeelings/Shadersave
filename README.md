@@ -37,7 +37,7 @@ To build this, you will need the following:
 - The **Desktop development with C++** workload.
 - The **Windows SDK**.
 
-You must also place [GLEW](https://glew.sourceforge.net/) under the **"libs"** folder.
+You must also place [GLEW](https://glew.sourceforge.net/) and [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) under the **"libs"** folder.
 
 # :beetle: Debugging
 

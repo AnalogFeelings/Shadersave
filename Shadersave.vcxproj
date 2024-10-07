@@ -13,12 +13,12 @@
   <ItemGroup>
     <ClCompile Include="src\Classes\Buffer.cpp" />
     <ClCompile Include="src\ConfigDialog.cpp" />
-    <ClCompile Include="src\Globals.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
     <ClCompile Include="src\EntryPoint.cpp" />
     <ClCompile Include="src\Registry.cpp" />
     <ClCompile Include="src\Settings.cpp" />
     <ClCompile Include="src\Classes\Shader.cpp" />
+    <ClCompile Include="src\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Include\Classes\Buffer.h" />
@@ -28,6 +28,7 @@
     <ClInclude Include="src\Include\Registry.h" />
     <ClInclude Include="src\Include\Settings.h" />
     <ClInclude Include="src\Include\Classes\Shader.h" />
+    <ClInclude Include="src\Include\Utils.h" />
     <ClInclude Include="src\resources\resource.h" />
     <ClInclude Include="src\Resources\Resources.h" />
     <ClInclude Include="src\resources\TargetVer.h" />
@@ -91,7 +92,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)src\resources;$(ProjectDir)src\include;$(ProjectDir)lib\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\resources;$(ProjectDir)src\include;$(ProjectDir)lib\glew\include;$(ProjectDir)lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -109,7 +110,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;WIN32_LEAN_AND_MEAN;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)src\resources;$(ProjectDir)src\include;$(ProjectDir)lib\glew\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\resources;$(ProjectDir)src\include;$(ProjectDir)lib\glew\include;$(ProjectDir)lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>

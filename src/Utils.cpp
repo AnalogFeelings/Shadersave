@@ -14,9 +14,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#include <Globals.h>
+#include <Utils.h>
 
-auto Globals::GetLastErrorAsString() -> std::string
+#include <Windows.h>
+#include <memory>
+
+auto Utils::GetLastErrorAsString() -> std::string
 {
     long errorMessageID = ::GetLastError();
     if (errorMessageID == 0)
@@ -32,4 +35,14 @@ auto Globals::GetLastErrorAsString() -> std::string
     LocalFree(messageBuffer);
 
     return message;
+}
+
+auto Utils::ConvertWideStringToNarrow(const wchar_t* string) -> std::string
+{
+    unsigned long length = std::wcslen(string);
+    std::unique_ptr<CHAR[]> stringConverted = std::make_unique<CHAR[]>(length + 1);
+
+    std::wcstombs(stringConverted.get(), string, length);
+
+    return std::string(stringConverted.get());
 }
