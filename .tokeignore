@@ -1,0 +1,16 @@
+.vs/
+.git/
+output/
+lib/
+obj/
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.DotSettings
+*.md
+*.filters
+*.user
+*.gitignore
+*.gitattributes
+*.manifest
+*.txt
