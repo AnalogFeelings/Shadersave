@@ -1,5 +1,5 @@
 // Shadersave - A screensaver that can run Shadertoy shaders locally.
-// Copyright (C) 2024-2024 Analog Feelings
+// Copyright (C) 2024 Analog Feelings
 // 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published
