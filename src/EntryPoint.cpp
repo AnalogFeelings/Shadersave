@@ -35,7 +35,19 @@ auto WINAPI ScreenSaverProc(HWND hWnd, unsigned int message, WPARAM wParam, LPAR
 			int windowHeight = Globals::ClientRect.bottom;
 			RenderSettings settings = Settings::LoadFromRegistry();
 
+			Globals::FrameDurationUs = static_cast<int>(1000000 / std::stoi(settings.FramerateCap));
+
 			Globals::MainWindow = hWnd;
+
+			Globals::FrameTimer = CreateWaitableTimerW(NULL, TRUE, L"RenderLoopTimer");
+			if (!Globals::FrameTimer)
+			{
+				std::string error = "Error initializing WaitableTimer.";
+
+				::MessageBox(hWnd, error.c_str(), "Error!", MB_OK | MB_ICONERROR | MB_TOPMOST);
+
+				return -1;
+			}
 
 			bool contextResult = Renderer::InitContext(hWnd, Globals::DeviceContext, Globals::GlRenderContext);
 			if (!contextResult)
@@ -61,6 +73,10 @@ auto WINAPI ScreenSaverProc(HWND hWnd, unsigned int message, WPARAM wParam, LPAR
 		}
 		case WM_PAINT:
 			PAINTSTRUCT paintStruct;
+
+			Globals::FrameDueTime.QuadPart = -1 * Globals::FrameDurationUs * 10;
+			SetWaitableTimer(Globals::FrameTimer, &Globals::FrameDueTime, 0, NULL, NULL, FALSE);
+			WaitForSingleObject(Globals::FrameTimer, INFINITE);
 
 			::BeginPaint(hWnd, &paintStruct);
 			Renderer::DoRender(Globals::DeviceContext);

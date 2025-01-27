@@ -84,6 +84,8 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, unsigned int message, WPARAM w
 
 			RenderSettings settings = Settings::LoadFromRegistry();
 
+			::SetDlgItemText(hDlg, IDC_FRAMERATECAP, settings.FramerateCap.c_str());
+
 			::SetDlgItemText(hDlg, IDC_MAINSHADERPATH, settings.MainPath.c_str());
 			::SetDlgItemText(hDlg, IDC_BUFFERASHADERPATH, settings.BufferAPath.c_str());
 			::SetDlgItemText(hDlg, IDC_BUFFERBSHADERPATH, settings.BufferBPath.c_str());
@@ -142,6 +144,8 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, unsigned int message, WPARAM w
 				{
 					RenderSettings settings =
 					{
+						.FramerateCap = ::GetControlText(hDlg, IDC_FRAMERATECAP),
+
 						.CommonPath = ::GetControlText(hDlg, IDC_COMMONSHADERPATH),
 
 						.MainPath = ::GetControlText(hDlg, IDC_MAINSHADERPATH),

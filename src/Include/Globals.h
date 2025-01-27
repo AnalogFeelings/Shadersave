@@ -29,6 +29,10 @@ namespace Globals
 	inline HGLRC GlRenderContext;
 	inline RECT ClientRect;
 
+	inline HANDLE FrameTimer;
+	inline LARGE_INTEGER FrameDueTime;
+	inline int FrameDurationUs;
+
 	inline std::string LastError;
 
 	inline std::unordered_set<std::string> ValidBindings =
