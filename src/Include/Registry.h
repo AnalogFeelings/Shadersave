@@ -17,9 +17,13 @@
 #pragma once
 
 #include <string>
+#include <windows.h>
 
 namespace Registry
 {
 	auto ReadString(const std::string& subKey, const std::string& item) -> std::string;
 	auto SetString(const std::string& subKey, const std::string& item, const std::string& value) -> bool;
+
+	auto ReadDword(const std::string& subKey, const std::string& item) -> UINT;
+	auto SetDword(const std::string& subKey, const std::string& item, UINT value) -> bool;
 }

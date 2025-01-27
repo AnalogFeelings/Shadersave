@@ -35,7 +35,7 @@ auto WINAPI ScreenSaverProc(HWND hWnd, unsigned int message, WPARAM wParam, LPAR
 			int windowHeight = Globals::ClientRect.bottom;
 			RenderSettings settings = Settings::LoadFromRegistry();
 
-			Globals::FrameDurationUs = static_cast<int>(1000000 / std::stoi(settings.FramerateCap));
+			Globals::FrameDurationUs = static_cast<int>(1000000 / settings.FramerateCap);
 
 			Globals::MainWindow = hWnd;
 

@@ -28,7 +28,7 @@ auto Settings::LoadFromRegistry() -> RenderSettings
 {
 	RenderSettings settings =
 	{
-		.FramerateCap = Registry::ReadString(REGISTRY_SUBKEY, FRAMERATE_CAP),
+		.FramerateCap = Registry::ReadDword(REGISTRY_SUBKEY, FRAMERATE_CAP),
 
 		.CommonPath = Registry::ReadString(REGISTRY_SUBKEY, COMMON_PATH),
 
@@ -87,7 +87,7 @@ auto Settings::SaveToRegistry(RenderSettings& settings) -> bool
 {
 	ValidateSettings(settings);
 
-	bool result = Registry::SetString(REGISTRY_SUBKEY, FRAMERATE_CAP, settings.FramerateCap);
+	bool result = Registry::SetDword(REGISTRY_SUBKEY, FRAMERATE_CAP, settings.FramerateCap);
 	if (!result)
 		return false;
 
@@ -180,8 +180,8 @@ auto Settings::SaveToRegistry(RenderSettings& settings) -> bool
 
 auto ValidateSettings(RenderSettings& settings) -> void
 {
-	if (settings.FramerateCap != "" && (std::stoi(settings.FramerateCap) < 0 || std::stoi(settings.FramerateCap) > 500))
-		settings.FramerateCap = "60"; // Default framerate cap, seems reasonable to me.
+	if (settings.FramerateCap < 0 || settings.FramerateCap > 500)
+		settings.FramerateCap = 60; // Default framerate cap, seems reasonable to me.
 
 	if (!std::filesystem::is_regular_file(settings.CommonPath))
 		settings.CommonPath = std::string();

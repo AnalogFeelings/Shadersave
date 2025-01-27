@@ -18,8 +18,6 @@
 #include <Globals.h>
 #include <Registry.h>
 
-#include <Windows.h>
-
 auto Registry::ReadString(const std::string& subKey, const std::string& item) -> std::string
 {
     char data[MAX_PATH];
@@ -32,9 +30,34 @@ auto Registry::ReadString(const std::string& subKey, const std::string& item) ->
     return std::string(data);
 }
 
+auto Registry::ReadDword(const std::string& subKey, const std::string& item) -> UINT
+{
+    DWORD data;
+    DWORD bufferSize = sizeof(DWORD);
+
+    LSTATUS result = ::RegGetValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), RRF_RT_DWORD, nullptr, &data, &bufferSize);
+    if (result != ERROR_SUCCESS)
+        return INFINITE;
+
+    return data;
+}
+
 auto Registry::SetString(const std::string& subKey, const std::string& item, const std::string& value) -> bool
 {
     LSTATUS result = ::RegSetKeyValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), REG_SZ, value.c_str(), value.length());
+    if (result != ERROR_SUCCESS)
+    {
+        Globals::LastError = Utils::GetLastErrorAsString();
+
+        return false;
+    }
+
+    return true;
+}
+
+auto Registry::SetDword(const std::string& subKey, const std::string& item, UINT value) -> bool
+{
+    LSTATUS result = ::RegSetKeyValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), REG_DWORD, &value, sizeof(UINT));
     if (result != ERROR_SUCCESS)
     {
         Globals::LastError = Utils::GetLastErrorAsString();
