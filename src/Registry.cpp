@@ -30,10 +30,10 @@ auto Registry::ReadString(const std::string& subKey, const std::string& item) ->
     return std::string(data);
 }
 
-auto Registry::ReadDword(const std::string& subKey, const std::string& item) -> UINT
+auto Registry::ReadDword(const std::string& subKey, const std::string& item) -> unsigned long
 {
-    DWORD data;
-    DWORD bufferSize = sizeof(DWORD);
+    unsigned long data;
+    unsigned long bufferSize = sizeof(DWORD);
 
     LSTATUS result = ::RegGetValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), RRF_RT_DWORD, nullptr, &data, &bufferSize);
     if (result != ERROR_SUCCESS)
@@ -55,7 +55,7 @@ auto Registry::SetString(const std::string& subKey, const std::string& item, con
     return true;
 }
 
-auto Registry::SetDword(const std::string& subKey, const std::string& item, UINT value) -> bool
+auto Registry::SetDword(const std::string& subKey, const std::string& item, unsigned long value) -> bool
 {
     LSTATUS result = ::RegSetKeyValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), REG_DWORD, &value, sizeof(UINT));
     if (result != ERROR_SUCCESS)
