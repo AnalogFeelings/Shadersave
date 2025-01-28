@@ -17,7 +17,6 @@
 #pragma once
 
 #include <chrono>
-#include <Windows.h>
 
 #define SHADERSAVE_VERSION "1.1"
 
@@ -92,7 +91,7 @@ struct Uniforms
 
 struct RenderSettings
 {
-	UINT FramerateCap;
+	unsigned int FramerateCap;
 
 	std::string CommonPath;
 
