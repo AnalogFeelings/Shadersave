@@ -16,26 +16,27 @@
 
 #pragma once
 
-#include <Defines.h>
+#include <Windows.h>
 
-#include <windows.h>
-#include <string>
-#include <unordered_set>
+#pragma once
 
-namespace Globals
-{
-	inline HWND MainWindow;
-	inline HDC DeviceContext;
-	inline HGLRC GlRenderContext;
-	inline RECT ClientRect;
+class FrameLimiter {
+public:
+	explicit FrameLimiter(int targetFPS = 60);
+	void WaitForFrame();
+	void DisplayFPS();
 
-	inline std::string LastError;
+private:
+	// Maybe consider using Windows definitions.
+	int m_targetFPS;
+	unsigned long long m_QPCFrequency;
+	unsigned long long m_frameStart, m_frameEnd;
+	unsigned long long m_averageFPS, m_ticksAccumulator;
+	unsigned long long m_elapsedTime, m_overSleepDuration;
+	unsigned long long m_frameCount;
+	unsigned long long m_targetFrameTime;
+	unsigned long long m_lastFPSUpdateTime;
 
-	inline std::unordered_set<std::string> ValidBindings =
-	{
-		BUFFER_A,
-		BUFFER_B,
-		BUFFER_C,
-		BUFFER_D
-	};
-}
+	void SleepUntilNextFrame();
+	unsigned long long GetElapsedMicroseconds(unsigned long long startCount, unsigned long long endCount);
+};
