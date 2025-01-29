@@ -25,8 +25,6 @@
 #include <Globals.h>
 #include <Classes/FrameLimiter.h>
 
-FrameLimiter frameLimiter;
-
 auto WINAPI ScreenSaverProc(HWND hWnd, unsigned int message, WPARAM wParam, LPARAM lParam) -> LRESULT
 {
 	switch (message)
@@ -37,8 +35,6 @@ auto WINAPI ScreenSaverProc(HWND hWnd, unsigned int message, WPARAM wParam, LPAR
 			int windowWidth = Globals::ClientRect.right;
 			int windowHeight = Globals::ClientRect.bottom;
 			RenderSettings settings = Settings::LoadFromRegistry();
-
-			frameLimiter = FrameLimiter(settings.FramerateCap);
 
 			Globals::MainWindow = hWnd;
 
@@ -69,7 +65,6 @@ auto WINAPI ScreenSaverProc(HWND hWnd, unsigned int message, WPARAM wParam, LPAR
 
 			::BeginPaint(hWnd, &paintStruct);
 			Renderer::DoRender(Globals::DeviceContext);
-			frameLimiter.WaitForFrame();
 			::EndPaint(hWnd, &paintStruct);
 
 			::InvalidateRect(hWnd, &Globals::ClientRect, FALSE);

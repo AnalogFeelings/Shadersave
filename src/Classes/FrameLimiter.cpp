@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
-
 #include <Classes/FrameLimiter.h>
 #include <Windows.h>
 #include <atlbase.h>
@@ -30,7 +28,7 @@ FrameLimiter::FrameLimiter(int targetFPS):
     QueryPerformanceCounter((LARGE_INTEGER*)&m_frameStart);
 }
 
-unsigned long long FrameLimiter::GetElapsedMicroseconds(unsigned long long startCount, unsigned long long endCount) 
+auto FrameLimiter::GetElapsedMicroseconds(unsigned long long startCount, unsigned long long endCount) -> unsigned long long
 {
     INT64 elapsedMicroseconds = endCount - startCount;
     elapsedMicroseconds *= 1000000;
@@ -38,7 +36,7 @@ unsigned long long FrameLimiter::GetElapsedMicroseconds(unsigned long long start
     return elapsedMicroseconds;
 }
 
-void FrameLimiter::SleepUntilNextFrame() 
+auto FrameLimiter::SleepUntilNextFrame() -> void
 {
     while (m_elapsedTime < m_targetFrameTime) 
     {
@@ -55,7 +53,7 @@ void FrameLimiter::SleepUntilNextFrame()
     }
 }
 
-void FrameLimiter::WaitForFrame() 
+auto FrameLimiter::WaitForFrame() -> void
 {
     QueryPerformanceCounter((LARGE_INTEGER*)&m_frameEnd);
     m_elapsedTime = GetElapsedMicroseconds(m_frameStart, m_frameEnd);
@@ -75,7 +73,7 @@ void FrameLimiter::WaitForFrame()
     m_frameStart = m_frameEnd;
 }
 
-void FrameLimiter::DisplayFPS() 
+auto FrameLimiter::DisplayFPS() -> void
 {
     QueryPerformanceCounter((LARGE_INTEGER*)&m_frameEnd);
     INT64 currentTime = m_frameEnd;

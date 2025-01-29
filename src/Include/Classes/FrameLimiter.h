@@ -23,8 +23,8 @@
 class FrameLimiter {
 public:
 	explicit FrameLimiter(int targetFPS = 60);
-	void WaitForFrame();
-	void DisplayFPS();
+	auto WaitForFrame() -> void;
+	auto DisplayFPS() -> void;
 
 private:
 	// Maybe consider using Windows definitions.
@@ -37,6 +37,6 @@ private:
 	unsigned long long m_targetFrameTime;
 	unsigned long long m_lastFPSUpdateTime;
 
-	void SleepUntilNextFrame();
-	unsigned long long GetElapsedMicroseconds(unsigned long long startCount, unsigned long long endCount);
+	auto SleepUntilNextFrame() -> void;
+	auto GetElapsedMicroseconds(unsigned long long startCount, unsigned long long endCount) -> unsigned long long;
 };
