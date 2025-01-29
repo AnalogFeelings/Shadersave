@@ -16,10 +16,6 @@
 
 #pragma once
 
-#include <Windows.h>
-
-#pragma once
-
 class FrameLimiter 
 {
 public:
