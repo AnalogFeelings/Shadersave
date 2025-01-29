@@ -20,7 +20,8 @@
 
 #pragma once
 
-class FrameLimiter {
+class FrameLimiter 
+{
 public:
 	explicit FrameLimiter(int targetFPS = 60);
 	auto WaitForFrame() -> void;
