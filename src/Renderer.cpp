@@ -420,6 +420,8 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 
 auto Renderer::DoRender(HDC deviceContext) -> void
 {
+	frameLimiter.Start();
+
 	ProgramNow = GetUnixTimeInMs();
 
 	std::time_t currentCTime = std::time(nullptr);
@@ -470,7 +472,9 @@ auto Renderer::DoRender(HDC deviceContext) -> void
 
 	::SwapBuffers(deviceContext);
 
-	frameLimiter.WaitForFrame();
+	frameLimiter.End();
+
+	while (!frameLimiter.LimitReached()) { /* busy wait */ }
 
 	unsigned long currentTime = GetUnixTimeInMs();
 	ProgramDelta = currentTime - ProgramNow;

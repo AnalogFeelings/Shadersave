@@ -22,20 +22,22 @@
 class FrameLimiter 
 {
 public:
-	explicit FrameLimiter(int targetFPS);
+	FrameLimiter() : m_perfCounterStart(0), m_perfCounterEnd(0), m_perfCounterLimit(0), m_qpcFreq(0) {}
+
+	FrameLimiter(int targetFPS);
 	auto Start() -> void;
 	auto End() -> void;
-	auto SetTimeLimit(uint64_t microSeconds) -> void;
-	auto GetElapsedUs() -> uint64_t;
-	auto GetRemainingUs() -> uint64_t;
+	auto LimitReached() -> bool;
 
 private:
 	auto GetPerformanceCounter() -> uint64_t;
 	auto GetPerformanceCounterFrequency() -> uint64_t;
+	auto GetElapsedUs() -> uint64_t;
+	auto GetRemainingUs() -> uint64_t;
 
 	uint64_t m_perfCounterStart;
 	uint64_t m_perfCounterEnd;
 	uint64_t m_perfCounterLimit;
 
-	static uint64_t sm_qpcFreq;
+	uint64_t m_qpcFreq;
 };
