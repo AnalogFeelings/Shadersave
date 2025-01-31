@@ -16,24 +16,26 @@
 
 #pragma once
 
+#include <stdint.h>
+#include <Windows.h>
+
 class FrameLimiter 
 {
 public:
-	explicit FrameLimiter(int targetFPS = 60);
-	auto WaitForFrame() -> void;
-	auto DisplayFPS() -> void;
+	explicit FrameLimiter(int targetFPS);
+	auto Start() -> void;
+	auto End() -> void;
+	auto SetTimeLimit(uint64_t microSeconds) -> void;
+	auto GetElapsedUs() -> uint64_t;
+	auto GetRemainingUs() -> uint64_t;
 
 private:
-	// Maybe consider using Windows definitions.
-	int m_targetFPS;
-	unsigned long long m_QPCFrequency;
-	unsigned long long m_frameStart, m_frameEnd;
-	unsigned long long m_averageFPS, m_ticksAccumulator;
-	unsigned long long m_elapsedTime, m_overSleepDuration;
-	unsigned long long m_frameCount;
-	unsigned long long m_targetFrameTime;
-	unsigned long long m_lastFPSUpdateTime;
+	auto GetPerformanceCounter() -> uint64_t;
+	auto GetPerformanceCounterFrequency() -> uint64_t;
 
-	auto SleepUntilNextFrame() -> void;
-	auto GetElapsedMicroseconds(unsigned long long startCount, unsigned long long endCount) -> unsigned long long;
+	uint64_t m_perfCounterStart;
+	uint64_t m_perfCounterEnd;
+	uint64_t m_perfCounterLimit;
+
+	static uint64_t sm_qpcFreq;
 };

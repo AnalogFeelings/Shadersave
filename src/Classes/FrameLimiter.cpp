@@ -15,75 +15,32 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <Classes/FrameLimiter.h>
-#include <Windows.h>
-#include <atlbase.h>
-#include <string>
 
-FrameLimiter::FrameLimiter(int targetFPS): 
-    m_targetFPS(targetFPS), m_ticksAccumulator(0), m_frameCount(0), m_averageFPS(0),
-    m_overSleepDuration(0), m_elapsedTime(0), m_targetFrameTime(1000000 / targetFPS) 
+FrameLimiter::FrameLimiter(int targetFPS)
 {
-    QueryPerformanceFrequency((LARGE_INTEGER*)&m_QPCFrequency);
-    m_frameStart = m_frameEnd = 0;
-    QueryPerformanceCounter((LARGE_INTEGER*)&m_frameStart);
+	sm_qpcFreq = GetPerformanceCounterFrequency();
+	m_perfCounterStart = GetPerformanceCounter();
+
+	m_perfCounterLimit = m_perfCounterStart + (((1'000'000 / targetFPS) * sm_qpcFreq) / 1'000'000);
 }
 
-auto FrameLimiter::GetElapsedMicroseconds(unsigned long long startCount, unsigned long long endCount) -> unsigned long long
+auto FrameLimiter::GetPerformanceCounter() -> uint64_t
 {
-    INT64 elapsedMicroseconds = endCount - startCount;
-    elapsedMicroseconds *= 1000000;
-    elapsedMicroseconds /= m_QPCFrequency;
-    return elapsedMicroseconds;
+	LARGE_INTEGER retval;
+	QueryPerformanceCounter(&retval);
+
+	return retval.QuadPart;
 }
 
-auto FrameLimiter::SleepUntilNextFrame() -> void
+auto FrameLimiter::GetPerformanceCounterFrequency() -> uint64_t
 {
-    while (m_elapsedTime < m_targetFrameTime) 
-    {
-        if ((m_elapsedTime + m_overSleepDuration) >= m_targetFrameTime) 
-        {
-            m_overSleepDuration -= m_targetFrameTime - m_elapsedTime;
-            break;
-        }
-        Sleep(1);
-        QueryPerformanceCounter((LARGE_INTEGER*)&m_frameEnd);
-        m_elapsedTime = GetElapsedMicroseconds(m_frameStart, m_frameEnd);
-        if (m_elapsedTime > m_targetFrameTime)
-            m_overSleepDuration += m_elapsedTime - m_targetFrameTime;
-    }
+	LARGE_INTEGER retval;
+	QueryPerformanceFrequency(&retval);
+
+	return retval.QuadPart;
 }
 
-auto FrameLimiter::WaitForFrame() -> void
+auto FrameLimiter::GetElapsedUs() -> uint64_t
 {
-    QueryPerformanceCounter((LARGE_INTEGER*)&m_frameEnd);
-    m_elapsedTime = GetElapsedMicroseconds(m_frameStart, m_frameEnd);
-    SleepUntilNextFrame();
-
-    QueryPerformanceCounter((LARGE_INTEGER*)&m_frameEnd);
-    m_ticksAccumulator += m_frameEnd - m_frameStart;
-    m_frameCount++;
-
-    if ((m_frameCount % m_targetFPS) == 0) 
-    {
-        m_averageFPS = ((m_QPCFrequency * m_targetFPS) + (m_ticksAccumulator - 1)) / m_ticksAccumulator;
-        m_ticksAccumulator = 0;
-        m_frameCount = 0;
-    }
-
-    m_frameStart = m_frameEnd;
-}
-
-auto FrameLimiter::DisplayFPS() -> void
-{
-    QueryPerformanceCounter((LARGE_INTEGER*)&m_frameEnd);
-    INT64 currentTime = m_frameEnd;
-
-    if (currentTime - m_lastFPSUpdateTime >= m_QPCFrequency) 
-    {
-        TCHAR outstr[1024];
-        _sntprintf_s(outstr, _countof(outstr), _TRUNCATE, _T("FPS: %lld\n"), m_averageFPS);
-        OutputDebugStringA(outstr);
-
-        m_lastFPSUpdateTime = currentTime;
-    }
+	return ((m_perfCounterEnd - m_perfCounterStart) * 1'000'000 / sm_qpcFreq);
 }
