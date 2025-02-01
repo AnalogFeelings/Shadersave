@@ -18,61 +18,84 @@
 
 FrameLimiter::FrameLimiter(int targetFPS)
 {
-	m_qpcFreq = GetPerformanceCounterFrequency();
-	m_perfCounterStart = GetPerformanceCounter();
+    m_qpcFreq = GetPerformanceCounterFrequency();
+    m_frameTime = m_qpcFreq / targetFPS;
 
-	m_perfCounterLimit = m_perfCounterStart + (((1'000'000 / targetFPS) * m_qpcFreq) / 1'000'000);
+    m_perfCounterStart = GetPerformanceCounter();
+    m_perfCounterLimit = m_perfCounterStart + m_frameTime;
 }
 
-auto FrameLimiter::Start() -> void
+auto FrameLimiter::StartTimer() -> void
 {
-	m_perfCounterStart = GetPerformanceCounter();
+    m_perfCounterStart = GetPerformanceCounter();
 }
 
-auto FrameLimiter::End() -> void
+auto FrameLimiter::EndTimer() -> void
 {
-	m_perfCounterEnd = GetPerformanceCounter();
+    m_perfCounterEnd = GetPerformanceCounter();
+    m_perfCounterLimit = m_perfCounterStart + m_frameTime;
+
+    if (m_perfCounterLimit < m_perfCounterEnd)
+        m_perfCounterLimit = m_perfCounterEnd;
 }
 
 auto FrameLimiter::LimitReached() -> bool
 {
-	uint64_t perfCountNow = GetPerformanceCounter();
-
-	if (perfCountNow < m_perfCounterStart)
-	{
-		m_perfCounterLimit = perfCountNow + (m_perfCounterLimit - m_perfCounterStart);
-	}
-
-	return (perfCountNow >= m_perfCounterLimit);
+    return (GetPerformanceCounter() >= m_perfCounterLimit);
 }
 
+auto FrameLimiter::WaitForNextFrame() -> void
+{
+    while (!LimitReached())
+    {
+        uint64_t remainingUs = GetRemainingUs();
+
+        // We can sleep for most of the time so that we're not hogging the CPU.
+        if (remainingUs > 2000)
+        {
+            std::this_thread::sleep_for(std::chrono::microseconds(remainingUs - 1000));
+        }
+        else
+        {
+            while (!LimitReached()) { _mm_pause(); }
+            break;
+        }
+    }
+}
 
 auto FrameLimiter::GetPerformanceCounter() -> uint64_t
 {
-	LARGE_INTEGER retval;
-	QueryPerformanceCounter(&retval);
-
-	return retval.QuadPart;
+    LARGE_INTEGER retval;
+    QueryPerformanceCounter(&retval);
+    return retval.QuadPart;
 }
 
 auto FrameLimiter::GetPerformanceCounterFrequency() -> uint64_t
 {
-	LARGE_INTEGER retval;
-	QueryPerformanceFrequency(&retval);
-
-	return retval.QuadPart;
-}
-
-
-auto FrameLimiter::GetElapsedUs() -> uint64_t
-{
-	return ((m_perfCounterEnd - m_perfCounterStart) * 1'000'000 / m_qpcFreq);
+    LARGE_INTEGER retval;
+    QueryPerformanceFrequency(&retval);
+    return retval.QuadPart;
 }
 
 auto FrameLimiter::GetRemainingUs() -> uint64_t
 {
-	uint64_t perfCountNow = GetPerformanceCounter();
-	uint64_t nPerformanceCountLeft = perfCountNow < m_perfCounterLimit ? m_perfCounterLimit - perfCountNow : 0;
+    uint64_t perfCountNow = GetPerformanceCounter();
+    uint64_t nPerformanceCountLeft = perfCountNow < m_perfCounterLimit ? m_perfCounterLimit - perfCountNow : 0;
 
-	return (nPerformanceCountLeft * 1'000'000 / m_qpcFreq);
+    return (nPerformanceCountLeft * 1'000'000 / m_qpcFreq);
+}
+
+auto FrameLimiter::SetHighPrecisionTiming(bool enable) -> void
+{
+    static bool initialized = false;
+    if (enable && !initialized)
+    {
+        timeBeginPeriod(1);
+        initialized = true;
+    }
+    else if (!enable && initialized)
+    {
+        timeEndPeriod(1);
+        initialized = false;
+    }
 }

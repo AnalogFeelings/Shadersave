@@ -24,6 +24,7 @@
 #include <filesystem>
 #include <memory>
 #include <string>
+#include <thread>
 #include <chrono>
 #include <iostream>
 #include <fstream>
@@ -414,13 +415,19 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 
 	// Initialize framerate limiter.
 	frameLimiter = FrameLimiter(settings.FramerateCap);
+	
+	// Request the minimum possible resolution for periodic Win32 timers.
+	frameLimiter.SetHighPrecisionTiming(true);
+
+	// Disable V-sync to allow for arbitrary frametimes.
+	wglSwapIntervalEXT(0);
 
 	return TRUE;
 }
 
 auto Renderer::DoRender(HDC deviceContext) -> void
 {
-	frameLimiter.Start();
+	frameLimiter.StartTimer();
 
 	ProgramNow = GetUnixTimeInMs();
 
@@ -472,9 +479,8 @@ auto Renderer::DoRender(HDC deviceContext) -> void
 
 	::SwapBuffers(deviceContext);
 
-	frameLimiter.End();
-
-	while (!frameLimiter.LimitReached()) { /* busy wait */ }
+	frameLimiter.EndTimer();
+	frameLimiter.WaitForNextFrame();
 
 	unsigned long currentTime = GetUnixTimeInMs();
 	ProgramDelta = currentTime - ProgramNow;
@@ -484,6 +490,9 @@ auto Renderer::DoRender(HDC deviceContext) -> void
 
 auto Renderer::UninitializeRenderer() -> void
 {
+	// Return to the default periodic timer resolution.
+	frameLimiter.SetHighPrecisionTiming(false);
+
 	glDeleteVertexArrays(1, &QuadVao);
 	glDeleteBuffers(1, &QuadVbo);
 	glDeleteBuffers(1, &QuadEbo);
