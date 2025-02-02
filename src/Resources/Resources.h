@@ -38,6 +38,7 @@
 #define IDC_BUFFERBCHANN1BROWSE         1039
 #define IDC_BUFFERBCHANN2BROWSE         1040
 #define IDC_BUFFERBCHANN3BROWSE         1041
+#define IDC_FRAMERATECAP                1044
 #define IDC_BUFFERCSHADERPATH           1052
 #define IDC_BUFFERCSHADERBROWSE         1053
 #define IDC_BUFFERCCHANNEL0             1054
@@ -70,7 +71,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        137
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1032
+#define _APS_NEXT_CONTROL_VALUE         1045
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

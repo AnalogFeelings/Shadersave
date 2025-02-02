@@ -91,6 +91,8 @@ struct Uniforms
 
 struct RenderSettings
 {
+	unsigned int FramerateCap;
+
 	std::string CommonPath;
 
 	std::string MainPath;

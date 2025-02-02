@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+#include <Classes/FrameLimiter.h>
 #include <Classes/Shader.h>
 #include <Classes/Buffer.h>
 #include <Resources.h>
@@ -23,6 +24,7 @@
 #include <filesystem>
 #include <memory>
 #include <string>
+#include <thread>
 #include <chrono>
 #include <iostream>
 #include <fstream>
@@ -51,6 +53,10 @@ Vector3 QuadChannelResolutions[CHANNEL_COUNT];
 
 std::unique_ptr<Buffer> Buffers[BUFFER_COUNT];
 unsigned int BufferTextures[BUFFER_COUNT];
+
+Uniforms ShaderUniforms;
+
+FrameLimiter frameLimiter;
 
 auto LoadTexture(const std::string& filename, unsigned int& texture, int& width, int& height) -> bool;
 auto LoadFileFromResource(int resourceId, unsigned int& size, const char*& data) -> bool;
@@ -407,36 +413,44 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 	// Set up startup time.
 	ProgramStart = GetUnixTimeInMs();
 
+	// Initialize framerate limiter.
+	frameLimiter = FrameLimiter(settings.FramerateCap);
+	
+	// Request the minimum possible resolution for periodic Win32 timers.
+	frameLimiter.SetHighPrecisionTiming(true);
+
+	// Disable V-sync to allow for arbitrary frametimes.
+	wglSwapIntervalEXT(0);
+
 	return TRUE;
 }
 
-auto Renderer::DoRender(HDC deviceContext) -> VOID
+auto Renderer::DoRender(HDC deviceContext) -> void
 {
+	frameLimiter.StartTimer();
+
 	ProgramNow = GetUnixTimeInMs();
 
 	std::time_t currentCTime = std::time(nullptr);
 	std::tm* detailedTime = std::localtime(&currentCTime);
 
-	Uniforms uniforms =
-	{
-		.Time = (ProgramNow - ProgramStart) / 1000.0f,
-		.DeltaTime = ProgramDelta / 1000.0f,
-		.FrameRate = 1000.0f / ProgramDelta,
+	ShaderUniforms.Time = (ProgramNow - ProgramStart) / 1000.0f,
+	ShaderUniforms.DeltaTime = ProgramDelta / 1000.0f,
+	ShaderUniforms.FrameRate = 1000.0f / ProgramDelta,
 
-		.Year = detailedTime->tm_year + 1900,
-		.Month = detailedTime->tm_mon + 1,
-		.Day = detailedTime->tm_mday,
-		.Seconds = (detailedTime->tm_hour * 3600) + (detailedTime->tm_min * 60) + detailedTime->tm_sec,
+	ShaderUniforms.Year = detailedTime->tm_year + 1900,
+	ShaderUniforms.Month = detailedTime->tm_mon + 1,
+	ShaderUniforms.Day = detailedTime->tm_mday,
+	ShaderUniforms.Seconds = (detailedTime->tm_hour * 3600) + (detailedTime->tm_min * 60) + detailedTime->tm_sec,
 
-		.FrameCount = FrameCount
-	};
+	ShaderUniforms.FrameCount = FrameCount;
 
 	glBindVertexArray(QuadVao);
 	for (std::unique_ptr<Buffer>& buffer : Buffers)
 	{
 		if (buffer)
 		{
-			buffer->SetupRender(uniforms);
+			buffer->SetupRender(ShaderUniforms);
 
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 		}
@@ -452,18 +466,21 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 		glBindTexture(GL_TEXTURE_2D, QuadChannels[i]);
 	}
 
-	QuadShader->SetFloatUniform("iTime", uniforms.Time);
-	QuadShader->SetFloatUniform("iTimeDelta", uniforms.DeltaTime);
-	QuadShader->SetFloatUniform("iFrameRate", uniforms.FrameRate);
+	QuadShader->SetFloatUniform("iTime", ShaderUniforms.Time);
+	QuadShader->SetFloatUniform("iTimeDelta", ShaderUniforms.DeltaTime);
+	QuadShader->SetFloatUniform("iFrameRate", ShaderUniforms.FrameRate);
 	QuadShader->SetIntUniform("iFrame", FrameCount);
 
-	QuadShader->SetVector4Uniform("iDate", uniforms.Year, uniforms.Month, uniforms.Day, uniforms.Seconds);
+	QuadShader->SetVector4Uniform("iDate", ShaderUniforms.Year, ShaderUniforms.Month, ShaderUniforms.Day, ShaderUniforms.Seconds);
 	QuadShader->UseShader();
 
 	glBindVertexArray(QuadVao);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
 	::SwapBuffers(deviceContext);
+
+	frameLimiter.EndTimer();
+	frameLimiter.WaitForNextFrame();
 
 	unsigned long currentTime = GetUnixTimeInMs();
 	ProgramDelta = currentTime - ProgramNow;
@@ -473,6 +490,9 @@ auto Renderer::DoRender(HDC deviceContext) -> VOID
 
 auto Renderer::UninitializeRenderer() -> void
 {
+	// Return to the default periodic timer resolution.
+	frameLimiter.SetHighPrecisionTiming(false);
+
 	glDeleteVertexArrays(1, &QuadVao);
 	glDeleteBuffers(1, &QuadVbo);
 	glDeleteBuffers(1, &QuadEbo);
