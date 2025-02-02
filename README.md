@@ -72,3 +72,11 @@ To debug the configuration dialog, do the following:
 
 [*Splitting DNA*](https://www.shadertoy.com/view/4d2cWd) by **BigWIngs**  
 ![dna](screenshots/dna.png)
+
+# :sparkles: Major Contributors
+
+- :floppy_disk: **Analog Feelings** - Creator of Shadersave, implemented almost all of the codebase.
+- :dog: **Pdawg-bytes** - Implemented the framerate limiter.
+
+# :balance_scale: License
+Shadersave is licensed under the [GNU Affero General Public License v3](LICENSE.txt).
