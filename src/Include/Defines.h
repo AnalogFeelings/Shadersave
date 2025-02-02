@@ -18,7 +18,7 @@
 
 #include <chrono>
 
-#define SHADERSAVE_VERSION "1.1"
+#define SHADERSAVE_VERSION "1.2"
 
 #define GLEW_ERROR_SIZE 128
 #define OPENGL_ERROR_SIZE 128
