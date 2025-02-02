@@ -23,6 +23,7 @@
 #include <shobjidl.h>
 #include <atlbase.h>
 #include <Globals.h>
+#include <Classes/FrameLimiter.h>
 
 auto WINAPI ScreenSaverProc(HWND hWnd, unsigned int message, WPARAM wParam, LPARAM lParam) -> LRESULT
 {
