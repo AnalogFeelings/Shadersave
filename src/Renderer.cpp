@@ -30,7 +30,6 @@
 #include <fstream>
 #include <GL/glew.h>
 #include <GL/wglew.h>
-#include <format>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -92,7 +91,9 @@ auto Renderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext
 		WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 		NULL
 	};
-	PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribs = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>(wglGetProcAddress("wglCreateContextAttribsARB"));
+
+	PROC wglCreateContextAttribsProc = wglGetProcAddress("wglCreateContextAttribsARB");
+	PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribs = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>(wglCreateContextAttribsProc);
 
 	glRenderContext = wglCreateContextAttribs(deviceContext, nullptr, attribs);
 
@@ -422,7 +423,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 	// Disable V-sync to allow for arbitrary frametimes.
 	wglSwapIntervalEXT(0);
 
-	return TRUE;
+	return true;
 }
 
 auto Renderer::DoRender(HDC deviceContext) -> void

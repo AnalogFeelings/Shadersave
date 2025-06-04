@@ -75,6 +75,7 @@
 #define BUFFER_C "BUFFER_C"
 #define BUFFER_D "BUFFER_D"
 
+// Just for convenience (and to avoid the nasty auto keyword for variables).
 typedef std::chrono::time_point<std::chrono::system_clock> SystemTimepoint;
 
 struct Uniforms
