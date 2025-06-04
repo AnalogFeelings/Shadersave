@@ -18,18 +18,20 @@
 
 #include <chrono>
 
-#define SHADERSAVE_VERSION "1.2"
+#define SHADERSAVE_VERSION "2.0"
 
 #define GLEW_ERROR_SIZE 128
 #define OPENGL_ERROR_SIZE 128
 #define SHADER_LOG_SIZE 1024
 #define UNIFORM_BUFFER_SIZE 24
 
+// Declares which texture ID should be used for iChannel0 in each buffer.
 #define BUFFERA_START 4
 #define BUFFERB_START 8
 #define BUFFERC_START 12
 #define BUFFERD_START 16
 
+// Changing these wont automatically make more buffers/channels work!
 #define BUFFER_COUNT 4
 #define CHANNEL_COUNT 4
 
@@ -73,7 +75,7 @@
 #define BUFFER_C "BUFFER_C"
 #define BUFFER_D "BUFFER_D"
 
-typedef std::chrono::time_point<std::chrono::system_clock> Timepoint;
+typedef std::chrono::time_point<std::chrono::system_clock> SystemTimepoint;
 
 struct Uniforms
 {

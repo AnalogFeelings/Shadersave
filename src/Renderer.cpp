@@ -602,7 +602,7 @@ auto CreateShader(const std::unique_ptr<Shader>& target, const std::string& vert
 
 auto GetUnixTimeInMs() -> unsigned long
 {
-	Timepoint currentPoint = std::chrono::system_clock::now();
+	SystemTimepoint currentPoint = std::chrono::system_clock::now();
 
 	return std::chrono::duration_cast<std::chrono::milliseconds>(currentPoint.time_since_epoch()).count();
 }
