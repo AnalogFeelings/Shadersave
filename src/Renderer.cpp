@@ -44,7 +44,7 @@ unsigned int QuadVbo = 0;
 unsigned int QuadEbo = 0;
 
 unsigned long ProgramStart = 0;
-unsigned long ProgramNow = 0;
+unsigned long FrameStartTime = 0;
 unsigned long ProgramDelta = 0;
 
 std::unique_ptr<Shader> QuadShader;
@@ -429,12 +429,12 @@ auto Renderer::DoRender(HDC deviceContext) -> void
 {
 	frameLimiter.StartTimer();
 
-	ProgramNow = GetUnixTimeInMs();
+	FrameStartTime = GetUnixTimeInMs();
 
 	std::time_t currentCTime = std::time(nullptr);
 	std::tm* detailedTime = std::localtime(&currentCTime);
 
-	ShaderUniforms.Time = (ProgramNow - ProgramStart) / 1000.0f;
+	ShaderUniforms.Time = (FrameStartTime - ProgramStart) / 1000.0f;
 	ShaderUniforms.DeltaTime = ProgramDelta / 1000.0f;
 	ShaderUniforms.FrameRate = 1000.0f / ProgramDelta;
 
@@ -483,7 +483,7 @@ auto Renderer::DoRender(HDC deviceContext) -> void
 	frameLimiter.WaitForNextFrame();
 
 	unsigned long currentTime = GetUnixTimeInMs();
-	ProgramDelta = currentTime - ProgramNow;
+	ProgramDelta = currentTime - FrameStartTime;
 
 	FrameCount++;
 }
