@@ -434,14 +434,14 @@ auto Renderer::DoRender(HDC deviceContext) -> void
 	std::time_t currentCTime = std::time(nullptr);
 	std::tm* detailedTime = std::localtime(&currentCTime);
 
-	ShaderUniforms.Time = (ProgramNow - ProgramStart) / 1000.0f,
-	ShaderUniforms.DeltaTime = ProgramDelta / 1000.0f,
-	ShaderUniforms.FrameRate = 1000.0f / ProgramDelta,
+	ShaderUniforms.Time = (ProgramNow - ProgramStart) / 1000.0f;
+	ShaderUniforms.DeltaTime = ProgramDelta / 1000.0f;
+	ShaderUniforms.FrameRate = 1000.0f / ProgramDelta;
 
-	ShaderUniforms.Year = detailedTime->tm_year + 1900,
-	ShaderUniforms.Month = detailedTime->tm_mon + 1,
-	ShaderUniforms.Day = detailedTime->tm_mday,
-	ShaderUniforms.Seconds = (detailedTime->tm_hour * 3600) + (detailedTime->tm_min * 60) + detailedTime->tm_sec,
+	ShaderUniforms.Year = detailedTime->tm_year + 1900;
+	ShaderUniforms.Month = detailedTime->tm_mon + 1;
+	ShaderUniforms.Day = detailedTime->tm_mday;
+	ShaderUniforms.Seconds = (detailedTime->tm_hour * 3600) + (detailedTime->tm_min * 60) + detailedTime->tm_sec;
 
 	ShaderUniforms.FrameCount = FrameCount;
 
