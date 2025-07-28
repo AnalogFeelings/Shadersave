@@ -115,7 +115,6 @@
       <AdditionalIncludeDirectories>$(ProjectDir)src\resources;$(ProjectDir)src\include;$(ProjectDir)lib\glew\include;$(ProjectDir)lib\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

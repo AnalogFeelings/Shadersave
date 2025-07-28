@@ -154,7 +154,9 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 	const char* vertexData = nullptr;
 
 	// Load vertex shader text.
-	RET_FALSE_IF_FALSE(LoadFileFromResource(IDR_VERTEXSHADER, vertexSize, vertexData));
+	bool vertexResult = LoadFileFromResource(IDR_VERTEXSHADER, vertexSize, vertexData);
+	if (!vertexResult)
+		return false;
 
 	std::string vertexSource = GuaranteeNullTermination(vertexSize, vertexData);
 	std::string fragmentSource;
@@ -165,7 +167,9 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		const char* fragmentData = nullptr;
 
 		// Load fragment shader text.
-		RET_FALSE_IF_FALSE(LoadFileFromResource(IDR_FRAGMENTSHADER, fragmentSize, fragmentData));
+		bool fragmentResult = LoadFileFromResource(IDR_FRAGMENTSHADER, fragmentSize, fragmentData);
+		if (!fragmentResult)
+			return false;
 
 		fragmentSource = GuaranteeNullTermination(fragmentSize, fragmentData);
 	}
@@ -181,7 +185,9 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 
 	// Actually load the shaders and compile them.
 	QuadShader = std::make_unique<Shader>();
-	RET_FALSE_IF_FALSE(CreateShader(QuadShader, vertexSource, fragmentSource, commonSource));
+	bool quadResult = CreateShader(QuadShader, vertexSource, fragmentSource, commonSource);
+	if (!quadResult)
+		return false;
 
 	// Initialize main quad shader bindings.
 	for (int i = 0; i < CHANNEL_COUNT; i++)
@@ -199,8 +205,10 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		else if (std::filesystem::is_regular_file(mainChannel))
 		{
 			int width, height;
+			bool result = LoadTexture(mainChannel, QuadChannels[i], width, height);
 
-			RET_FALSE_IF_FALSE(LoadTexture(mainChannel, QuadChannels[i], width, height));
+			if (!result)
+				return false;
 
 			QuadChannelResolutions[i] = Vector3(width, height, 0);
 		}
@@ -220,8 +228,13 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		std::string bufferSource = LoadFileFromDisk(settings.BufferAPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		RET_FALSE_IF_FALSE(CreateShader(shader, vertexSource, bufferSource, commonSource));
-		RET_FALSE_IF_FALSE(Buffers[0]->SetupBuffer(&BufferTextures[0], ViewportWidth, ViewportHeight, BUFFERA_START, shader));
+		bool shaderResult = CreateShader(shader, vertexSource, bufferSource, commonSource);
+		if (!shaderResult)
+			return false;
+
+		bool bufferResult = Buffers[0]->SetupBuffer(&BufferTextures[0], ViewportWidth, ViewportHeight, BUFFERA_START, shader);
+		if (!bufferResult)
+			return false;
 
 		// Let's initialize the channels.
 		for (int i = 0; i < CHANNEL_COUNT; i++)
@@ -239,8 +252,10 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			else if (std::filesystem::is_regular_file(bufferAChannel))
 			{
 				int width, height;
+				bool result = LoadTexture(bufferAChannel, channels[i], width, height);
 
-				RET_FALSE_IF_FALSE(LoadTexture(bufferAChannel, channels[i], width, height));
+				if (!result)
+					return false;
 
 				channelResolutions[i] = Vector3(width, height, 0);
 			}
@@ -258,8 +273,13 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		std::string bufferSource = LoadFileFromDisk(settings.BufferBPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		RET_FALSE_IF_FALSE(CreateShader(shader, vertexSource, bufferSource, commonSource));
-		RET_FALSE_IF_FALSE(Buffers[1]->SetupBuffer(&BufferTextures[1], ViewportWidth, ViewportHeight, BUFFERB_START, shader));
+		bool shaderResult = CreateShader(shader, vertexSource, bufferSource, commonSource);
+		if (!shaderResult)
+			return false;
+
+		bool bufferResult = Buffers[1]->SetupBuffer(&BufferTextures[1], ViewportWidth, ViewportHeight, BUFFERB_START, shader);
+		if (!bufferResult)
+			return false;
 
 		// Let's initialize the channels.
 		for (int i = 0; i < CHANNEL_COUNT; i++)
@@ -277,8 +297,10 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			else if (std::filesystem::is_regular_file(bufferBChannel))
 			{
 				int width, height;
+				bool result = LoadTexture(bufferBChannel, channels[i], width, height);
 
-				RET_FALSE_IF_FALSE(LoadTexture(bufferBChannel, channels[i], width, height));
+				if (!result)
+					return false;
 
 				channelResolutions[i] = Vector3(width, height, 0);
 			}
@@ -296,8 +318,13 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		std::string bufferSource = LoadFileFromDisk(settings.BufferCPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		RET_FALSE_IF_FALSE(CreateShader(shader, vertexSource, bufferSource, commonSource));
-		RET_FALSE_IF_FALSE(Buffers[2]->SetupBuffer(&BufferTextures[2], ViewportWidth, ViewportHeight, BUFFERC_START, shader));
+		bool shaderResult = CreateShader(shader, vertexSource, bufferSource, commonSource);
+		if (!shaderResult)
+			return false;
+
+		bool bufferResult = Buffers[2]->SetupBuffer(&BufferTextures[2], ViewportWidth, ViewportHeight, BUFFERC_START, shader);
+		if (!bufferResult)
+			return false;
 
 		// Let's initialize the channels.
 		for (int i = 0; i < CHANNEL_COUNT; i++)
@@ -315,8 +342,10 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			else if (std::filesystem::is_regular_file(bufferCChannel))
 			{
 				int width, height;
+				bool result = LoadTexture(bufferCChannel, channels[i], width, height);
 
-				RET_FALSE_IF_FALSE(LoadTexture(bufferCChannel, channels[i], width, height));
+				if (!result)
+					return false;
 
 				channelResolutions[i] = Vector3(width, height, 0);
 			}
@@ -334,8 +363,13 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		std::string bufferSource = LoadFileFromDisk(settings.BufferDPath);
 		std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
-		RET_FALSE_IF_FALSE(CreateShader(shader, vertexSource, bufferSource, commonSource));
-		RET_FALSE_IF_FALSE(Buffers[3]->SetupBuffer(&BufferTextures[3], ViewportWidth, ViewportHeight, BUFFERD_START, shader));
+		bool shaderResult = CreateShader(shader, vertexSource, bufferSource, commonSource);
+		if (!shaderResult)
+			return false;
+
+		bool bufferResult = Buffers[3]->SetupBuffer(&BufferTextures[3], ViewportWidth, ViewportHeight, BUFFERD_START, shader);
+		if (!bufferResult)
+			return false;
 
 		// Let's initialize the channels.
 		for (int i = 0; i < CHANNEL_COUNT; i++)
@@ -353,8 +387,10 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			else if (std::filesystem::is_regular_file(bufferDChannel))
 			{
 				int width, height;
+				bool result = LoadTexture(bufferDChannel, channels[i], width, height);
 
-				RET_FALSE_IF_FALSE(LoadTexture(bufferDChannel, channels[i], width, height));
+				if (!result)
+					return false;
 
 				channelResolutions[i] = Vector3(width, height, 0);
 			}
@@ -489,7 +525,11 @@ auto LoadTexture(const std::string& filename, unsigned int& texture, int& width,
 	int numberOfChannels;
 	unsigned char* image = stbi_load(filename.c_str(), &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
-	RET_FALSE_IF_FALSE_MSG(image, "Could not load image file " + filename + ".");
+	if (!image)
+	{
+		Globals::LastError = "Could not load image file " + filename + ".";
+		return false;
+	}
 
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -507,11 +547,13 @@ auto LoadFileFromResource(int resourceId, unsigned int& size, const char*& data)
 	HMODULE moduleHandle = ::GetModuleHandle(nullptr);
 	HRSRC resourceHandle = ::FindResource(moduleHandle, MAKEINTRESOURCE(resourceId), "TEXT");
 
-	RET_FALSE_IF_FALSE(resourceHandle);
+	if (!resourceHandle)
+		return false;
 
 	HGLOBAL resourceData = ::LoadResource(moduleHandle, resourceHandle);
 
-	RET_FALSE_IF_FALSE(resourceData);
+	if (!resourceData)
+		return false;
 
 	size = ::SizeofResource(moduleHandle, resourceHandle);
 	data = static_cast<const char*>(::LockResource(resourceData));
@@ -544,9 +586,17 @@ auto LoadFileFromDisk(const std::string& filename) -> std::string
 
 auto CreateShader(const std::unique_ptr<Shader>& target, const std::string& vertexSource, std::string& fragmentSource, const std::string& commonSource) -> bool
 {
-	RET_FALSE_IF_FALSE(target->LoadShader(vertexSource));
-	RET_FALSE_IF_FALSE(target->LoadShadertoyShader(fragmentSource, commonSource));
-	RET_FALSE_IF_FALSE(target->CreateProgram());
+	bool shaderResult = target->LoadShader(vertexSource);
+	if (!shaderResult)
+		return false;
+
+	bool shadertoyResult = target->LoadShadertoyShader(fragmentSource, commonSource);
+	if (!shadertoyResult)
+		return false;
+
+	bool compileResult = target->CreateProgram();
+	if (!compileResult)
+		return false;
 
 	return true;
 }

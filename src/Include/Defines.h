@@ -78,19 +78,6 @@
 // Just for convenience (and to avoid the nasty auto keyword for variables).
 typedef std::chrono::time_point<std::chrono::system_clock> SystemTimepoint;
 
-#define RET_FALSE_IF_FALSE(condition) \
-	if (!(condition)) [[unlikely]] \
-		return false; \
-	else ((void)0)
-
-#define RET_FALSE_IF_FALSE_MSG(condition, message) \
-	if (!(condition)) [[unlikely]] \
-	{ \
-		Globals::LastError = (message); \
-		return false; \
-	} \
-	else ((void)0)
-
 struct Uniforms
 {
 	float Time;
