@@ -19,7 +19,7 @@
 
 #include <GL/glew.h>
 
-auto Buffer::SetupBuffer(unsigned int* textureGlobal, int viewportWidth, int viewportHeight, int channelStart, std::unique_ptr<Shader>& shader) -> bool
+auto Buffer::SetupBuffer(uint32_t* textureGlobal, int32_t viewportWidth, int32_t viewportHeight, int32_t channelStart, std::unique_ptr<Shader>& shader) -> bool
 {
 	glGenFramebuffers(1, &this->BufferFramebuffer);
 	glGenTextures(1, &this->BufferTexture);
@@ -66,9 +66,9 @@ auto Buffer::SetupBuffer(unsigned int* textureGlobal, int viewportWidth, int vie
 	return true;
 }
 
-auto Buffer::SetupChannels(const unsigned int(&channels)[CHANNEL_COUNT], const Vector3(&channelResolutions)[CHANNEL_COUNT]) -> void
+auto Buffer::SetupChannels(const uint32_t(&channels)[CHANNEL_COUNT], const Vector3(&channelResolutions)[CHANNEL_COUNT]) -> void
 {
-	std::memcpy(this->Channels, channels, sizeof(unsigned int) * CHANNEL_COUNT);
+	std::memcpy(this->Channels, channels, sizeof(uint32_t) * CHANNEL_COUNT);
 	std::memcpy(this->ChannelResolutions, channelResolutions, sizeof(Vector3) * CHANNEL_COUNT);
 
 	this->BufferShader->SetVector3ArrayUniform("iChannelResolution", this->ChannelResolutions, CHANNEL_COUNT);
@@ -115,7 +115,7 @@ auto Buffer::SetupRender(const Uniforms& uniforms) -> void
 
 	this->BufferShader->UseShader();
 
-	for (int i = 0; i < CHANNEL_COUNT; i++)
+	for (int32_t i = 0; i < CHANNEL_COUNT; i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + this->ChannelStart + i);
 		glBindTexture(GL_TEXTURE_2D, this->Channels[i]);

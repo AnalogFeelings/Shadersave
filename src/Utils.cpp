@@ -21,13 +21,13 @@
 
 auto Utils::GetLastErrorAsString() -> std::string
 {
-    long errorMessageID = ::GetLastError();
+    uint32_t errorMessageID = ::GetLastError();
     if (errorMessageID == 0)
         return std::string();
 
     char* messageBuffer = nullptr;
     size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        nullptr, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPSTR>(&messageBuffer), 0, nullptr);
+        nullptr, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<char*>(&messageBuffer), 0, nullptr);
 
     std::string message(messageBuffer, size);
 
@@ -39,8 +39,8 @@ auto Utils::GetLastErrorAsString() -> std::string
 
 auto Utils::ConvertWideStringToNarrow(const wchar_t* string) -> std::string
 {
-    unsigned long length = std::wcslen(string);
-    std::unique_ptr<CHAR[]> stringConverted = std::make_unique<CHAR[]>(length + 1);
+    size_t length = std::wcslen(string);
+    std::unique_ptr<char[]> stringConverted = std::make_unique<char[]>(length + 1);
 
     std::wcstombs(stringConverted.get(), string, length);
 

@@ -20,6 +20,7 @@
 #include <Defines.h>
 
 #include <memory>
+#include <stdint.h>
 
 class Buffer
 {
@@ -33,7 +34,7 @@ public:
 	/// <param name="channelStart">The starting number of the buffer channel texture unit.</param>
 	/// <param name="shader">The shader to use.</param>
 	/// <returns>true if initialized successfully.</returns>
-	auto SetupBuffer(unsigned int* textureGlobal, int viewportWidth, int viewportHeight, int channelStart, std::unique_ptr<Shader>& shader) -> bool;
+	auto SetupBuffer(uint32_t* textureGlobal, int32_t viewportWidth, int32_t viewportHeight, int32_t channelStart, std::unique_ptr<Shader>& shader) -> bool;
 
 	/// <summary>
 	/// Initializes the channel bindings.
@@ -41,7 +42,7 @@ public:
 	/// <param name="channels">The texture ID array for the channels.</param>
 	/// <param name="channelResolutions">The channel resolutions array.</param>
 	/// <returns></returns>
-	auto SetupChannels(const unsigned int (&channels)[CHANNEL_COUNT], const Vector3 (&channelResolutions)[CHANNEL_COUNT]) -> void;
+	auto SetupChannels(const uint32_t(&channels)[CHANNEL_COUNT], const Vector3 (&channelResolutions)[CHANNEL_COUNT]) -> void;
 
 	/// <summary>
 	/// Sets up the state machine to render the buffer.
@@ -55,18 +56,18 @@ public:
 	~Buffer();
 
 private:
-	int ViewportWidth = 0;
-	int ViewportHeight = 0;
-	int ChannelStart = 0;
+	int32_t ViewportWidth = 0;
+	int32_t ViewportHeight = 0;
+	int32_t ChannelStart = 0;
 
-	unsigned int BufferFramebuffer = 0;
-	unsigned int BufferTexture = 0;
-	unsigned int BufferTextureCopy = 0;
-	unsigned int BufferTextureLast = 0;
+	uint32_t BufferFramebuffer = 0;
+	uint32_t BufferTexture = 0;
+	uint32_t BufferTextureCopy = 0;
+	uint32_t BufferTextureLast = 0;
 
-	unsigned int* BufferTextureGlobal = nullptr;
+	uint32_t* BufferTextureGlobal = nullptr;
 
-	unsigned int Channels[CHANNEL_COUNT] = {};
+	uint32_t Channels[CHANNEL_COUNT] = {};
 	Vector3 ChannelResolutions[CHANNEL_COUNT] = {};
 
 	std::unique_ptr<Shader> BufferShader;

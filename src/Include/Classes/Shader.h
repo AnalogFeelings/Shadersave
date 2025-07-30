@@ -20,6 +20,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <stdint.h>
 
 class Shader
 {
@@ -32,19 +33,19 @@ public:
 	auto UseShader() -> void;
 	~Shader();
 
-	auto SetIntUniform(const std::string& name, int value) -> void;
+	auto SetIntUniform(const std::string& name, int32_t value) -> void;
 	auto SetFloatUniform(const std::string& name, float value) -> void;
 	auto SetVector2Uniform(const std::string& name, float x, float y) -> void;
 	auto SetVector3Uniform(const std::string& name, float x, float y, float z) -> void;
 	auto SetVector4Uniform(const std::string& name, float x, float y, float z, float w) -> void;
-	auto SetVector3ArrayUniform(const std::string& name, Vector3* value, int size) -> void;
+	auto SetVector3ArrayUniform(const std::string& name, Vector3* value, int32_t size) -> void;
 
 private:
-	unsigned int ProgramId = 0;
-	unsigned int VertexShader = 0;
-	unsigned int FragmentShader = 0;
+	uint32_t ProgramId = 0;
+	uint32_t VertexShader = 0;
+	uint32_t FragmentShader = 0;
 
-	std::unordered_map<std::string, int> UniformMap = {};
+	std::unordered_map<std::string, int32_t> UniformMap = {};
 
 	/// <summary>
 	/// Checks if a shader has compile errors. Sets LastError on failure.
@@ -52,5 +53,5 @@ private:
 	/// <param name="shaderId">The ID of the shader object.</param>
 	/// <param name="type">The type of the shader object.</param>
 	/// <returns>TRUE if there are no errors.</returns>
-	auto CheckCompileErrors(unsigned int shaderId, const std::string& type) -> bool;
+	auto CheckCompileErrors(uint32_t shaderId, const std::string& type) -> bool;
 };

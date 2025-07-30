@@ -23,7 +23,7 @@
 auto Shader::LoadShader(const std::string& vertexText) -> bool
 {
 	const char* constVertex = vertexText.c_str();
-	unsigned int createdVertex = glCreateShader(GL_VERTEX_SHADER);
+	uint32_t createdVertex = glCreateShader(GL_VERTEX_SHADER);
 
 	glShaderSource(createdVertex, 1, &constVertex, nullptr);
 	glCompileShader(createdVertex);
@@ -78,7 +78,7 @@ auto Shader::LoadShadertoyShader(std::string& fragmentText, const std::string& c
 	fragmentText = stream.str();
 
 	const char* constFragment = fragmentText.c_str();
-	unsigned int createdFragment = glCreateShader(GL_FRAGMENT_SHADER);
+	uint32_t createdFragment = glCreateShader(GL_FRAGMENT_SHADER);
 
 	glShaderSource(createdFragment, 1, &constFragment, nullptr);
 	glCompileShader(createdFragment);
@@ -105,19 +105,19 @@ auto Shader::CreateProgram() -> bool
 	glDeleteShader(this->VertexShader);
 	glDeleteShader(this->FragmentShader);
 
-	int uniformCount;
+	int32_t uniformCount;
 	glGetProgramiv(this->ProgramId, GL_ACTIVE_UNIFORMS, &uniformCount);
 
-	for (int i = 0; i < uniformCount; i++)
+	for (int32_t i = 0; i < uniformCount; i++)
 	{
-		int length, size;
-		unsigned int type;
+		int32_t length, size;
+		uint32_t type;
 		char buffer[UNIFORM_BUFFER_SIZE] = {};
 
 		glGetActiveUniform(this->ProgramId, i, UNIFORM_BUFFER_SIZE, &length, &size, &type, buffer);
 
 		std::string bufferString(buffer);
-		int location = glGetUniformLocation(this->ProgramId, buffer);
+		int32_t location = glGetUniformLocation(this->ProgramId, buffer);
 
 		if (bufferString.ends_with("[0]"))
 			bufferString.resize(bufferString.size() - 3);
@@ -138,11 +138,11 @@ Shader::~Shader()
 	glDeleteProgram(this->ProgramId);
 }
 
-auto Shader::SetIntUniform(const std::string& name, int value) -> void
+auto Shader::SetIntUniform(const std::string& name, int32_t value) -> void
 {
 	if(!this->UniformMap.contains(name)) return;
 
-	int uniformLocation = this->UniformMap.at(name);
+	int32_t uniformLocation = this->UniformMap.at(name);
 	glProgramUniform1i(this->ProgramId, uniformLocation, value);
 }
 
@@ -150,7 +150,7 @@ auto Shader::SetFloatUniform(const std::string& name, float value) -> void
 {
 	if(!this->UniformMap.contains(name)) return;
 
-	int uniformLocation = this->UniformMap.at(name);
+	int32_t uniformLocation = this->UniformMap.at(name);
 	glProgramUniform1f(this->ProgramId, uniformLocation, value);
 }
 
@@ -158,7 +158,7 @@ auto Shader::SetVector2Uniform(const std::string& name, float x, float y) -> voi
 {
 	if(!this->UniformMap.contains(name)) return;
 
-	int uniformLocation = this->UniformMap.at(name);
+	int32_t uniformLocation = this->UniformMap.at(name);
 	glProgramUniform2f(this->ProgramId, uniformLocation, x, y);
 }
 
@@ -166,7 +166,7 @@ auto Shader::SetVector3Uniform(const std::string& name, float x, float y, float 
 {
 	if(!this->UniformMap.contains(name)) return;
 
-	int uniformLocation = this->UniformMap.at(name);
+	int32_t uniformLocation = this->UniformMap.at(name);
 	glProgramUniform3f(this->ProgramId, uniformLocation, x, y, z);
 }
 
@@ -174,7 +174,7 @@ auto Shader::SetVector4Uniform(const std::string& name, float x, float y, float 
 {
 	if(!this->UniformMap.contains(name)) return;
 
-	int uniformLocation = this->UniformMap.at(name);
+	int32_t uniformLocation = this->UniformMap.at(name);
 	glProgramUniform4f(this->ProgramId, uniformLocation, x, y, z, w);
 }
 
@@ -182,13 +182,13 @@ auto Shader::SetVector3ArrayUniform(const std::string& name, Vector3* value, int
 {
 	if (!this->UniformMap.contains(name)) return;
 
-	int uniformLocation = this->UniformMap.at(name);
+	int32_t uniformLocation = this->UniformMap.at(name);
 	glProgramUniform3fv(this->ProgramId, uniformLocation, size, reinterpret_cast<float*>(value));
 }
 
-auto Shader::CheckCompileErrors(unsigned int shaderId, const std::string& type) -> bool
+auto Shader::CheckCompileErrors(uint32_t shaderId, const std::string& type) -> bool
 {
-	int isSuccess;
+	int32_t isSuccess;
 
 	if (type != "PROGRAM")
 	{

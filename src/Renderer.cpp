@@ -34,35 +34,35 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-int ViewportWidth = 0;
-int ViewportHeight = 0;
-int FrameCount = 0;
+int32_t ViewportWidth = 0;
+int32_t ViewportHeight = 0;
+int32_t FrameCount = 0;
 
-unsigned int QuadVao = 0;
-unsigned int QuadVbo = 0;
-unsigned int QuadEbo = 0;
+uint32_t QuadVao = 0;
+uint32_t QuadVbo = 0;
+uint32_t QuadEbo = 0;
 
-unsigned long ProgramStart = 0;
-unsigned long FrameStartTime = 0;
-unsigned long ProgramDelta = 0;
+uint32_t ProgramStart = 0;
+uint32_t FrameStartTime = 0;
+uint32_t ProgramDelta = 0;
 
 std::unique_ptr<Shader> QuadShader;
-unsigned int QuadChannels[CHANNEL_COUNT];
+uint32_t QuadChannels[CHANNEL_COUNT];
 Vector3 QuadChannelResolutions[CHANNEL_COUNT];
 
 std::unique_ptr<Buffer> Buffers[BUFFER_COUNT];
-unsigned int BufferTextures[BUFFER_COUNT];
+uint32_t BufferTextures[BUFFER_COUNT];
 
 Uniforms ShaderUniforms;
 
 FrameLimiter frameLimiter;
 
-auto LoadTexture(const std::string& filename, unsigned int& texture, int& width, int& height) -> bool;
-auto LoadFileFromResource(int resourceId, unsigned int& size, const char*& data) -> bool;
-auto GuaranteeNullTermination(unsigned int size, const char* data) -> std::string;
+auto LoadTexture(const std::string& filename, uint32_t& texture, int32_t& width, int32_t& height) -> bool;
+auto LoadFileFromResource(int32_t resourceId, uint32_t& size, const char*& data) -> bool;
+auto GuaranteeNullTermination(uint32_t size, const char* data) -> std::string;
 auto LoadFileFromDisk(const std::string& filename) -> std::string;
 auto CreateShader(const std::unique_ptr<Shader>& target, const std::string& vertexSource, std::string& fragmentSource, const std::string& commonSource) -> bool;
-auto GetUnixTimeInMs() -> unsigned long;
+auto GetUnixTimeInMs() -> uint32_t;
 
 auto Renderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> bool
 {
@@ -77,14 +77,14 @@ auto Renderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext
 
 	deviceContext = ::GetDC(hWnd);
 
-	int chosenFormat = ::ChoosePixelFormat(deviceContext, &pixelFormatDescriptor);
+	int32_t chosenFormat = ::ChoosePixelFormat(deviceContext, &pixelFormatDescriptor);
 	::SetPixelFormat(deviceContext, chosenFormat, &pixelFormatDescriptor);
 
 	// Needed to make a modern context.
 	HGLRC fakeContext = wglCreateContext(deviceContext);
 	wglMakeCurrent(deviceContext, fakeContext);
 
-	int attribs[] =
+	int32_t attribs[] =
 	{
 		WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
 		WGL_CONTEXT_MINOR_VERSION_ARB, 3,
@@ -115,7 +115,7 @@ auto Renderer::InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext
 	return true;
 }
 
-auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderSettings& settings) -> bool
+auto Renderer::InitRenderer(int32_t viewportWidth, int32_t viewportHeight, const RenderSettings& settings) -> bool
 {
 	ViewportWidth = viewportWidth;
 	ViewportHeight = viewportHeight;
@@ -140,7 +140,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 	glBindVertexArray(0);
 
 	// Initialize buffer textures.
-	for (unsigned int& bufferTexture : BufferTextures)
+	for (uint32_t& bufferTexture : BufferTextures)
 	{
 		glGenTextures(1, &bufferTexture);
 
@@ -150,7 +150,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 
-	unsigned int vertexSize = 0;
+	uint32_t vertexSize = 0;
 	const char* vertexData = nullptr;
 
 	// Load vertex shader text.
@@ -163,7 +163,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 
 	if (settings.MainPath.empty())
 	{
-		unsigned int fragmentSize = 0;
+		uint32_t fragmentSize = 0;
 		const char* fragmentData = nullptr;
 
 		// Load fragment shader text.
@@ -190,7 +190,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 		return false;
 
 	// Initialize main quad shader bindings.
-	for (int i = 0; i < CHANNEL_COUNT; i++)
+	for (int32_t i = 0; i < CHANNEL_COUNT; i++)
 	{
 		const std::string mainChannel = settings.MainChannels[i];
 
@@ -204,7 +204,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			QuadChannels[i] = BufferTextures[3];
 		else if (std::filesystem::is_regular_file(mainChannel))
 		{
-			int width, height;
+			int32_t width, height;
 			bool result = LoadTexture(mainChannel, QuadChannels[i], width, height);
 
 			if (!result)
@@ -218,7 +218,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 	}
 
 	// Create buffers.
-	unsigned int channels[CHANNEL_COUNT];
+	uint32_t channels[CHANNEL_COUNT];
 	Vector3 channelResolutions[CHANNEL_COUNT];
 
 	if (!settings.BufferAPath.empty())
@@ -237,7 +237,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			return false;
 
 		// Let's initialize the channels.
-		for (int i = 0; i < CHANNEL_COUNT; i++)
+		for (int32_t i = 0; i < CHANNEL_COUNT; i++)
 		{
 			const std::string bufferAChannel = settings.BufferAChannels[i];
 
@@ -251,7 +251,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 				channels[i] = BufferTextures[3];
 			else if (std::filesystem::is_regular_file(bufferAChannel))
 			{
-				int width, height;
+				int32_t width, height;
 				bool result = LoadTexture(bufferAChannel, channels[i], width, height);
 
 				if (!result)
@@ -282,7 +282,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			return false;
 
 		// Let's initialize the channels.
-		for (int i = 0; i < CHANNEL_COUNT; i++)
+		for (int32_t i = 0; i < CHANNEL_COUNT; i++)
 		{
 			const std::string bufferBChannel = settings.BufferBChannels[i];
 
@@ -296,7 +296,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 				channels[i] = BufferTextures[3];
 			else if (std::filesystem::is_regular_file(bufferBChannel))
 			{
-				int width, height;
+				int32_t width, height;
 				bool result = LoadTexture(bufferBChannel, channels[i], width, height);
 
 				if (!result)
@@ -327,7 +327,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			return false;
 
 		// Let's initialize the channels.
-		for (int i = 0; i < CHANNEL_COUNT; i++)
+		for (int32_t i = 0; i < CHANNEL_COUNT; i++)
 		{
 			const std::string bufferCChannel = settings.BufferCChannels[i];
 
@@ -341,7 +341,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 				channels[i] = BufferTextures[3];
 			else if (std::filesystem::is_regular_file(bufferCChannel))
 			{
-				int width, height;
+				int32_t width, height;
 				bool result = LoadTexture(bufferCChannel, channels[i], width, height);
 
 				if (!result)
@@ -372,7 +372,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 			return false;
 
 		// Let's initialize the channels.
-		for (int i = 0; i < CHANNEL_COUNT; i++)
+		for (int32_t i = 0; i < CHANNEL_COUNT; i++)
 		{
 			const std::string bufferDChannel = settings.BufferDChannels[i];
 
@@ -386,7 +386,7 @@ auto Renderer::InitRenderer(int viewportWidth, int viewportHeight, const RenderS
 				channels[i] = BufferTextures[3];
 			else if (std::filesystem::is_regular_file(bufferDChannel))
 			{
-				int width, height;
+				int32_t width, height;
 				bool result = LoadTexture(bufferDChannel, channels[i], width, height);
 
 				if (!result)
@@ -461,7 +461,7 @@ auto Renderer::DoRender(HDC deviceContext) -> void
 	glClearColor(0, 0, 0, 1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	for (int i = 0; i < CHANNEL_COUNT; i++)
+	for (int32_t i = 0; i < CHANNEL_COUNT; i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, QuadChannels[i]);
@@ -483,7 +483,7 @@ auto Renderer::DoRender(HDC deviceContext) -> void
 	frameLimiter.EndTimer();
 	frameLimiter.WaitForNextFrame();
 
-	unsigned long currentTime = GetUnixTimeInMs();
+	uint32_t currentTime = GetUnixTimeInMs();
 	ProgramDelta = currentTime - FrameStartTime;
 
 	FrameCount++;
@@ -498,12 +498,12 @@ auto Renderer::UninitializeRenderer() -> void
 	glDeleteBuffers(1, &QuadVbo);
 	glDeleteBuffers(1, &QuadEbo);
 
-	for (unsigned int& bufferTexture : BufferTextures)
+	for (uint32_t& bufferTexture : BufferTextures)
 	{
 		glDeleteTextures(1, &bufferTexture);
 	}
 
-	for (unsigned int& quadChannel : QuadChannels)
+	for (uint32_t& quadChannel : QuadChannels)
 	{
 		glDeleteTextures(1, &quadChannel);
 	}
@@ -518,11 +518,11 @@ auto Renderer::UninitializeRenderer() -> void
 	::ReleaseDC(Globals::MainWindow, Globals::DeviceContext);
 }
 
-auto LoadTexture(const std::string& filename, unsigned int& texture, int& width, int& height) -> bool
+auto LoadTexture(const std::string& filename, uint32_t& texture, int32_t& width, int32_t& height) -> bool
 {
 	stbi_set_flip_vertically_on_load(true);
 
-	int numberOfChannels;
+	int32_t numberOfChannels;
 	unsigned char* image = stbi_load(filename.c_str(), &width, &height, &numberOfChannels, STBI_rgb_alpha);
 
 	if (!image)
@@ -542,7 +542,7 @@ auto LoadTexture(const std::string& filename, unsigned int& texture, int& width,
 	return true;
 }
 
-auto LoadFileFromResource(int resourceId, unsigned int& size, const char*& data) -> bool
+auto LoadFileFromResource(int32_t resourceId, uint32_t& size, const char*& data) -> bool
 {
 	HMODULE moduleHandle = ::GetModuleHandle(nullptr);
 	HRSRC resourceHandle = ::FindResource(moduleHandle, MAKEINTRESOURCE(resourceId), "TEXT");
@@ -561,9 +561,9 @@ auto LoadFileFromResource(int resourceId, unsigned int& size, const char*& data)
 	return true;
 }
 
-auto GuaranteeNullTermination(unsigned int size, const char* data) -> std::string
+auto GuaranteeNullTermination(uint32_t size, const char* data) -> std::string
 {
-	std::unique_ptr<CHAR[]> buffer = std::make_unique<CHAR[]>(size + 1);
+	std::unique_ptr<char[]> buffer = std::make_unique<char[]>(size + 1);
 	std::memcpy(buffer.get(), data, size);
 
 	buffer.get()[size] = NULL;
@@ -601,7 +601,7 @@ auto CreateShader(const std::unique_ptr<Shader>& target, const std::string& vert
 	return true;
 }
 
-auto GetUnixTimeInMs() -> unsigned long
+auto GetUnixTimeInMs() -> uint32_t
 {
 	SystemTimepoint currentPoint = std::chrono::system_clock::now();
 

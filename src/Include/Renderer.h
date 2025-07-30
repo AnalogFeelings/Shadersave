@@ -19,6 +19,8 @@
 #include <windows.h>
 #include <Defines.h>
 
+#include <stdint.h>
+
 namespace Renderer
 {
 	constexpr float QUAD_VERTICES[12] =
@@ -28,14 +30,14 @@ namespace Renderer
 		-1.0f, +1.0f, -0.0f,
 		+1.0f, -1.0f, -0.0f
 	};
-	constexpr unsigned int QUAD_INDICES[6] =
+	constexpr uint32_t QUAD_INDICES[6] =
 	{
 		0, 1, 2,
 		0, 3, 1
 	};
 
 	auto InitContext(HWND hWnd, HDC& deviceContext, HGLRC& glRenderContext) -> bool;
-	auto InitRenderer(int viewportWidth, int viewportHeight, const RenderSettings& settings) -> bool;
+	auto InitRenderer(int32_t viewportWidth, int32_t viewportHeight, const RenderSettings& settings) -> bool;
 	auto UninitializeRenderer() -> void;
 
 	auto DoRender(HDC deviceContext) -> void;

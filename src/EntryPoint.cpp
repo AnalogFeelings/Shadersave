@@ -25,15 +25,15 @@
 #include <Globals.h>
 #include <Classes/FrameLimiter.h>
 
-auto WINAPI ScreenSaverProc(HWND hWnd, unsigned int message, WPARAM wParam, LPARAM lParam) -> LRESULT
+auto WINAPI ScreenSaverProc(HWND hWnd, uint32_t message, WPARAM wParam, LPARAM lParam) -> LRESULT
 {
 	switch (message)
 	{
 		case WM_CREATE:
 		{
 			::GetClientRect(hWnd, &Globals::ClientRect);
-			int windowWidth = Globals::ClientRect.right;
-			int windowHeight = Globals::ClientRect.bottom;
+			int32_t windowWidth = Globals::ClientRect.right;
+			int32_t windowHeight = Globals::ClientRect.bottom;
 			RenderSettings settings = Settings::LoadFromRegistry();
 
 			Globals::MainWindow = hWnd;

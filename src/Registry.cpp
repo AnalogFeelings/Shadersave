@@ -21,6 +21,9 @@
 auto Registry::ReadString(const std::string& subKey, const std::string& item) -> std::string
 {
     char data[MAX_PATH];
+
+    // MSVC shits itself when you try to pass an "unsigned int*" into an "unsigned long*"
+    // even though theyre the same size?????
     unsigned long bufferSize = MAX_PATH;
 
     LSTATUS result = ::RegGetValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), RRF_RT_REG_SZ, nullptr, data, &bufferSize);
@@ -30,10 +33,10 @@ auto Registry::ReadString(const std::string& subKey, const std::string& item) ->
     return std::string(data);
 }
 
-auto Registry::ReadDword(const std::string& subKey, const std::string& item) -> unsigned long
+auto Registry::ReadDword(const std::string& subKey, const std::string& item) -> uint32_t
 {
-    unsigned long data;
-    unsigned long bufferSize = sizeof(DWORD);
+    uint32_t data;
+    unsigned long bufferSize = sizeof(unsigned long);
 
     LSTATUS result = ::RegGetValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), RRF_RT_DWORD, nullptr, &data, &bufferSize);
     if (result != ERROR_SUCCESS)
@@ -55,9 +58,9 @@ auto Registry::SetString(const std::string& subKey, const std::string& item, con
     return true;
 }
 
-auto Registry::SetDword(const std::string& subKey, const std::string& item, unsigned long value) -> bool
+auto Registry::SetDword(const std::string& subKey, const std::string& item, uint32_t value) -> bool
 {
-    LSTATUS result = ::RegSetKeyValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), REG_DWORD, &value, sizeof(UINT));
+    LSTATUS result = ::RegSetKeyValue(HKEY_CURRENT_USER, subKey.c_str(), item.c_str(), REG_DWORD, &value, sizeof(uint32_t));
     if (result != ERROR_SUCCESS)
     {
         Globals::LastError = Utils::GetLastErrorAsString();

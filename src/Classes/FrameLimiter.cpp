@@ -16,7 +16,7 @@
 
 #include <Classes/FrameLimiter.h>
 
-FrameLimiter::FrameLimiter(int targetFPS)
+FrameLimiter::FrameLimiter(int32_t targetFPS)
 {
     m_qpcFreq = GetPerformanceCounterFrequency();
     m_frameTime = m_qpcFreq / targetFPS;

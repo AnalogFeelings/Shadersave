@@ -16,9 +16,6 @@
 
 #pragma once
 
-// We have to do this so that the linker includes the multimedia lib.
-// This supports the use of timeBegin/EndPeriod for Win32 timers.
-#pragma comment(lib, "winmm.lib")
 #include <Windows.h>
 #include <timeapi.h>
 #include <stdint.h>
@@ -32,7 +29,7 @@ public:
 		m_perfCounterStart(0), m_perfCounterEnd(0), m_perfCounterLimit(0), 
 		m_qpcFreq(0), m_frameTime(0) {}
 
-	FrameLimiter(int targetFPS);
+	FrameLimiter(int32_t targetFPS);
 	auto StartTimer() -> void;
 	auto EndTimer() -> void;
 	auto WaitForNextFrame() -> void;

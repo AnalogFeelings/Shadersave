@@ -17,6 +17,7 @@
 #pragma once
 
 #include <chrono>
+#include <stdint.h>
 
 #define SHADERSAVE_VERSION "2.0"
 
@@ -84,17 +85,17 @@ struct Uniforms
 	float DeltaTime;
 	float FrameRate;
 
-	int Year;
-	int Month;
-	int Day;
-	int Seconds;
+	int32_t Year;
+	int32_t Month;
+	int32_t Day;
+	int32_t Seconds;
 
-	int FrameCount;
+	int32_t FrameCount;
 };
 
 struct RenderSettings
 {
-	unsigned int FramerateCap;
+	uint32_t FramerateCap;
 
 	std::string CommonPath;
 
