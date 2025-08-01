@@ -26,11 +26,12 @@
 #include <shobjidl.h>
 #include <atlbase.h>
 #include <unordered_map>
+#include <stdint.h>
 
 /// <summary>
 /// A map of which browse button maps to which text box.
 /// </summary>
-std::unordered_map<int, int> BrowseButtonMap =
+std::unordered_map<int32_t, int32_t> BrowseButtonMap =
 {
 	{ IDC_MAINSHADERBROWSE, IDC_MAINSHADERPATH },
 	{ IDC_MAINCHANN0BROWSE, IDC_MAINCHANNEL0 },
@@ -66,9 +67,9 @@ std::unordered_map<int, int> BrowseButtonMap =
 };
 
 auto OpenFilePicker(HWND owner) -> std::string;
-auto GetControlText(HWND hDlg, int control) -> std::string;
+auto GetControlText(HWND hDlg, int32_t control) -> std::string;
 
-auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, unsigned int message, WPARAM wParam, LPARAM lParam) -> BOOL
+auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, uint32_t message, WPARAM wParam, LPARAM lParam) -> BOOL
 {
 	switch (message)
 	{
@@ -122,7 +123,7 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, unsigned int message, WPARAM w
 		}
 		case WM_COMMAND:
 		{
-			unsigned short senderControl = LOWORD(wParam);
+			uint16_t senderControl = LOWORD(wParam);
 
 			switch (senderControl)
 			{
@@ -213,7 +214,7 @@ auto WINAPI ScreenSaverConfigureDialog(HWND hDlg, unsigned int message, WPARAM w
 						break;
 					
 					std::string filePath = OpenFilePicker(hDlg);
-					int correspondingTextBox = BrowseButtonMap.at(senderControl);
+					int32_t correspondingTextBox = BrowseButtonMap.at(senderControl);
 
 					::SetDlgItemText(hDlg, correspondingTextBox, filePath.c_str());
 
@@ -270,7 +271,7 @@ auto OpenFilePicker(HWND owner) -> std::string
 	return result;
 }
 
-auto GetControlText(HWND hDlg, int control) -> std::string
+auto GetControlText(HWND hDlg, int32_t control) -> std::string
 {
 	char buffer[MAX_PATH];
 	::GetDlgItemText(hDlg, control, buffer, MAX_PATH);
