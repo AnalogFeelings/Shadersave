@@ -38,12 +38,7 @@ auto Buffer::SetupBuffer(uint32_t* textureGlobal, int32_t viewportWidth, int32_t
 	glBindFramebuffer(GL_FRAMEBUFFER, this->BufferFramebuffer);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->BufferTexture, 0);
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		Globals::LastError = "Framebuffer was not complete on initialization.";
-
-		return false;
-	}
+	RET_IF_COND_TRUE_MSG(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE, "Framebuffer was not complete on initialization.");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

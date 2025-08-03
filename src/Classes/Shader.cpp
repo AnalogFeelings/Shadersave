@@ -37,11 +37,7 @@ auto Shader::LoadShader(const std::string& vertexText) -> bool
 
 auto Shader::LoadShadertoyShader(std::string& fragmentText, const std::string& commonText) -> bool
 {
-	if (fragmentText.empty())
-	{
-		Globals::LastError = "Shader file was empty.";
-		return false;
-	}
+	RET_IF_COND_TRUE_MSG(fragmentText.empty(), "Shader file was empty.");
 
 	std::stringstream stream;
 
@@ -98,9 +94,7 @@ auto Shader::CreateProgram() -> bool
 	glAttachShader(this->ProgramId, this->FragmentShader);
 	glLinkProgram(this->ProgramId);
 
-	bool programResult = this->CheckCompileErrors(this->ProgramId, "PROGRAM");
-	if (!programResult)
-		return false;
+	RET_IF_COND_FALSE(this->CheckCompileErrors(this->ProgramId, "PROGRAM"));
 
 	glDeleteShader(this->VertexShader);
 	glDeleteShader(this->FragmentShader);

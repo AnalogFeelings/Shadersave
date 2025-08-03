@@ -76,6 +76,36 @@
 #define BUFFER_C "BUFFER_C"
 #define BUFFER_D "BUFFER_D"
 
+#define RET_IF_COND_FALSE(condition) \
+	if (!(condition)) [[unlikely]] \
+	{ \
+		return false; \
+	} \
+	else ((void)0)
+
+#define RET_IF_COND_FALSE_MSG(condition, message) \
+	if (!(condition)) [[unlikely]] \
+	{ \
+		Globals::LastError = (message); \
+		return false; \
+	} \
+	else ((void)0)
+
+#define RET_IF_COND_TRUE(condition) \
+	if ((condition)) [[unlikely]] \
+	{ \
+		return false; \
+	} \
+	else ((void)0)
+
+#define RET_IF_COND_TRUE_MSG(condition, message) \
+	if ((condition)) [[unlikely]] \
+	{ \
+		Globals::LastError = (message); \
+		return false; \
+	} \
+	else ((void)0)
+
 // Just for convenience (and to avoid the nasty auto keyword for variables).
 typedef std::chrono::time_point<std::chrono::system_clock> SystemTimepoint;
 
