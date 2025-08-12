@@ -1,3 +1,9 @@
+> [!CAUTION]
+> This repository has been moved to https://codeberg.org/AnalogFeelings/Shadersave and will no longer receive updates.  
+> Do not use this code as it may contain vulnerabilities or bugs that may have been fixed in the Codeberg version. A copy of the original README will be left below.
+
+---
+
 # :rainbow: Shadersave
 [![GitHub issues](https://img.shields.io/github/issues/analogfeelings/shadersave?style=flat-square&logo=github&label=Issues)](https://github.com/AnalogFeelings/shadersave/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/analogfeelings/shadersave?label=Pull%20Requests&style=flat-square&logo=github)](https://github.com/AnalogFeelings/shadersave/pulls)
